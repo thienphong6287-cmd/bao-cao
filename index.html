@@ -105,6 +105,9 @@ label.b input,.pk input{position:absolute;left:0;top:0;width:100%;height:100%;op
 .crv .cb2.r3 button{padding:13px 4px;font-size:15px}.crv .rl,.crv .rr{background:#2c2c2e;color:#fff}
 .fab{border:0;position:fixed;right:18px;bottom:calc(22px + env(safe-area-inset-bottom));width:68px;height:68px;border-radius:50%;background:#ffc000;box-shadow:0 4px 14px #0006;display:grid;place-items:center;font-size:30px;z-index:30;cursor:pointer}
 #tst{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#111e;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;z-index:99;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90vw;text-align:center}#tst.on{opacity:1}
+.cam .cvw video{position:absolute;inset:0;width:100%;height:100%;min-width:0;min-height:0;max-width:none;flex:none;object-fit:contain}
+.cam .cst{position:absolute;left:0;right:0;bottom:0;height:68px;padding:6px 8px;background:#0008;z-index:3}.cam .cst img{width:54px;height:54px}.cam .cst p{font-size:12px;color:#ddd}
+.cam .czm{bottom:78px}.cam .camb{padding:8px 10px calc(8px + env(safe-area-inset-bottom))}.cam #sh{width:66px;height:66px}.csc{display:flex;flex-direction:column;align-items:center;gap:4px}.cam .cmd{padding:0;background:none;font-size:12px}
 .cam{touch-action:none}.clv{position:absolute;left:50%;top:50%;width:62%;display:none;align-items:center;gap:8px;pointer-events:none;z-index:2}.clv i{flex:1;height:2px;background:#fff;box-shadow:0 0 2px #000}.clv b{color:#fff;font-size:12px;min-width:26px;text-align:center;text-shadow:0 0 3px #000}.clv.ok i{background:#ffd60a;height:3px}
 .cfx{position:absolute;left:50%;top:50%;width:0;height:0;display:none;pointer-events:none;z-index:2}.cfx span{position:absolute;left:-14px;top:-14px;width:28px;height:28px}.cfx span::before,.cfx span::after{content:"";position:absolute;background:#fff;box-shadow:0 0 2px #000}.cfx span::before{left:13px;top:0;width:2px;height:28px}.cfx span::after{top:13px;left:0;height:2px;width:28px}.cfx .cf1::before,.cfx .cf1::after{background:#ffd60a}.cfx.ok span::before,.cfx.ok span::after{background:#ffd60a}
 .clb{background:#0009;color:#fff;border:1px solid #ffffff50;border-radius:12px;font-size:12px;padding:4px 10px}.clb.on{background:#ffffffd0;color:#000}
@@ -113,7 +116,7 @@ label.b input,.pk input{position:absolute;left:0;top:0;width:100%;height:100%;op
 .cvw{overflow:hidden;touch-action:none}.cvw video{transform-origin:center center}
 .czm{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:6px;background:#0008;border-radius:20px;padding:4px;z-index:2}.czm button{border:0;border-radius:16px;min-width:44px;height:32px;background:transparent;color:#fff;font-weight:700;font-size:13px}.czm button.on{background:#ffffffe0;color:#000}
 .cor{position:absolute;left:10px;top:calc(10px + env(safe-area-inset-top));background:#0009;color:#fff;font-size:12px;padding:5px 9px;border-radius:12px;z-index:2;display:none}
-@media (orientation:landscape) and (max-height:600px){.cmd{display:none}.cam{flex-direction:row}.cst{flex-direction:column;width:92px;height:auto;overflow-y:auto;overflow-x:hidden}.cst p{writing-mode:vertical-rl;margin:auto}.camb{flex-direction:column;justify-content:space-around;padding:10px calc(10px + env(safe-area-inset-right)) 10px 10px}.crv .cb2{padding-bottom:12px}}
+@media (orientation:landscape) and (max-height:600px){.cam .cmd{display:none}.cam{flex-direction:row}.cam .cst{left:auto;top:0;right:0;bottom:0;flex-direction:column;width:70px;height:auto;overflow-y:auto;overflow-x:hidden}.cam .czm{bottom:12px}.cst p{writing-mode:vertical-rl;margin:auto}.camb{flex-direction:column;justify-content:space-around;padding:10px calc(10px + env(safe-area-inset-right)) 10px 10px}.crv .cb2{padding-bottom:12px}}
 .cnb{color:#fff;font-size:12px;text-align:center;min-width:72px;line-height:1.25;border:1px solid #ffffff60;border-radius:8px;padding:6px 4px}
 .camb{display:flex;align-items:center;justify-content:space-around;padding:14px 10px calc(14px + env(safe-area-inset-bottom));background:#000}.camb span{color:#fff;min-width:72px}
 #sh{width:72px;height:72px;border-radius:50%;border:5px solid #fff;background:#ffffff40}#cx{background:var(--acc);color:#222;border:0;border-radius:8px;padding:12px 18px;font-weight:700;min-width:72px}
@@ -199,7 +202,7 @@ async function camOpen(onShot,onDel){
   const R=Math.PI/180,ux=-Math.sin(g*R)*Math.cos(b*R),uy=Math.sin(b*R),uz=Math.cos(g*R)*Math.cos(b*R);lvl={ux,uy,uz};if(typeof drawLv==="function")drawLv()};
  try{if(window.DeviceOrientationEvent&&typeof DeviceOrientationEvent.requestPermission==="function")DeviceOrientationEvent.requestPermission().then(r=>{if(r==="granted")addEventListener("deviceorientation",onOri)}).catch(()=>{});else addEventListener("deviceorientation",onOri)}catch(e){}
  const m=document.createElement("div");m.className="cam";
- m.innerHTML='<div class=cvw><video playsinline autoplay muted disablepictureinpicture disableremoteplayback></video><div class=cfl></div><div class=cgr><i></i><i></i><i></i><i></i></div><div class=clv><i></i><b></b><i></i></div><div class=cfx><span class=cf0></span><span class=cf1></span></div><div class=cor>↻ Ảnh sẽ lưu theo chiều ngang</div><div class=ctp><span class=crs hidden></span><button class=clb>━ Cân bằng</button><button class=cgb>▦ Lưới</button></div><div class=czm></div></div><div class=cst><p>Ảnh chụp tự lưu và hiện ở đây — chạm vào ảnh để xem, xoay hoặc xóa</p></div><div class=cmd>ẢNH</div><div class=camb><label class=cnb>📱 Camera<br>iPhone<input type=file accept="image/*" capture=environment hidden></label><button id=sh aria-label="Chụp"></button><button id=cx>Xong</button></div>';document.body.append(m);
+ m.innerHTML='<div class=cvw><video playsinline webkit-playsinline autoplay muted disablepictureinpicture disableremoteplayback x-webkit-airplay="deny"></video><div class=cfl></div><div class=cgr><i></i><i></i><i></i><i></i></div><div class=clv><i></i><b></b><i></i></div><div class=cfx><span class=cf0></span><span class=cf1></span></div><div class=cor>↻ Ảnh sẽ lưu theo chiều ngang</div><div class=ctp><span class=crs hidden></span><button class=clb>━ Cân bằng</button><button class=cgb>▦ Lưới</button></div><div class=czm></div><div class=cst><p>Ảnh chụp tự lưu — chạm ảnh nhỏ để xem, xoay, xóa</p></div></div><div class=camb><label class=cnb>📱 Camera<br>iPhone<input type=file accept="image/*" capture=environment hidden></label><div class=csc><div class=cmd>ẢNH</div><button id=sh aria-label="Chụp"></button></div><button id=cx>Xong</button></div>';document.body.append(m);
  const v=m.querySelector("video"),vw=m.querySelector(".cvw"),strip=m.querySelector(".cst"),fl=m.querySelector(".cfl"),cx=m.querySelector("#cx"),zb=m.querySelector(".czm"),ot=m.querySelector(".cor"),gr=m.querySelector(".cgr"),gb=m.querySelector(".cgb"),rs=m.querySelector(".crs");
  let stm=null,ic=null,busy=0,n=0,away=0,hw=null,z=1;
  const noGest=e=>e.preventDefault();document.addEventListener("gesturestart",noGest);document.addEventListener("gesturechange",noGest);
@@ -210,9 +213,9 @@ async function camOpen(onShot,onDel){
  const zMax=()=>hw?Math.min(hw.max,8):5,zMin=()=>hw?Math.max(hw.min,1):1;
  const setZ=async nz=>{z=Math.min(zMax(),Math.max(zMin(),nz));if(hw){try{await stm.getVideoTracks()[0].applyConstraints({advanced:[{zoom:z}]})}catch(e){hw=null}}v.style.transform=hw||z<=1?"":`scale(${z})`;zb.querySelectorAll("button").forEach(b=>b.classList.toggle("on",Math.abs(+b.dataset.z-z)<.05));const lb=zb.querySelector("[data-cur]");if(lb)lb.textContent=z.toFixed(1)+"×"};
  const zUI=()=>{const L=[1,2,3].filter(x=>x<=zMax());zb.innerHTML=L.map(x=>`<button data-z="${x}">${x}×</button>`).join("");zb.querySelectorAll("button").forEach(b=>b.onclick=e=>{e.stopPropagation();setZ(+b.dataset.z)});setZ(z)};
- const start=async()=>{clearTimeout(CAMS.t);const live=CAMS.s&&CAMS.s.getVideoTracks().some(t=>t.readyState==="live");
+ const start=async()=>{clearTimeout(CAMS.t);const live=CAMS.s&&CAMS.s.getVideoTracks().some(t=>t.readyState==="live"&&t.enabled&&!t.muted);if(CAMS.s&&!live){CAMS.s.getTracks().forEach(t=>t.stop());CAMS.s=null}
   if(live)stm=CAMS.s;else{stm=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:4032},height:{ideal:3024},aspectRatio:{ideal:4/3}},audio:false});CAMS.s=stm}
-  v.srcObject=stm;await Promise.race([v.play().catch(()=>{}),new Promise(r=>setTimeout(r,1500))]);ic=null;hw=null;
+  v.muted=true;v.playsInline=true;v.setAttribute("playsinline","");v.setAttribute("webkit-playsinline","");v.controls=false;v.srcObject=stm;await Promise.race([v.play().catch(()=>{}),new Promise(r=>setTimeout(r,1500))]);ic=null;hw=null;
   const tr=stm.getVideoTracks()[0];try{const cp=tr.getCapabilities&&tr.getCapabilities();if(cp&&cp.zoom&&cp.zoom.max>cp.zoom.min)hw={min:cp.zoom.min,max:cp.zoom.max}}catch(e){}
   try{if(window.ImageCapture)ic=new ImageCapture(tr)}catch(e){}zUI();setTimeout(place,50)};
  /* đóng camera: giữ luồng 3 phút để lần mở sau không hỏi quyền lại */
@@ -242,7 +245,7 @@ async function camOpen(onShot,onDel){
  const review=(id,d,t)=>{const r=document.createElement("div");r.className="crv";const k=[...strip.querySelectorAll("img")].indexOf(t)+1;
   r.innerHTML='<div class=rt>Ảnh '+k+' / '+n+' · đã lưu</div><div class=ci><img alt=""></div><div class="cb2 r3"><button class=rl>↺ Trái</button><button class=rr>↻ Phải</button><button class=rd>🗑 Xóa</button><button class=ru>📷 Chụp tiếp</button></div>';r.querySelector(".ci img").src=mem[id]||d;m.append(r);
   const rt=async dir=>{await rotImg(id,dir);r.querySelector(".ci img").src=mem[id];t.src=mem[id]};r.querySelector(".rl").onclick=()=>rt(-1);r.querySelector(".rr").onclick=()=>rt(1);
-  r.querySelector(".rd").onclick=async()=>{await onDel(id);t.remove();n--;cnt();if(!n)strip.innerHTML='<p>Ảnh chụp tự lưu và hiện ở đây — chạm vào ảnh để xem, xoay hoặc xóa</p>';r.remove()};
+  r.querySelector(".rd").onclick=async()=>{await onDel(id);t.remove();n--;cnt();if(!n)strip.innerHTML='<p>Ảnh chụp tự lưu — chạm ảnh nhỏ để xem, xoay, xóa</p>';r.remove()};
   r.querySelector(".ru").onclick=()=>{t.classList.add("ok");r.remove()}};
  /* chụp: cắt theo zoom số + xoay theo cách cầm máy */
  const grab=async()=>{const rot=rotNeed(),dz=hw?1:z;
@@ -255,6 +258,14 @@ async function camOpen(onShot,onDel){
  const sb=m.querySelector("#sh");
  sb.onclick=async()=>{if(busy)return;if(!v.videoWidth){try{await v.play()}catch(e){}if(!v.videoWidth)return toast("Camera chưa sẵn sàng — thử lại sau 1 giây hoặc dùng nút 📱 Camera iPhone")}busy=1;shutterSnd();sb.style.opacity=.4;fl.style.transition="none";fl.style.opacity=.9;setTimeout(()=>{fl.style.transition="opacity .35s";fl.style.opacity=0},40);
   try{const hb=await grab();const d=hb&&await comp(hb);if(d)await add(d,hb);else toast("Không chụp được — hãy dùng nút 📱 Camera iPhone")}catch(e){toast("Lỗi chụp: "+(e&&e.message||e))}finally{setTimeout(()=>{if(v.paused)v.play().catch(()=>{});busy=0;sb.style.opacity=1},250)}};
+ /* iPhone đôi khi mở video ra trình phát toàn màn hình (chữ LIVE) che mất nút chụp: thoát ra ngay và chạy lại khung ngắm */
+ let fsWarn=0;v.addEventListener("webkitbeginfullscreen",()=>{try{v.webkitExitFullscreen()}catch(e){}if(!fsWarn++)toast("Đã tắt chế độ phát toàn màn hình — bấm nút tròn để chụp")});
+ v.addEventListener("webkitendfullscreen",()=>{setTimeout(()=>v.play().catch(()=>{}),100)});
+ let lastT=-1,stuck=0,fixing=0;const restart=async()=>{if(fixing)return;fixing=1;stop(1);try{await start()}catch(e){toast("Không mở lại được camera — đóng camera rồi mở lại")}fixing=0;stuck=0};
+ const hb=setInterval(async()=>{if(!document.body.contains(m)){clearInterval(hb);return}if(away||!stm||fixing||document.visibilityState!=="visible")return;const tr=stm.getVideoTracks()[0];
+  if(!tr||tr.readyState==="ended"||tr.muted){restart();return}if(v.paused&&!busy){v.play().catch(()=>{})}
+  /* màn hình đen / đứng hình: thời gian video không chạy hoặc chưa có khung hình -> mở lại camera */
+  const t=v.currentTime;if(!v.videoWidth||t===lastT){if(++stuck>=3)restart()}else stuck=0;lastT=t},1000);
  const nat=m.querySelector(".cnb input");m.querySelector(".cnb").onclick=()=>{stop(1);away=1};
  const back=async()=>{if(!away)return;away=0;if(!stm&&document.body.contains(m))try{await start()}catch(e){}};
  nat.onchange=async()=>{for(const f of [...nat.files]){const d=await comp(f);if(d)await add(d,f)}nat.value="";back()};
@@ -337,6 +348,7 @@ async function render(){
      try{for(const f of fs){const d=await comp(f);if(!d)continue;const id=uid();mem[id]=d;await idbPut("i",id,d);if(hiOn())await idbPut("i","h:"+id,f);x.ph.push({id,cap:capOf(0)});n++}await save()}finally{busyEnd()}
      await render();scrollTo(0,y);toast(n?`✓ Đã lưu ảnh · ${x.ph.filter(p=>p.id&&!p.up).length} ảnh — bấm 📷 để chụp tiếp`:"Không đọc được ảnh")});
     $("#camf").onclick=()=>$("#cam").click();
+    if(INAPP&&!sessionStorage.getItem("inapp_warn")){try{sessionStorage.setItem("inapp_warn","1")}catch(e){}setTimeout(()=>alert("Bạn đang mở app trong trình duyệt của Zalo/Facebook. Trình duyệt này bắt camera chạy toàn màn hình nên không chụp được.\n\nHãy bấm ••• hoặc biểu tượng la bàn → \"Mở bằng Safari\", hoặc mở app từ biểu tượng ngoài màn hình chính."),300)}
     $("#cam").onclick=async()=>{if(!(await camOpen(async(d,hb)=>{const id=uid();mem[id]=d;await idbPut("i",id,d);if(hb&&hiOn())await idbPut("i","h:"+id,hb);x.ph.push({id,cap:capOf(0)});await save();return id},async id=>{const q=x.ph.findIndex(p=>p.id===id);if(q>=0)x.ph.splice(q,1);await delImg(id);await save()})))alert("Không mở được camera trong app. Hãy cho phép Camera cho trang này (Safari: biểu tượng aA → Cài đặt trang web → Camera → Cho phép), hoặc dùng nút 📱 Camera iPhone.")};
     a.querySelectorAll("[data-v]").forEach(e=>e.onclick=()=>viewer(x,+e.dataset.v));
     a.querySelectorAll("[data-r]").forEach(e=>e.onclick=async()=>{const[i,d]=e.dataset.r.split(":").map(Number),p=x.ph[i];if(!p||!p.id)return;e.disabled=true;await rotImg(p.id,d);render()});
@@ -640,6 +652,7 @@ await savePdf()};
 const doExp=async mode=>{const b=$("#exp");b.disabled=true;busyMsg("Đang chuẩn bị báo cáo…");await new Promise(r=>setTimeout(r,50));try{await doExp0(mode)}catch(e){alert("Không xuất được file: "+(e&&e.message||e))}busyEnd();b.disabled=false};
 $("#exp").onclick=()=>doExp(0);
 
+const INAPP=/Zalo|FBAN|FBAV|FB_IAB|Instagram|Messenger|Line\/|MicroMessenger|TikTok|Telegram/i.test(navigator.userAgent);
 function toast(t){let e=document.getElementById("tst");if(!e){e=document.createElement("div");e.id="tst";document.body.append(e)}e.textContent=t;e.className="on";clearTimeout(toast.t);toast.t=setTimeout(()=>e.className="",2600)}
 /* ===== Xoay ảnh trái/phải (xoay cả bản báo cáo lẫn ảnh gốc) ===== */
 const loadIm=src=>new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>no(new Error("Không đọc được ảnh"));i.src=src});
