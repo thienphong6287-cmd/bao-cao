@@ -93,7 +93,10 @@ label.b input,.pk input{position:absolute;left:0;top:0;width:100%;height:100%;op
 @media print{.ix{width:112px;height:72px;top:0;right:24px}.ix svg{width:112px;height:72px}.ix i{bottom:3px;font-size:14px}
 .hd.o .ix,.hd.y .ix{width:124px;height:80px}.hd.o .ix svg,.hd.y .ix svg{width:124px;height:80px}}
 .rp{display:flex;align-items:center;gap:10px;cursor:pointer}.rp .t{flex:1}.rp small{display:block;color:var(--mut)}.ph img{cursor:zoom-in}
-.cam,.vw{position:fixed;inset:0;background:#000;z-index:100;display:flex;flex-direction:column}.cam video{flex:1;width:100%;min-height:0;object-fit:contain;transition:opacity .1s}
+.cam,.vw{position:fixed;inset:0;background:#000;z-index:100;display:flex;flex-direction:column}.cam video{flex:1;width:100%;min-height:0;object-fit:contain}.cvw{position:relative;flex:1;min-height:0;display:flex;background:#000}.cfl{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+.cst{display:flex;gap:6px;overflow-x:auto;padding:8px;background:#111;height:88px;align-items:center;flex:none}.cst img{height:70px;width:70px;object-fit:cover;border-radius:6px;border:2px solid #ffffff40;flex:none;cursor:pointer}.cst img.ok{border-color:#3ecf6e}.cst p{color:#999;font-size:13px;margin:0 auto;text-align:center}
+.crv{position:absolute;inset:0;background:#000;display:flex;flex-direction:column;z-index:3}.crv .ci{flex:1;min-height:0;display:flex}.crv .ci img{flex:1;min-width:0;object-fit:contain}.crv .cb2{display:flex;gap:10px;padding:12px 12px calc(12px + env(safe-area-inset-bottom))}.crv .cb2 button{flex:1;padding:15px;border:0;border-radius:10px;font-weight:700;font-size:16px}.crv .rd{background:#c62828;color:#fff}.crv .ru{background:#2e7d32;color:#fff}.crv .rt{color:#fff;text-align:center;padding:calc(10px + env(safe-area-inset-top)) 10px 6px;font-size:15px}
+.cnb{color:#fff;font-size:12px;text-align:center;min-width:72px;line-height:1.25;border:1px solid #ffffff60;border-radius:8px;padding:6px 4px}
 .camb{display:flex;align-items:center;justify-content:space-around;padding:14px 10px calc(14px + env(safe-area-inset-bottom));background:#000}.camb span{color:#fff;min-width:72px}
 #sh{width:72px;height:72px;border-radius:50%;border:5px solid #fff;background:#ffffff40}#cx{background:var(--acc);color:#222;border:0;border-radius:8px;padding:12px 18px;font-weight:700;min-width:72px}
 .vt{display:flex;gap:6px;align-items:center;padding:calc(8px + env(safe-area-inset-top)) 8px 8px;background:#111}.vt button{background:#333;color:#fff;border:0;border-radius:8px;padding:9px 12px;font-size:15px}.vt span{flex:1;color:#fff;text-align:center;font-size:13px}
@@ -142,21 +145,21 @@ const st=(n,m)=>db.transaction(n,m).objectStore(n);
 const idbGet=(n,k)=>new Promise(r=>{try{const q=st(n).get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>r()}catch(e){r()}});
 const idbPut=(n,k,v)=>new Promise(r=>{try{const q=st(n,"readwrite").put(v,k);q.onsuccess=q.onerror=()=>r()}catch(e){r()}});
 const idbDel=(n,k)=>new Promise(r=>{try{const q=st(n,"readwrite").delete(k);q.onsuccess=q.onerror=()=>r()}catch(e){r()}});
-const save=()=>{if(!db||!S)return;S.updated=Date.now();return idbPut("m","r:"+S.id,S)};
-const img=async id=>mem[id]||(mem[id]=await idbGet("i",id));
+const save=()=>{if(!db||!S)return;S.updated=Date.now();syMark(S.id);return idbPut("m","r:"+S.id,S)};
+const img=async id=>!id?undefined:mem[id]||(mem[id]=await idbGet("i",id))||(mem[id]=await syImgDown(id));
 function comp(f){return new Promise(res=>{const u=URL.createObjectURL(f),i=new Image();i.onload=()=>{const k=Math.min(1,1600/Math.max(i.width,i.height)),c=document.createElement("canvas");c.width=Math.round(i.width*k);c.height=Math.round(i.height*k);c.getContext("2d").drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL("image/jpeg",.8))};i.onerror=()=>res(null);i.src=u})}
 const DAYS=()=>{try{return +localStorage.getItem("fir_days")||10}catch(e){return 10}};
 const allReports=()=>new Promise(r=>{try{const q=st("m").getAll();q.onsuccess=()=>r((q.result||[]).filter(x=>x&&x.id&&x.skus));q.onerror=()=>r([])}catch(e){r([])}});
-async function delReport(r){for(const k of r.skus)for(const x of Object.values(k.sec))for(const p of x.ph)if(p.id)await delImg(p.id);await idbDel("m","r:"+r.id)}
-async function openReport(id){S=await idbGet("m","r:"+id);V={p:"home"};render();scrollTo(0,0)}
+async function delReport(r,local){for(const k of r.skus)for(const x of Object.values(k.sec))for(const p of x.ph)if(p.id)await delImg(p.id);await idbDel("m","r:"+r.id);if(!local)syMark(r.id,1)}
+async function openReport(id){if(syOn())try{await Promise.race([syPull(id),new Promise(r=>setTimeout(r,5000))])}catch(e){}S=await idbGet("m","r:"+id);if(!S)return render();V={p:"home"};render();scrollTo(0,0)}
 async function renderList(a){$("#ttl").textContent="Báo cáo của tôi";const rs=(await allReports()).sort((x,y)=>y.updated-x.updated),D=DAYS();
- a.innerHTML=`<div class=c><button class="b y" id=nr style="width:100%">＋ Tạo báo cáo mới</button><p class=tip>Báo cáo tự xóa sau ${D} ngày kể từ lần sửa cuối. Hãy xuất file hoặc sao lưu trước khi hết hạn.</p></div>`+(rs.map(r=>{const left=Math.max(0,Math.ceil(D-(Date.now()-r.updated)/864e5));return`<div class="c rp" data-o="${r.id}"><div class=t><b>${esc(r.cover.po||"(chưa có PO)")}</b>${r.cover.cust?" · "+esc(r.cover.cust):""}<small>${r.skus.length} SKU · sửa ${new Date(r.updated).toLocaleString("vi-VN")}</small><small style="color:${left<=2?"var(--bad)":"var(--mut)"}">Còn ${left} ngày</small></div><button class="b x" data-d="${r.id}">Xóa</button></div>`}).join("")||'<p class=tip>Chưa có báo cáo nào.</p>')+`<div class=c><h2>Cài đặt</h2><label>Số ngày giữ báo cáo</label><input type=number min=1 id=dy value=${D}><label class="b g" style="margin-top:10px">Khôi phục báo cáo từ file<input type=file accept=".json,application/json" id=rsf></label></div>`;
+ a.innerHTML=`<div class=c><button class="b y" id=nr style="width:100%">＋ Tạo báo cáo mới</button><p class=tip>Báo cáo tự xóa sau ${D} ngày kể từ lần sửa cuối. Hãy xuất file hoặc sao lưu trước khi hết hạn.</p></div>`+(rs.map(r=>{const left=Math.max(0,Math.ceil(D-(Date.now()-r.updated)/864e5));return`<div class="c rp" data-o="${r.id}"><div class=t><b>${esc(r.cover.po||"(chưa có PO)")}</b>${r.cover.cust?" · "+esc(r.cover.cust):""}<small>${r.skus.length} SKU · sửa ${new Date(r.updated).toLocaleString("vi-VN")}</small><small style="color:${left<=2?"var(--bad)":"var(--mut)"}">Còn ${left} ngày</small></div><button class="b x" data-d="${r.id}">Xóa</button></div>`}).join("")||'<p class=tip>Chưa có báo cáo nào.</p>')+`<div class=c><h2>Cài đặt</h2><label>Số ngày giữ báo cáo</label><input type=number min=1 id=dy value=${D}><label class="b g" style="margin-top:10px">Khôi phục báo cáo từ file<input type=file accept=".json,application/json" id=rsf></label></div>${syCard()}`;syBind(a);
  $("#nr").onclick=async()=>{S=blank();if(rs[0])S.cfg={...rs[0].cfg};await save();V={p:"home"};render()};
  a.querySelectorAll("[data-o]").forEach(e=>e.onclick=()=>openReport(e.dataset.o));
  a.querySelectorAll("[data-d]").forEach(e=>e.onclick=async ev=>{ev.stopPropagation();const r=rs.find(z=>z.id===e.dataset.d);if(confirm("Xóa báo cáo "+(r.cover.po||"này")+" và toàn bộ ảnh?")){await delReport(r);render()}});
  $("#dy").onchange=e=>{try{localStorage.setItem("fir_days",Math.max(1,+e.target.value||10))}catch(x){}render()};
  $("#rsf").onchange=e=>restore(e.target.files[0])}
-const delImg=async id=>{await idbDel("i",id);await idbDel("i","h:"+id);delete mem[id]};
+const delImg=async id=>{await idbDel("i",id);await idbDel("i","h:"+id);await idbDel("m","u:"+id);delete mem[id]};
 const hiOn=()=>CF().hq!=="0";
 const b64=u=>Uint8Array.from(atob(u.split(",")[1]),c=>c.charCodeAt(0));
 let PHF=[];
@@ -169,11 +172,26 @@ async function saveAllPhotos(){const fs=PHF;if(!fs.length)return alert("Chưa c�
  await zipPhotos(true)}
 async function zipPhotos(direct){const fs=[],im=[];for(const k of S.skus){const code=(k.code||"sku").replace(/[^\w.\-]/g,"_");for(const d of SEC){const x=k.sec[d[0]];if(!x)continue;let j=0;for(const p of x.ph){if(!p.id)continue;const h=await idbGet("i","h:"+p.id);let by;if(h&&h.arrayBuffer)by=new Uint8Array(await h.arrayBuffer());else{const u=await img(p.id);if(!u)continue;by=b64(u)}const nn=String(++j).padStart(2,"0");fs.push({n:`${code}/${d[0]}_${nn}.jpg`,b:by});im.push(new File([by],`${code}_${d[0]}_${nn}.jpg`,{type:"image/jpeg"}))}}}
  if(!fs.length)return alert("Chưa có ảnh nào trong báo cáo.");{const bl=zipB(fs,"application/zip"),nm="anh-"+(S.cover.po||"bao-cao")+".zip";if(direct===true){const u=URL.createObjectURL(bl),a=document.createElement("a");a.href=u;a.download=nm;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000)}else offerFile(bl,nm,im)}}
-async function camOpen(onShot){const m=document.createElement("div");m.className="cam";m.innerHTML='<video playsinline autoplay muted></video><div class=camb><span id=cn>0 ảnh</span><button id=sh aria-label="Chụp"></button><button id=cx>Xong</button></div>';document.body.append(m);
- const v=m.querySelector("video");let stm,n=0;
- try{stm=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:3264},height:{ideal:2448}},audio:false});v.srcObject=stm;await v.play()}catch(e){m.remove();return false}
- m.querySelector("#sh").onclick=async()=>{if(!v.videoWidth)return;const c=document.createElement("canvas"),k=Math.min(1,1600/Math.max(v.videoWidth,v.videoHeight));c.width=Math.round(v.videoWidth*k);c.height=Math.round(v.videoHeight*k);c.getContext("2d").drawImage(v,0,0,c.width,c.height);v.style.opacity=.3;setTimeout(()=>v.style.opacity=1,120);const hb=await new Promise(r=>{const h=document.createElement("canvas");h.width=v.videoWidth;h.height=v.videoHeight;h.getContext("2d").drawImage(v,0,0);h.toBlob(r,"image/jpeg",.92)});await onShot(c.toDataURL("image/jpeg",.8),hb);m.querySelector("#cn").textContent=(++n)+" ảnh"};
- m.querySelector("#cx").onclick=()=>{stm.getTracks().forEach(t=>t.stop());m.remove();render()};return true}
+async function camOpen(onShot,onDel){const m=document.createElement("div");m.className="cam";
+ m.innerHTML='<div class=cvw><video playsinline autoplay muted></video><div class=cfl></div></div><div class=cst><p>Ảnh vừa chụp hiện ở đây — chạm vào ảnh để xem, giữ hoặc xóa</p></div><div class=camb><label class=cnb>Máy ảnh<br>iPhone/gốc<input type=file accept="image/*" capture=environment hidden></label><button id=sh aria-label="Chụp"></button><button id=cx>Xong</button></div>';document.body.append(m);
+ const v=m.querySelector("video"),strip=m.querySelector(".cst"),fl=m.querySelector(".cfl"),cx=m.querySelector("#cx");let stm=null,ic=null,busy=0,n=0,away=0;
+ const start=async()=>{stm=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:4032},height:{ideal:3024}},audio:false});v.srcObject=stm;await v.play();ic=null;try{if(window.ImageCapture)ic=new ImageCapture(stm.getVideoTracks()[0])}catch(e){}};
+ const stop=()=>{if(stm)stm.getTracks().forEach(t=>t.stop());stm=null};
+ try{await start()}catch(e){m.remove();return false}
+ const cnt=()=>{cx.textContent=n?"Xong ("+n+")":"Xong"};
+ const add=async(d,hb)=>{const id=await onShot(d,hb);if(!id)return;const t=document.createElement("img");t.src=d;t.alt="";t.onclick=()=>review(id,d,t);const p=strip.querySelector("p");if(p)p.remove();strip.append(t);strip.scrollLeft=strip.scrollWidth;n++;cnt()};
+ const review=(id,d,t)=>{const r=document.createElement("div");r.className="crv";const k=[...strip.querySelectorAll("img")].indexOf(t)+1;
+  r.innerHTML='<div class=rt>Ảnh '+k+' / '+n+'</div><div class=ci><img alt=""></div><div class=cb2><button class=rd>🗑 Xóa ảnh</button><button class=ru>✓ Dùng ảnh này</button></div>';r.querySelector(".ci img").src=d;m.append(r);
+  r.querySelector(".rd").onclick=async()=>{await onDel(id);t.remove();n--;cnt();if(!n)strip.innerHTML='<p>Ảnh vừa chụp hiện ở đây — chạm vào ảnh để xem, giữ hoặc xóa</p>';r.remove()};
+  r.querySelector(".ru").onclick=()=>{t.classList.add("ok");r.remove()}};
+ const grab=async()=>{if(ic){try{const b=await ic.takePhoto();if(b&&b.size)return b}catch(e){}}const h=document.createElement("canvas");h.width=v.videoWidth;h.height=v.videoHeight;h.getContext("2d").drawImage(v,0,0);return await new Promise(r=>h.toBlob(r,"image/jpeg",.92))};
+ m.querySelector("#sh").onclick=async()=>{if(!v.videoWidth||busy)return;busy=1;const sb=m.querySelector("#sh");sb.style.opacity=.4;fl.style.transition="none";fl.style.opacity=.9;v.pause();setTimeout(()=>{fl.style.transition="opacity .35s";fl.style.opacity=0},40);
+  try{const hb=await grab();const d=hb&&await comp(hb);if(d)await add(d,hb)}finally{setTimeout(()=>{v.play().catch(()=>{});busy=0;sb.style.opacity=1},350)}};
+ const nat=m.querySelector(".cnb input");m.querySelector(".cnb").onclick=()=>{stop();away=1};
+ const back=async()=>{if(!away)return;away=0;if(!stm&&document.body.contains(m))try{await start()}catch(e){}};
+ nat.onchange=async()=>{for(const f of [...nat.files]){const d=await comp(f);if(d)await add(d,f)}nat.value="";back()};
+ const vis=()=>{if(document.visibilityState==="visible")setTimeout(back,600)};document.addEventListener("visibilitychange",vis);window.addEventListener("focus",vis);
+ cx.onclick=()=>{stop();document.removeEventListener("visibilitychange",vis);window.removeEventListener("focus",vis);m.remove();render()};return true}
 function viewer(x,i){const m=document.createElement("div");m.className="vw";m.innerHTML='<div class=vt><button id=vp>‹</button><span id=vi></span><button id=vn>›</button><button id=vs>Lưu</button><button id=vd>Xóa</button><button id=vc>Đóng</button></div><div class=vb><img alt=""></div>';document.body.append(m);
  const im=m.querySelector("img"),box=m.querySelector(".vb"),pts={};let s=1,tx=0,ty=0,d0=0,s0=1,t0=0;
  const ap=()=>im.style.transform=`translate(${tx}px,${ty}px) scale(${s})`,reset=()=>{s=1;tx=ty=0;ap()};
@@ -209,7 +227,7 @@ async function render(){
     $("#add").onclick=()=>{const code=$("#nc").value.trim();if(!code)return $("#nc").focus();S.skus.push({id:uid(),code,name:$("#nn").value.trim(),d:[0,0,0],sec:{}});save();render()};
     $("#pp").onclick=()=>doExp(2);$("#px").onclick=()=>doExp(1);
     a.querySelectorAll("[data-g]").forEach(i=>i.oninput=()=>{(S.cfg||(S.cfg={}))[i.dataset.g]=i.value;save()});
-    $("#lg").onchange=async e=>{const d=await comp(e.target.files[0]);if(d){mem.logo=d;await idbPut("i","logo",d);(S.cfg||(S.cfg={})).logo=1;save();render()}};
+    $("#lg").onchange=async e=>{const d=await comp(e.target.files[0]);if(d){mem.logo=d;await idbPut("i","logo",d);await idbDel("m","u:logo");(S.cfg||(S.cfg={})).logo=1;save();render()}};
     if($("#lgx"))$("#lgx").onclick=async()=>{delete S.cfg.logo;await idbDel("i","logo");delete mem.logo;save();render()};
     $("#bk").onclick=backup;$("#zi").onclick=()=>zipPhotos();$("#sa").onclick=confirmSaveAll;prepPhotos();
     $("#rm").onclick=async()=>{if(!confirm("Xóa báo cáo này và toàn bộ ảnh? Không thể hoàn tác."))return;await delReport(S);V={p:"list"};render()};
@@ -230,7 +248,7 @@ async function render(){
     ${secForm(V.k,x)}<div class=c style="margin-top:12px"><label>Inspector comments</label><textarea id=nt placeholder="Mỗi dòng là một ý, báo cáo tự thêm dấu •">${esc(x.note)}</textarea></div>`;
     const addF=async fs=>{for(const f of fs){const d=await comp(f);if(!d)continue;const id=uid();mem[id]=d;await idbPut("i",id,d);if(hiOn())await idbPut("i","h:"+id,f);x.ph.push({id,cap:dc(V.k,x.ph.length)})}await save();render()};
     $("#fc").onchange=e=>addF([...e.target.files]);$("#fl").onchange=e=>addF([...e.target.files]);
-    $("#cam").onclick=async()=>{if(!(await camOpen(async(d,hb)=>{const id=uid();mem[id]=d;await idbPut("i",id,d);if(hb&&hiOn())await idbPut("i","h:"+id,hb);x.ph.push({id,cap:dc(V.k,x.ph.length)});await save()})))alert("Không mở được camera trong app (chưa cấp quyền hoặc trình duyệt không hỗ trợ). Hãy dùng 'Dùng máy ảnh hệ thống'.")};
+    $("#cam").onclick=async()=>{if(!(await camOpen(async(d,hb)=>{const id=uid();mem[id]=d;await idbPut("i",id,d);if(hb&&hiOn())await idbPut("i","h:"+id,hb);x.ph.push({id,cap:dc(V.k,x.ph.length)});await save();return id},async id=>{const q=x.ph.findIndex(p=>p.id===id);if(q>=0){if(x.ph[q].ref)x.ph[q].id=null;else x.ph.splice(q,1)}await delImg(id);await save()})))alert("Không mở được camera trong app (chưa cấp quyền hoặc trình duyệt không hỗ trợ). Hãy dùng 'Dùng máy ảnh hệ thống'.")};
     a.querySelectorAll("[data-v]").forEach(e=>e.onclick=()=>viewer(x,+e.dataset.v));
     a.querySelectorAll("[data-i]").forEach(i=>i.oninput=()=>{x.ph[i.dataset.i].cap=i.value;save()});
     $("#nt").oninput=e=>{x.note=e.target.value;save()};
@@ -521,8 +539,60 @@ await savePdf()};
 const doExp=async mode=>{const b=$("#exp");b.disabled=true;busyMsg("Đang chuẩn bị báo cáo…");await new Promise(r=>setTimeout(r,50));try{await doExp0(mode)}catch(e){alert("Không xuất được file: "+(e&&e.message||e))}busyEnd();b.disabled=false};
 $("#exp").onclick=()=>doExp(0);
 
+/* ===== Đồng bộ đám mây (Supabase): điện thoại ↔ máy tính ===== */
+const SY={get c(){try{return JSON.parse(localStorage.getItem("fir_sync")||"null")}catch(e){return null}},set(v){try{v?localStorage.setItem("fir_sync",JSON.stringify(v)):localStorage.removeItem("fir_sync")}catch(e){}}};
+const syOn=()=>{const c=SY.c;return !!(c&&c.url&&c.key&&c.code)};
+const syH=j=>{const c=SY.c,h={apikey:c.key};if(/^eyJ/.test(c.key))h.Authorization="Bearer "+c.key;if(j)h["Content-Type"]="application/json";return h};
+const syU=p=>SY.c.url.trim().replace(/\/+$/,"")+p;
+const syPath=id=>encodeURIComponent(SY.c.code)+"/"+encodeURIComponent(id)+".jpg";
+const dq=()=>{try{return JSON.parse(localStorage.getItem("fir_dirty")||"{}")}catch(e){return{}}},dqS=o=>{try{localStorage.setItem("fir_dirty",JSON.stringify(o))}catch(e){}};
+let syBusy=0,syLast=(()=>{try{return localStorage.getItem("fir_sylast")||""}catch(e){return""}})();
+function syMsg(t,ok){if(ok){syLast=t;try{localStorage.setItem("fir_sylast",t)}catch(e){}}const e=document.getElementById("sys");if(e)e.textContent=t}
+function syMark(id,del){if(!syOn()||!id)return;const o=dq();o[id]=(del?"d":"u")+Date.now();dqS(o);clearTimeout(syMark.t);syMark.t=setTimeout(syPush,2500)}
+const imgIds=r=>{const a=[];for(const k of r.skus||[])for(const x of Object.values(k.sec||{}))for(const p of x.ph||[])if(p.id)a.push(p.id);if(r.cfg&&r.cfg.logo)a.push("logo");return a};
+async function syErr(r,w){let t="";try{t=(await r.text()).slice(0,160)}catch(e){}return new Error(w+" (lỗi "+r.status+") "+t)}
+async function syImgUp(id){if(await idbGet("m","u:"+id))return;const d=mem[id]||await idbGet("i",id);if(!d)return;
+ const r=await fetch(syU("/storage/v1/object/photos/"+syPath(id)),{method:"POST",headers:{...syH(),"Content-Type":"image/jpeg","x-upsert":"true"},body:new Blob([b64(d)],{type:"image/jpeg"})});
+ if(!r.ok)throw await syErr(r,"Tải ảnh lên thất bại");await idbPut("m","u:"+id,1)}
+async function syImgDown(id){if(!id||!syOn()||!navigator.onLine)return;try{const r=await fetch(syU("/storage/v1/object/authenticated/photos/"+syPath(id)),{headers:syH()});if(!r.ok)return;const b=await r.blob();
+ const d=await new Promise(ok=>{const f=new FileReader();f.onload=()=>ok(f.result);f.onerror=()=>ok(null);f.readAsDataURL(b)});if(!d)return;const u="data:image/jpeg;base64,"+d.split(",")[1];
+ await idbPut("i",id,u);await idbPut("m","u:"+id,1);return u}catch(e){}}
+async function syRow(row){const r=await fetch(syU("/rest/v1/reports?on_conflict=id"),{method:"POST",headers:{...syH(1),Prefer:"resolution=merge-duplicates,return=minimal"},body:JSON.stringify([{...row,code:SY.c.code}])});if(!r.ok)throw await syErr(r,"Lưu báo cáo lên mây thất bại")}
+async function syPush(){if(!syOn()||syBusy)return;if(!navigator.onLine)return syMsg("Đang offline — sẽ đồng bộ khi có mạng");syBusy=1;
+ try{const o=dq(),ks=Object.keys(o);for(const id of ks){const tk=o[id];
+   if(tk[0]==="d"){try{const g=await fetch(syU("/rest/v1/reports?id=eq."+encodeURIComponent(id)+"&select=data"),{headers:syH()});const[x]=g.ok?await g.json():[];const ps=x&&x.data?imgIds(x.data).filter(i=>i!=="logo").map(syPath).map(decodeURIComponent):[];
+     if(ps.length)await fetch(syU("/storage/v1/object/photos"),{method:"DELETE",headers:syH(1),body:JSON.stringify({prefixes:ps})})}catch(e){}
+    await syRow({id,data:null,updated:Date.now(),deleted:true})}
+   else{const r=await idbGet("m","r:"+id);if(r){const ids=imgIds(r);let k=0;for(const i of ids){syMsg("Đang tải ảnh lên… "+(++k)+"/"+ids.length);await syImgUp(i)}await syRow({id,data:r,updated:r.updated,deleted:false})}}
+   const o2=dq();if(o2[id]===tk){delete o2[id];dqS(o2)}}
+  syMsg("✓ Đã đồng bộ lúc "+new Date().toLocaleTimeString("vi-VN"),1)}
+ catch(e){syMsg("⚠ Chưa đồng bộ được: "+(e&&e.message||e)+" — sẽ tự thử lại")}syBusy=0}
+async function syPull(only){if(!syOn()||!navigator.onLine)return 0;
+ const r=await fetch(syU("/rest/v1/reports?code=eq."+encodeURIComponent(SY.c.code)+(only?"&id=eq."+encodeURIComponent(only):"")+"&select=id,updated,deleted"),{headers:syH()});if(!r.ok)throw await syErr(r,"Không đọc được dữ liệu trên mây");
+ const rows=await r.json(),o=dq();let ch=0;
+ for(const w of rows){if(o[w.id])continue;const loc=await idbGet("m","r:"+w.id);
+  if(w.deleted){if(loc){await delReport(loc,1);ch++}continue}
+  if(Date.now()-w.updated>DAYS()*864e5||(loc&&loc.updated>=w.updated))continue;
+  const g=await fetch(syU("/rest/v1/reports?id=eq."+encodeURIComponent(w.id)+"&select=data"),{headers:syH()});if(!g.ok)continue;const[x]=await g.json();
+  if(x&&x.data&&x.data.skus){await idbPut("m","r:"+w.id,x.data);ch++}}
+ return ch}
+async function syNow(show){if(!syOn())return;try{await syPush();const ch=await syPull();if(!dq()||!Object.keys(dq()).length)syMsg("✓ Đã đồng bộ lúc "+new Date().toLocaleTimeString("vi-VN")+(ch?" · nhận "+ch+" thay đổi":""),1);if(ch&&V.p==="list")render()}catch(e){syMsg("⚠ "+(e&&e.message||e))}}
+function syLink(){const c=SY.c;return location.origin+location.pathname+"#sync="+btoa(unescape(encodeURIComponent(JSON.stringify(c))))}
+function syCard(){const c=SY.c||{};if(!syOn())return`<div class=c><h2>Đồng bộ điện thoại ↔ máy tính</h2><p class=tip>Kết nối kho dữ liệu Supabase (miễn phí) để báo cáo làm trên điện thoại tự hiện trên máy tính. Nếu đã kết nối ở máy khác, chỉ cần mở <b>link kết nối</b> được gửi từ máy đó.</p>
+ <label>Supabase Project URL</label><input id=su placeholder="https://xxxx.supabase.co" value="${esc(c.url||"")}"><label>Supabase anon / publishable key</label><input id=sk placeholder="eyJ… hoặc sb_publishable_…" value="${esc(c.key||"")}"><label>Mã nhóm (máy nào cùng mã sẽ thấy chung báo cáo)</label><input id=sc placeholder="vd: qc-team-2026" value="${esc(c.code||"")}">
+ <p><button class="b y" id=sok>Kết nối</button></p><p class=tip id=sys></p></div>`;
+ return`<div class=c><h2>Đồng bộ điện thoại ↔ máy tính</h2><p class=tip>Đang bật · mã nhóm <b>${esc(c.code)}</b></p><p class=tip id=sys>${esc(syLast||"")}</p><div class=r><button class="b y" id=snw>🔄 Đồng bộ ngay</button><button class="b g" id=slk>🔗 Gửi link kết nối cho máy khác</button></div><p><button class="b x" id=sof>Ngắt đồng bộ trên máy này</button></p></div>`}
+function syBind(a){const q=s=>a.querySelector(s);
+ if(q("#sok"))q("#sok").onclick=async()=>{const v={url:q("#su").value.trim(),key:q("#sk").value.trim(),code:q("#sc").value.trim()};if(!/^https:\/\/.+/.test(v.url)||!v.key||!v.code)return alert("Điền đủ URL (bắt đầu bằng https://), key và mã nhóm.");SY.set(v);syMsg("Đang kiểm tra kết nối…");
+  try{const r=await fetch(syU("/rest/v1/reports?select=id&limit=1"),{headers:syH()});if(!r.ok)throw await syErr(r,"Supabase từ chối");const o=dq();for(const x of await allReports())o[x.id]="u"+Date.now();dqS(o);await syNow();render()}catch(e){SY.set(null);syMsg("⚠ Không kết nối được: "+(e&&e.message||e))}};
+ if(q("#snw"))q("#snw").onclick=()=>{syMsg("Đang đồng bộ…");syNow()};
+ if(q("#slk"))q("#slk").onclick=async()=>{const l=syLink();try{if(navigator.share){await navigator.share({title:"Link kết nối báo cáo kiểm hàng",url:l});return}}catch(e){if(e&&e.name==="AbortError")return}try{await navigator.clipboard.writeText(l);alert("Đã sao chép link. Dán và mở link này trên máy tính (hoặc máy khác).")}catch(e){prompt("Sao chép link này và mở trên máy khác:",l)}};
+ if(q("#sof"))q("#sof").onclick=()=>{if(confirm("Ngắt đồng bộ trên máy này? Báo cáo trong máy vẫn giữ nguyên.")){SY.set(null);render()}}}
+function syInit(){const h=location.hash.match(/^#sync=(.+)$/);if(h){try{const v=JSON.parse(decodeURIComponent(escape(atob(h[1]))));if(v.url&&v.key&&v.code){SY.set(v);alert("Đã kết nối đồng bộ (mã nhóm: "+v.code+"). Báo cáo từ các máy khác sẽ tự tải về.")}}catch(e){}history.replaceState(null,"",location.pathname)}
+ if(!syOn())return;const tick=()=>{if(document.visibilityState==="visible")syNow()};setTimeout(tick,800);setInterval(tick,20000);addEventListener("online",tick);document.addEventListener("visibilitychange",tick)}
+
 (async()=>{try{db=await openDB();const old=await idbGet("m","s");if(old){old.id=old.id||uid();old.created=old.updated=Date.now();await idbPut("m","r:"+old.id,old);await idbDel("m","s")}
-  for(const r of await allReports())if(Date.now()-r.updated>DAYS()*864e5)await delReport(r)}catch(e){alert("Trình duyệt không cho lưu dữ liệu. Hãy mở file bằng Chrome/Safari và đừng dùng chế độ ẩn danh.")}
+  for(const r of await allReports())if(Date.now()-r.updated>DAYS()*864e5)await delReport(r,1);syInit()}catch(e){alert("Trình duyệt không cho lưu dữ liệu. Hãy mở file bằng Chrome/Safari và đừng dùng chế độ ẩn danh.")}
   S=S||blank();render()})();
 if("serviceWorker" in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script></body></html>
