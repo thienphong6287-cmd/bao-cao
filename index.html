@@ -108,6 +108,10 @@ label.b input,.pk input{position:absolute;left:0;top:0;width:100%;height:100%;op
 .cam .cvw video{position:absolute;inset:0;width:100%;height:100%;min-width:0;min-height:0;max-width:none;flex:none;object-fit:contain}
 .cam .cst{position:absolute;left:0;right:0;bottom:0;height:68px;padding:6px 8px;background:#0008;z-index:3}.cam .cst img{width:54px;height:54px}.cam .cst p{font-size:12px;color:#ddd}
 .cam .czm{bottom:78px}.cam .camb{padding:8px 10px calc(8px + env(safe-area-inset-bottom))}.cam #sh{width:66px;height:66px}.csc{display:flex;flex-direction:column;align-items:center;gap:4px}.cam .cmd{padding:0;background:none;font-size:12px}
+.omb{background:#0009;color:#fff;border:1px solid #ffffff50;border-radius:12px;font-size:12px;padding:4px 10px}
+.cam .cor{display:none;background:#000a;color:#ffd60a;font-weight:700}
+.mvb{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#fff6d6;border:1px solid #f0c000;border-radius:10px;padding:10px;margin-bottom:8px}.mvb select{flex:1;min-width:160px}.mvb .b{margin:0}
+.ph figure{position:relative}.ph figure.sel{outline:3px solid #f0a800;outline-offset:-3px}.chk{position:absolute;left:8px;top:8px;width:28px;height:28px;border-radius:50%;background:#fffd;border:2px solid #f0a800;display:grid;place-items:center;font-weight:900;color:#c07800;z-index:2;cursor:pointer}
 .cam{touch-action:none}.clv{position:absolute;left:50%;top:50%;width:62%;display:none;align-items:center;gap:8px;pointer-events:none;z-index:2}.clv i{flex:1;height:2px;background:#fff;box-shadow:0 0 2px #000}.clv b{color:#fff;font-size:12px;min-width:26px;text-align:center;text-shadow:0 0 3px #000}.clv.ok i{background:#ffd60a;height:3px}
 .cfx{position:absolute;left:50%;top:50%;width:0;height:0;display:none;pointer-events:none;z-index:2}.cfx span{position:absolute;left:-14px;top:-14px;width:28px;height:28px}.cfx span::before,.cfx span::after{content:"";position:absolute;background:#fff;box-shadow:0 0 2px #000}.cfx span::before{left:13px;top:0;width:2px;height:28px}.cfx span::after{top:13px;left:0;height:2px;width:28px}.cfx .cf1::before,.cfx .cf1::after{background:#ffd60a}.cfx.ok span::before,.cfx.ok span::after{background:#ffd60a}
 .clb{background:#0009;color:#fff;border:1px solid #ffffff50;border-radius:12px;font-size:12px;padding:4px 10px}.clb.on{background:#ffffffd0;color:#000}
@@ -194,21 +198,41 @@ function confirmSaveAll(){const n=PHF.length;if(!n)return alert("Chưa có ảnh
 async function saveAllPhotos(){const fs=PHF;if(!fs.length)return alert("Chưa có ảnh nào trong báo cáo.");
  try{if(navigator.canShare&&navigator.canShare({files:fs})){await navigator.share({files:fs});return}}catch(e){if(e&&e.name==="AbortError")return}
  await zipPhotos(true)}
-async function zipPhotos(direct){const fs=[],im=[];for(const k of S.skus){const code=(k.code||"sku").replace(/[^\w.\-]/g,"_");for(const d of SEC){const x=k.sec[d[0]];if(!x)continue;let j=0;for(const p of x.ph){if(!p.id)continue;const h=await idbGet("i","h:"+p.id);let by;if(h&&h.arrayBuffer)by=new Uint8Array(await h.arrayBuffer());else{const u=await img(p.id);if(!u)continue;by=b64(u)}const nn=String(++j).padStart(2,"0");fs.push({n:`${code}/${d[0]}_${nn}.jpg`,b:by});im.push(new File([by],`${code}_${d[0]}_${nn}.jpg`,{type:"image/jpeg"}))}}}
- if(!fs.length)return alert("Chưa có ảnh nào trong báo cáo.");{const bl=zipB(fs,"application/zip"),nm="anh-"+(S.cover.po||"bao-cao")+".zip";if(direct===true){const u=URL.createObjectURL(bl),a=document.createElement("a");a.href=u;a.download=nm;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000)}else offerFile(bl,nm,im)}}
+async function zipPhotos(direct,only){const ks=only?[only]:S.skus,fs=[],clean=t=>String(t||"").replace(/[\\/:*?"<>|\n\r\t]+/g," ").replace(/\s+/g," ").trim().slice(0,60);
+ const root=clean(S.cover.po?"PO "+S.cover.po:"Bao cao")||"Bao cao";busyMsg("Đang gom ảnh…");
+ try{for(const k of ks){const kf=clean(k.code)||"item";let si=0;for(const d of SEC){const x=k.sec[d[0]];const ph=(x?.ph||[]).filter(p=>p.id);if(!ph.length)continue;si++;
+   const sf=String(SEC.indexOf(d)+1).padStart(2,"0")+" "+clean(d[1]);let j=0;
+   for(const p of ph){let bl=await idbGet("i","h:"+p.id);if(!(bl&&bl.size)){const u=await img(p.id);if(!u)continue;bl=new Blob([b64(u)],{type:"image/jpeg"})}
+    const nn=String(++j).padStart(2,"0");fs.push({n:`${root}/${kf}/${sf}/${nn}${p.cap?" "+clean(p.cap):""}.jpg`,blob:bl})}}}
+  if(!fs.length){busyEnd();return alert(only?"Item này chưa có ảnh.":"Chưa có ảnh nào trong báo cáo.")}
+  busyMsg(`Đang nén ${fs.length} ảnh…`);const bl=await zipBlobs(fs),nm=(only?clean(only.code)+" - ":"")+"anh "+root+".zip";busyEnd();
+  if(direct===true){const u=URL.createObjectURL(bl),a=document.createElement("a");a.href=u;a.download=nm;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000)}else offerFile(bl,nm)}
+ catch(e){busyEnd();alert("Không tạo được file ảnh: "+(e&&e.message||e))}}
+/* ZIP không nén, đọc từng ảnh một để không tốn RAM (ảnh gốc 4032×3024) */
+async function zipBlobs(files){const enc=new TextEncoder(),out=[],cd=[],u16=v=>[v&255,v>>8&255],u32=v=>[v&255,v>>8&255,v>>16&255,v>>>24&255];let off=0;
+ for(const f of files){const nm=enc.encode(f.n),c=crc32(new Uint8Array(await f.blob.arrayBuffer())),L=f.blob.size;
+  const h=new Uint8Array([0x50,0x4b,3,4,...u16(20),...u16(0x800),...u16(0),...u16(0),...u16(0x21),...u32(c),...u32(L),...u32(L),...u16(nm.length),...u16(0)]);
+  out.push(h,nm,f.blob);cd.push(new Uint8Array([0x50,0x4b,1,2,...u16(20),...u16(20),...u16(0x800),...u16(0),...u16(0),...u16(0x21),...u32(c),...u32(L),...u32(L),...u16(nm.length),...u16(0),...u16(0),...u16(0),...u16(0),...u32(0),...u32(off)]),nm);off+=h.length+nm.length+L}
+ const cs=cd.reduce((a,x)=>a+x.length,0);return new Blob([...out,...cd,new Uint8Array([0x50,0x4b,5,6,0,0,0,0,...u16(files.length),...u16(files.length),...u32(cs),...u32(off),0,0])],{type:"application/zip"})}
 async function camOpen(onShot,onDel){
  /* iPhone: xin quyền cảm biến xoay ngay trong lúc bấm nút (bắt buộc với Safari) */
  let dev=null,lvl=null;const onOri=e=>{const b=e.beta,g=e.gamma;if(b==null||g==null)return;if(Math.abs(g)>55&&Math.abs(b)<35)dev=g<0?90:270;else if(b>50)dev=0;else if(b<-50)dev=180;oriTag();
   const R=Math.PI/180,ux=-Math.sin(g*R)*Math.cos(b*R),uy=Math.sin(b*R),uz=Math.cos(g*R)*Math.cos(b*R);lvl={ux,uy,uz};if(typeof drawLv==="function")drawLv()};
  try{if(window.DeviceOrientationEvent&&typeof DeviceOrientationEvent.requestPermission==="function")DeviceOrientationEvent.requestPermission().then(r=>{if(r==="granted")addEventListener("deviceorientation",onOri)}).catch(()=>{});else addEventListener("deviceorientation",onOri)}catch(e){}
  const m=document.createElement("div");m.className="cam";
- m.innerHTML='<div class=cvw><video playsinline webkit-playsinline autoplay muted disablepictureinpicture disableremoteplayback x-webkit-airplay="deny"></video><div class=cfl></div><div class=cgr><i></i><i></i><i></i><i></i></div><div class=clv><i></i><b></b><i></i></div><div class=cfx><span class=cf0></span><span class=cf1></span></div><div class=cor>↻ Ảnh sẽ lưu theo chiều ngang</div><div class=ctp><span class=crs hidden></span><button class=clb>━ Cân bằng</button><button class=cgb>▦ Lưới</button></div><div class=czm></div><div class=cst><p>Ảnh chụp tự lưu — chạm ảnh nhỏ để xem, xoay, xóa</p></div></div><div class=camb><label class=cnb>📱 Camera<br>iPhone<input type=file accept="image/*" capture=environment hidden></label><div class=csc><div class=cmd>ẢNH</div><button id=sh aria-label="Chụp"></button></div><button id=cx>Xong</button></div>';document.body.append(m);
- const v=m.querySelector("video"),vw=m.querySelector(".cvw"),strip=m.querySelector(".cst"),fl=m.querySelector(".cfl"),cx=m.querySelector("#cx"),zb=m.querySelector(".czm"),ot=m.querySelector(".cor"),gr=m.querySelector(".cgr"),gb=m.querySelector(".cgb"),rs=m.querySelector(".crs");
+ m.innerHTML='<div class=cvw><video playsinline webkit-playsinline autoplay muted disablepictureinpicture disableremoteplayback x-webkit-airplay="deny"></video><div class=cfl></div><div class=cgr><i></i><i></i><i></i><i></i></div><div class=clv><i></i><b></b><i></i></div><div class=cfx><span class=cf0></span><span class=cf1></span></div><div class=cor>↻ Ảnh sẽ lưu theo chiều ngang</div><div class=ctp><span class=crs hidden></span><button class=omb>⟳ Tự động</button><button class=clb>━ Cân bằng</button><button class=cgb>▦ Lưới</button></div><div class=czm></div><div class=cst><p>Ảnh chụp tự lưu — chạm ảnh nhỏ để xem, xoay, xóa</p></div></div><div class=camb><label class=cnb>📱 Camera<br>iPhone<input type=file accept="image/*" capture=environment hidden></label><div class=csc><div class=cmd>ẢNH</div><button id=sh aria-label="Chụp"></button></div><button id=cx>Xong</button></div>';document.body.append(m);
+ const v=m.querySelector("video"),vw=m.querySelector(".cvw"),strip=m.querySelector(".cst"),fl=m.querySelector(".cfl"),cx=m.querySelector("#cx"),zb=m.querySelector(".czm"),ot=m.querySelector(".cor"),omb=m.querySelector(".omb"),gr=m.querySelector(".cgr"),gb=m.querySelector(".cgb"),rs=m.querySelector(".crs");
  let stm=null,ic=null,busy=0,n=0,away=0,hw=null,z=1;
  const noGest=e=>e.preventDefault();document.addEventListener("gesturestart",noGest);document.addEventListener("gesturechange",noGest);
  const scr=()=>{let a=screen.orientation&&typeof screen.orientation.angle==="number"?screen.orientation.angle:(window.orientation||0);return((a%360)+360)%360};
- const rotNeed=()=>dev==null?0:((scr()-dev)%360+360)%360;
- function oriTag(){ot.style.display=rotNeed()?"block":"none"}
+ const ORM=()=>{try{return localStorage.getItem("fir_orm")||"auto"}catch(e){return"auto"}};
+ /* xoay ảnh cho đúng chiều cầm máy: dựa vào cảm biến (Tự động) hoặc chế độ chọn tay (Ngang/Dọc) + tỉ lệ khung hình thật */
+ const rotNeed=()=>{const W=v.videoWidth,H=v.videoHeight;if(!W||!H)return 0;const md=ORM(),isL=W>H;
+  const want=md==="land"?"L":md==="port"?"P":dev==null?null:(dev%180===90?"L":"P");if(!want)return 0;
+  if(want==="L"&&!isL)return(dev===270)?90:270;
+  if(want==="P"&&isL){const r=dev==null?90:((scr()-dev)%360+360)%360;return r%180===90?r:90}
+  return 0};
+ function oriTag(){const W=v.videoWidth,H=v.videoHeight;if(!W||!H){ot.style.display="none";return}const r=rotNeed(),L=(W>H)!==(r%180===90);ot.style.display="block";ot.textContent="Ảnh lưu: "+(L?"NGANG ▭":"DỌC ▯");const md=ORM();omb.textContent=md==="land"?"▭ Ngang":md==="port"?"▯ Dọc":"⟳ Tự động"}
  /* Zoom: dùng zoom thật của camera nếu máy hỗ trợ, nếu không thì zoom số (cắt giữa khung hình) */
  const zMax=()=>hw?Math.min(hw.max,8):5,zMin=()=>hw?Math.max(hw.min,1):1;
  const setZ=async nz=>{z=Math.min(zMax(),Math.max(zMin(),nz));if(hw){try{await stm.getVideoTracks()[0].applyConstraints({advanced:[{zoom:z}]})}catch(e){hw=null}}v.style.transform=hw||z<=1?"":`scale(${z})`;zb.querySelectorAll("button").forEach(b=>b.classList.toggle("on",Math.abs(+b.dataset.z-z)<.05));const lb=zb.querySelector("[data-cur]");if(lb)lb.textContent=z.toFixed(1)+"×"};
@@ -231,6 +255,7 @@ async function camOpen(onShot,onDel){
   let a=Math.atan2(ux,uy)*180/Math.PI-scr();a=((a%360)+540)%360-180;const near=Math.round(a/90)*90,d=a-near;
   if(Math.abs(d)>25){lv.style.display="none";return}lv.style.display="flex";lv.style.transform=`translate(-50%,-50%) rotate(${a}deg)`;const ok=Math.abs(d)<1;lv.classList.toggle("ok",ok);lv.querySelector("b").textContent=ok?"":Math.abs(d).toFixed(0)+"°";lv.querySelector("b").style.transform=`rotate(${-a}deg)`};
  lSet();
+ omb.onclick=e=>{e.stopPropagation();const n={auto:"land",land:"port",port:"auto"}[ORM()];try{localStorage.setItem("fir_orm",n)}catch(_){}oriTag();toast(n==="auto"?"Tự động: xoay ảnh theo cảm biến":n==="land"?"Luôn lưu ảnh NGANG":"Luôn lưu ảnh DỌC")};
  const gOn=()=>{try{return localStorage.getItem("fir_grid")!=="0"}catch(e){return true}};const gSet=()=>{gr.style.display=gOn()?"block":"none";gb.classList.toggle("on",gOn())};gSet();
  gb.onclick=e=>{e.stopPropagation();try{localStorage.setItem("fir_grid",gOn()?"0":"1")}catch(_){}gSet()};
  v.addEventListener("loadedmetadata",place);v.addEventListener("resize",place);addEventListener("resize",place);
@@ -263,7 +288,7 @@ async function camOpen(onShot,onDel){
  v.addEventListener("webkitendfullscreen",()=>{setTimeout(()=>v.play().catch(()=>{}),100)});
  let lastT=-1,stuck=0,fixing=0;const restart=async()=>{if(fixing)return;fixing=1;stop(1);try{await start()}catch(e){toast("Không mở lại được camera — đóng camera rồi mở lại")}fixing=0;stuck=0};
  const hb=setInterval(async()=>{if(!document.body.contains(m)){clearInterval(hb);return}if(away||!stm||fixing||document.visibilityState!=="visible")return;const tr=stm.getVideoTracks()[0];
-  if(!tr||tr.readyState==="ended"||tr.muted){restart();return}if(v.paused&&!busy){v.play().catch(()=>{})}
+  if(!tr||tr.readyState==="ended"||tr.muted){restart();return}if(v.paused&&!busy){v.play().catch(()=>{})}oriTag();
   /* màn hình đen / đứng hình: thời gian video không chạy hoặc chưa có khung hình -> mở lại camera */
   const t=v.currentTime;if(!v.videoWidth||t===lastT){if(++stuck>=3)restart()}else stuck=0;lastT=t},1000);
  const nat=m.querySelector(".cnb input");m.querySelector(".cnb").onclick=()=>{stop(1);away=1};
@@ -300,7 +325,7 @@ const cnt=(k,key)=>(k.sec[key]?.ph||[]).filter(p=>p.id).length;
 const tot=()=>S.skus.reduce((a,k)=>(a[0]+=+k.d[0]||0,a[1]+=+k.d[1]||0,a[2]+=+k.d[2]||0,a),[0,0,0]);
 const verdict=()=>{const t=tot(),c=S.cover;return t[0]<=+c.aC&&t[1]<=+c.aMa&&t[2]<=+c.aMi};
 
-async function render(){
+let _lastSec="";async function render(){if(V.p!=="sec"||_lastSec!==(V.s+"/"+V.k)){if(V.p==="sec")_lastSec=V.s+"/"+V.k;else _lastSec="";SEL=null}
   const a=$("#app"),b=$("#back");b.hidden=V.p==="list";$("#exp").hidden=V.p==="list";
   if(V.p==="list"){await renderList(a)}else if(V.p==="home"){$("#ttl").textContent="Báo cáo kiểm hàng";const c=S.cover,t=tot(),ok=verdict();
     const f=(k,l,ty="text")=>`<label>${l}</label><input type="${ty}" value="${esc(c[k])}" data-c="${k}">`;
@@ -309,7 +334,7 @@ async function render(){
     <p>Lỗi: Critical <b>${t[0]}</b> · Major <b>${t[1]}</b> · Minor <b>${t[2]}</b></p><div class="res ${ok?"pass":"fail"}">${ok?"PASS":"FAIL"}</div></div>
     <div class=c><h2>Sản phẩm (SKU)</h2>${S.skus.map(k=>{const n=SEC.reduce((s,x)=>s+cnt(k,x[0]),0);return`<div class=row data-s="${k.id}"><div class=t><b>${esc(k.code||"(chưa có mã)")}</b><small>${esc(k.name)}</small></div><span class="n ${n?"on":""}">${n} ảnh</span></div>`}).join("")||'<p class=tip>Chưa có SKU. Thêm SKU đầu tiên bên dưới.</p>'}
     ${S.skus.length>=MAXI?`<p class=tip>Đã đủ ${MAXI} item — tối đa cho một báo cáo.</p>`:`<label>Mã item</label><input id=nc placeholder="vd: 17004985.11"><label>Tên sản phẩm</label><input id=nn>`}${S.skus.length>=MAXI?"":`<p><button class="b y" id=add>Thêm item (${S.skus.length}/${MAXI})</button></p>`}<label class="b g" style="margin-top:4px">📥 Nhập PO &amp; item từ file Excel<input type=file accept=".xlsx,.xls,.xlsm,.csv" id=xl hidden></label></div>
-    ${cfgCard()}<div class=c><h2>Dữ liệu trong máy</h2><p class=tip>Mọi thứ tự lưu trong máy này. Nên sao lưu trước khi xóa dữ liệu trình duyệt.</p><div class=r><button class="b g" id=bk>Sao lưu</button><button class="b y" id=sa style="width:100%;margin-bottom:8px">💾 Lưu tất cả ảnh vào máy</button><button class="b g" id=zi>Tải toàn bộ ảnh (.zip)</button></div><p><button class="b y" id=pp>Xuất PowerPoint (.pptx)</button></p><p><button class="b g" id=px>Xuất PDF có link (qua hộp thoại in)</button></p><p><button class="b x" id=rm>Xóa báo cáo này</button></p></div>`;
+    ${cfgCard()}<div class=c><h2>Dữ liệu trong máy</h2><p class=tip>Mọi thứ tự lưu trong máy này. Nên sao lưu trước khi xóa dữ liệu trình duyệt.</p><div class=r><button class="b g" id=bk>Sao lưu</button><button class="b y" id=sa style="width:100%;margin-bottom:8px">💾 Lưu tất cả ảnh vào máy</button><button class="b g" id=zi>📦 Tải toàn bộ ảnh (.zip, mỗi item 1 thư mục)</button></div><p><button class="b y" id=pp>Xuất PowerPoint (.pptx)</button></p><p><button class="b g" id=px>Xuất PDF có link (qua hộp thoại in)</button></p><p><button class="b x" id=rm>Xóa báo cáo này</button></p></div>`;
     a.querySelectorAll("[data-c]").forEach(i=>i.oninput=()=>{S.cover[i.dataset.c]=i.value;save()});
     a.querySelectorAll("[data-c]").forEach(i=>i.onchange=()=>{if(/^a(C|Ma|Mi)$/.test(i.dataset.c))render()});
     a.querySelectorAll("[data-s]").forEach(e=>e.onclick=()=>{V={p:"sku",s:e.dataset.s};render()});
@@ -322,9 +347,13 @@ async function render(){
     $("#bk").onclick=backup;$("#zi").onclick=()=>zipPhotos();$("#sa").onclick=confirmSaveAll;prepPhotos();
     $("#rm").onclick=async()=>{if(!confirm("Xóa báo cáo này và toàn bộ ảnh? Không thể hoàn tác."))return;await delReport(S);V={p:"list"};render()};
   }else if(V.p==="sku"){const k=sku();$("#ttl").textContent=k.code;
-    a.innerHTML=`<div class=c><h2>${esc(k.name)||"Sản phẩm"}</h2><p class=tip>Số lỗi tìm thấy (tính vào kết quả AQL)</p><div class=r>${["Critical","Major","Minor"].map((l,i)=>`<div><label>${l}</label><input type=number min=0 value="${k.d[i]}" data-d="${i}"></div>`).join("")}</div></div>
+    a.innerHTML=`<div class=c><h2>Mã &amp; tên item</h2><div class=r><div><label>Mã item</label><input id=kc value="${esc(k.code)}"></div><div><label>Tên sản phẩm</label><input id=kn value="${esc(k.name)}"></div></div></div><div class=c><p class=tip>Số lỗi tìm thấy (tính vào kết quả AQL)</p><div class=r>${["Critical","Major","Minor"].map((l,i)=>`<div><label>${l}</label><input type=number min=0 value="${k.d[i]}" data-d="${i}"></div>`).join("")}</div></div>
     <div class=c><h2>Số lượng (bảng kết quả)</h2><div class=r>${[["po","PO Q'ty"],["ct","Carton Q'ty"],["sm","Sample Size"]].map(([f,l])=>`<div><label>${l}</label><input type=number min=0 data-q="${f}" value="${esc(k.q?.[f]??"")}"></div>`).join("")}</div><p class=tip>Carton để trống = lấy bằng PO Q'ty.</p></div><div class=c><h2>Hạng mục kiểm</h2>${SEC.map(x=>{const n=cnt(k,x[0]);return`<div class=row data-k="${x[0]}"><div class=t>${x[1]}<small>${x[2]}</small></div><span class="n ${n?"on":""}">${n}</span></div>`}).join("")}</div><div class=c><details><summary style="font-weight:700;cursor:pointer">Thông tin sản phẩm (bấm để mở)</summary>${PF.map(([f,e,v])=>`<label>${e} · ${v}</label><input data-f="${f}" value="${esc(f==="desc"?(k.f?.desc??k.name):(k.f?.[f]??""))}">`).join("")}</details></div>
+    <div class=c><button class="b g" id=kz style="width:100%">📦 Tải ảnh của item này (.zip)</button><button class="b g" id=kcp style="width:100%;margin-top:8px">📋 Sao chép item này sang báo cáo khác</button></div>
     <p><button class="b x" id=ds>Xóa SKU này</button></p>`;
+    $("#kc").onchange=()=>{const v=$("#kc").value.trim();if(!v){$("#kc").value=k.code;return}if(S.skus.some(z=>z!==k&&z.code.trim().toLowerCase()===v.toLowerCase())){alert("Mã "+v+" đã có trong báo cáo.");$("#kc").value=k.code;return}k.code=v;$("#ttl").textContent=v;save()};
+    $("#kn").oninput=()=>{const old=k.name;k.name=$("#kn").value;if(k.f&&k.f.desc===old)k.f.desc=k.name;save()};
+    $("#kz").onclick=()=>zipPhotos(false,k);$("#kcp").onclick=()=>copyItem(k);
     a.querySelectorAll("[data-q]").forEach(i=>i.oninput=()=>{(k.q||(k.q={}))[i.dataset.q]=i.value;save()});
     a.querySelectorAll("[data-f]").forEach(i=>i.oninput=()=>{(k.f||(k.f={}))[i.dataset.f]=i.value;save()});
     a.querySelectorAll("[data-d]").forEach(i=>i.oninput=()=>{k.d[i.dataset.d]=Math.max(0,+i.value||0);save()});
@@ -334,8 +363,8 @@ async function render(){
     await Promise.all(x.ph.filter(p=>p.id).map(p=>img(p.id)));
     const grp=GR[V.k],sameG=(i,j)=>j>=0&&j<x.ph.length&&!x.ph[j].ref&&!!x.ph[j].up===!!x.ph[i].up,nbI=(i,d)=>{if(x.ph[i].ref)return -1;for(let j=i+d;j>=0&&j<x.ph.length;j+=d)if(sameG(i,j))return j;return -1};
     const capOf=up=>V.k==="man"?(up?"Approved AI. Page":"Actual AI. Page"):V.k==="def"?"":dc(V.k,x.ph.filter(p=>!p.up).length);
-    const FIG=(p,i)=>`<figure>${p.id?`<img src="${mem[p.id]||""}" alt="" data-v="${i}">`:'<div class=emp>Ảnh mẫu — chưa có<br>(chọn từ máy)</div>'}<input placeholder="Chú thích" value="${esc(p.cap)}" data-i="${i}"><div class=a>${p.ref?`<label class=pk>Chọn ảnh từ máy<input type=file accept="image/*" data-rf="1"></label><button data-x="${i}" ${p.id?"":"disabled"}>🗑</button>`:`<button data-m="${i}:-1" ${nbI(i,-1)>=0?"":"disabled"}>◀</button><button data-m="${i}:1" ${nbI(i,1)>=0?"":"disabled"}>▶</button><button data-r="${i}:-1" ${p.id?"":"disabled"} title="Xoay trái">↺</button><button data-r="${i}:1" ${p.id?"":"disabled"} title="Xoay phải">↻</button><button data-x="${i}">🗑</button>`}</div></figure>`;
-    a.innerHTML=`<div class=c><p class=tip>${def[2]} · ${esc(k.code)}</p><div class=r><button class="b y" id=cam>📷 Chụp ảnh</button><label class="b g">Chọn từ máy<input type=file accept="image/*" multiple id=fl></label></div><label class="b g" style="margin-top:8px;font-size:13px">📱 Camera iPhone (iOS hỏi "Dùng ảnh" mỗi tấm)<input type=file accept="image/*" capture=environment class=camn hidden></label></div>
+    const FIG=(p,i)=>`<figure class="${SEL&&SEL.has(i)?"sel":""}">${SEL&&p.id&&!p.ref?`<span class=chk data-sl="${i}">${SEL.has(i)?"✓":""}</span>`:""}${p.id?`<img src="${mem[p.id]||""}" alt="" data-v="${i}">`:'<div class=emp>Ảnh mẫu — chưa có<br>(chọn từ máy)</div>'}<input placeholder="Chú thích" value="${esc(p.cap)}" data-i="${i}"><div class=a>${p.ref?`<label class=pk>Chọn ảnh từ máy<input type=file accept="image/*" data-rf="1"></label><button data-x="${i}" ${p.id?"":"disabled"}>🗑</button>`:`<button data-m="${i}:-1" ${nbI(i,-1)>=0?"":"disabled"}>◀</button><button data-m="${i}:1" ${nbI(i,1)>=0?"":"disabled"}>▶</button><button data-r="${i}:-1" ${p.id?"":"disabled"} title="Xoay trái">↺</button><button data-r="${i}:1" ${p.id?"":"disabled"} title="Xoay phải">↻</button><button data-x="${i}">🗑</button>`}</div></figure>`;
+    a.innerHTML=`<div class=c><p class=tip>${def[2]} · ${esc(k.code)}</p>${x.ph.some(p=>p.id&&!p.ref)?`<button class="b g" id=sel style="width:100%;margin-bottom:8px;font-size:13px">${SEL?"✕ Thôi chọn ảnh":"☑ Chọn ảnh để di chuyển sang mục khác"}</button>`:""}${SEL?`<div class=mvb><b id=sct>Đã chọn 0 ảnh</b><select id=mvt>${SEC.filter(z=>z[0]!==V.k).map(z=>`<option value="${z[0]}">${z[1]} · ${z[2]}</option>`).join("")}</select><button class="b y" id=mvg>Di chuyển</button></div>`:""}<div class=r><button class="b y" id=cam>📷 Chụp ảnh</button><label class="b g">Chọn từ máy<input type=file accept="image/*" multiple id=fl></label></div><label class="b g" style="margin-top:8px;font-size:13px">📱 Camera iPhone (iOS hỏi "Dùng ảnh" mỗi tấm)<input type=file accept="image/*" capture=environment class=camn hidden></label></div>
     <button class=fab id=camf title="Chụp ảnh">📷</button>
     ${grp?`<div class=c style="margin-top:12px"><h2>${GRL[V.k][0]}</h2></div>`:""}<div class=ph>${x.ph.map((p,i)=>grp&&p.up?"":FIG(p,i)).join("")}</div>
     ${x.ph.some(p=>!p.up)?"":'<p class=tip>Chưa có ảnh chụp. Bấm Chụp ảnh để bắt đầu.</p>'}
@@ -350,7 +379,11 @@ async function render(){
     $("#camf").onclick=()=>$("#cam").click();
     if(INAPP&&!sessionStorage.getItem("inapp_warn")){try{sessionStorage.setItem("inapp_warn","1")}catch(e){}setTimeout(()=>alert("Bạn đang mở app trong trình duyệt của Zalo/Facebook. Trình duyệt này bắt camera chạy toàn màn hình nên không chụp được.\n\nHãy bấm ••• hoặc biểu tượng la bàn → \"Mở bằng Safari\", hoặc mở app từ biểu tượng ngoài màn hình chính."),300)}
     $("#cam").onclick=async()=>{if(!(await camOpen(async(d,hb)=>{const id=uid();mem[id]=d;await idbPut("i",id,d);if(hb&&hiOn())await idbPut("i","h:"+id,hb);x.ph.push({id,cap:capOf(0)});await save();return id},async id=>{const q=x.ph.findIndex(p=>p.id===id);if(q>=0)x.ph.splice(q,1);await delImg(id);await save()})))alert("Không mở được camera trong app. Hãy cho phép Camera cho trang này (Safari: biểu tượng aA → Cài đặt trang web → Camera → Cho phép), hoặc dùng nút 📱 Camera iPhone.")};
-    a.querySelectorAll("[data-v]").forEach(e=>e.onclick=()=>viewer(x,+e.dataset.v));
+    a.querySelectorAll("[data-v]").forEach(e=>e.onclick=()=>{const i=+e.dataset.v;if(SEL){if(x.ph[i]?.ref)return;SEL.has(i)?SEL.delete(i):SEL.add(i);render();return}viewer(x,i)});
+    a.querySelectorAll("[data-sl]").forEach(e=>e.onclick=()=>{const i=+e.dataset.sl;SEL.has(i)?SEL.delete(i):SEL.add(i);render()});
+    if($("#sel"))$("#sel").onclick=()=>{SEL=SEL?null:new Set();render()};
+    if($("#sct")){$("#sct").textContent=`Đã chọn ${SEL.size} ảnh →`;if(SEL.lastTo)$("#mvt").value=SEL.lastTo;$("#mvt").onchange=()=>SEL.lastTo=$("#mvt").value;
+     $("#mvg").onclick=async()=>{if(!SEL.size)return alert("Chạm vào ảnh để chọn trước.");const to=$("#mvt").value,nm=SEC.find(z=>z[0]===to)[1];const n=await movePhotos(k,V.k,[...SEL],to);SEL=null;render();toast(`✓ Đã chuyển ${n} ảnh sang ${nm}`)}}
     a.querySelectorAll("[data-r]").forEach(e=>e.onclick=async()=>{const[i,d]=e.dataset.r.split(":").map(Number),p=x.ph[i];if(!p||!p.id)return;e.disabled=true;await rotImg(p.id,d);render()});
     a.querySelectorAll("[data-i]").forEach(i=>i.oninput=()=>{x.ph[i.dataset.i].cap=i.value;save()});
     $("#nt").oninput=e=>{x.note=e.target.value;save()};
@@ -560,7 +593,7 @@ const IXA='<a class=ix href="#idx"><svg viewBox="0 0 130 84" width=130 height=84
 const DC={pack:Array(6).fill("Carton Photo"),wt:["Weight Product","Weight Carton"],psz:["Measure Carton Length","Measure Carton Width","Measure Carton Height"],lbl:["Approved Carton Layout",...Array(5).fill("Carton view")],bar:["Approved Carton Layout","Barcode_Position 1","Barcode_Position 2","Barcode_Position 3","Barcode_Position 4"],mat:Array(6).fill("Inside Carton"),cmp:["KD components","Fitting Hardware Bag","Fitting Hardware Bag","Fitting Hardware Bag"],man:["Actual AI. First Page","Actual AI. Page 1","Actual AI. Page 2 - 3","Approved AI. First Page","Approved AI. Page 1","Approved AI. Page 2 - 3"],moi:Array(4).fill("Moisture checked"),col:["Color check","Color check","MCP/ Front Side","MCP/ Back Side"],fit:["PO#"],asm:["KD components","Fitting Hardwares","Assembly on site","Assembly on site"],psize:["Measure Product Length","Measure Product Width/Depth","Measure Product Height"],pph:Array(6).fill("Product View")};
 const GRL={man:["Hàng trên · ảnh chụp HDLR thực tế (Actual)","Hàng dưới · ảnh HDLR đã duyệt – tải từ máy (Approved)"],def:["Ảnh lỗi chụp khi kiểm (bên trái)","Ảnh tải từ máy (bên phải)"]};
 const defN=k=>{const x=k.sec.def;if(!x||!(x.ph.some(p=>p.id)||x.note))return 0;const c=x.ph.filter(p=>!p.up&&p.id).length,u=x.ph.filter(p=>p.up&&p.id).length;return Math.max(1,c,u)};
-const MAXI=11;
+const MAXI=11;let SEL=null;
 const SIDE=["col","cmp","moi","fit","asm"],GR={man:[3,3],def:[1,1]};
 const DN={box:["Boxes were selected randomly for inspecting"],pack:["Printing quality was good"],lbl:["Actual Box matched with approved carton layout"],mat:["Carton: 5 ply","EPS Foam","Paper Angle Board","EPE foam"],cmp:["Hardware Tracker by Red Plastic Tape","Manual was put in plastic bag","Blister Pack included","All hardware in BLACK color","Desiccants included","Warranty Card"],man:["Actual printed manual matched with approved Manual"],moi:["Moisture is still within acceptable rate"],col:["Products color matched Master Color Panel"],fit:["Part number sticker included","Tracker label included","Fixing checked"],asm:["Assembly process worked smoothly"]};
 const DCC={pack:["Carton Photo"],wt:["Weight Product","Weight Carton"],psz:["Measure Carton Length","Measure Carton Width","Measure Carton Height"],lbl:["Carton view"],bar:["Barcode_Position"],mat:["Inside Carton"],cmp:["Fitting Hardware Bag"],man:["Actual AI. Page","Actual AI. Page","Actual AI. Page","Approved AI. Page","Approved AI. Page","Approved AI. Page"],moi:["Moisture checked"],col:["Color check"],fit:["Fixing checked"],asm:["Assembly on site"],psize:["Measure Product Length","Measure Product Width/Depth","Measure Product Height"],pph:["Product View"],box:["Box Selection"]};
@@ -625,7 +658,7 @@ P("res",`<div class="hd o"><div class=ht><b style="font-size:40px">General Inspe
 /* Từng SKU */
 for(const k of S.skus){const f=k.f||{};
  const rows=PF.map(([fk,e,v])=>`<tr><td class=lb>${e}<br><i>${v}</i></td><td class=vl>${esc(fk==="desc"?(f.desc||k.name):(f[fk]||(fk==="po"&&k.q?.po?k.q.po+" boxes":"")||(fk==="ins"&&k.q?.sm?k.q.sm+" boxes":"")||DF[fk]||""))}</td></tr>`).join("");
- const pp=k.sec.pph?.ph[0],cp=k.sec.col?.ph[0],emp=(t,l)=>`<div class="eb sa" style="position:absolute;left:${l}px;top:${t}px;width:426px;height:310px"></div>`;
+ const pp=k.sec.pph?.ph[0],cp=(()=>{const a=(k.sec.col?.ph||[]).filter(p=>p.id);return a[2]||a[0]})(),emp=(t,l)=>`<div class="eb sa" style="position:absolute;left:${l}px;top:${t}px;width:426px;height:310px"></div>`;
  P("p-"+k.id,hd("Product Information","",k.code,"y","height:80px")+`<table class="og it" style="left:17.4px;top:89.8px;width:751.4px"><colgroup><col style="width:302.8px"><col style="width:448.6px"></colgroup><tr style="height:49.3px"><th>Item #/ SKU#</th><th>${esc(k.code)}</th></tr>${rows}</table><div class=vd></div><b class=pt style="top:91px">Product Photo</b>${pp?`<img class=ri style="left:844px;top:153px;width:426px;height:310px" src="${I2(pp.id)}">`:emp(153,844)}<b class=pt style="top:496px">Color Photo</b>${cp?`<img class=ri style="left:849px;top:555px;width:418px;height:315px" src="${I2(cp.id)}">`:emp(555,849)}`);
  for(const d of SEC){const x=k.sec[d[0]];if(!x||(!x.ph.some(p=>p.id)&&!x.note))continue;
   const key=d[0],tt=T[key],df=key==="def",bx=key==="box",L=(key==="lbl"||key==="bar")&&!x.ph[0]?.ref?[{ref:1,id:null,cap:"Approved Carton Layout"},...x.ph]:x.ph,side=!df&&SIDE.includes(key),NOTE=x.dn?x.note:(x.note||(DN[key]||[]).join("\n"));
@@ -654,6 +687,28 @@ $("#exp").onclick=()=>doExp(0);
 
 const INAPP=/Zalo|FBAN|FBAV|FB_IAB|Instagram|Messenger|Line\/|MicroMessenger|TikTok|Telegram/i.test(navigator.userAgent);
 function toast(t){let e=document.getElementById("tst");if(!e){e=document.createElement("div");e.id="tst";document.body.append(e)}e.textContent=t;e.className="on";clearTimeout(toast.t);toast.t=setTimeout(()=>e.className="",2600)}
+/* ===== Sao chép 1 item (kèm toàn bộ ảnh, ghi chú, số lượng) sang báo cáo khác ===== */
+async function copyItem(k){const all=(await allReports()).filter(r=>r.id!==S.id).sort((a,b)=>b.updated-a.updated);
+ const m=document.createElement("div");m.style.cssText="position:fixed;inset:0;background:#000a;z-index:99;display:grid;place-items:center;padding:16px";
+ m.innerHTML=`<div class=c style="max-width:520px;width:100%;max-height:85vh;overflow:auto"><h2>Sao chép item ${esc(k.code)} sang…</h2>${all.map(r=>`<div class=row data-t="${r.id}"><div class=t><b>${esc(r.cover?.po||"(chưa có PO)")}</b><small>${esc(r.cover?.cust||"")} · ${r.skus.length}/${MAXI} item · ${new Date(r.updated).toLocaleDateString("vi-VN")}</small></div></div>`).join("")||'<p class=tip>Chưa có báo cáo nào khác.</p>'}
+ <div class=row data-t="new"><div class=t><b>＋ Báo cáo mới</b><small>Tạo báo cáo mới chỉ có item này</small></div></div><p><button class="b g" id=cpx>Hủy</button></p></div>`;document.body.append(m);
+ m.querySelector("#cpx").onclick=()=>m.remove();
+ m.querySelectorAll("[data-t]").forEach(e=>e.onclick=async()=>{let t=e.dataset.t==="new"?null:all.find(r=>r.id===e.dataset.t);
+  if(!t){t=blank();t.cover={...t.cover,cust:S.cover.cust||"",fac:S.cover.fac||""}}
+  const ex=t.skus.find(z=>z.code.trim().toLowerCase()===k.code.trim().toLowerCase());
+  if(ex){if(!confirm(`Báo cáo đích đã có item ${k.code}. Ghi đè bằng bản sao này?`))return}else if(t.skus.length>=MAXI)return alert(`Báo cáo đích đã đủ ${MAXI} item.`);
+  m.remove();busyMsg("Đang sao chép ảnh…");
+  try{const c=JSON.parse(JSON.stringify(k));c.id=uid();
+   for(const x of Object.values(c.sec))for(const p of x.ph){if(!p.id)continue;const nid=uid(),d=mem[p.id]||await idbGet("i",p.id);if(!d){p.id=null;continue}await idbPut("i",nid,d);const h=await idbGet("i","h:"+p.id);if(h)await idbPut("i","h:"+nid,h);p.id=nid}
+   if(ex){for(const x of Object.values(ex.sec))for(const p of x.ph)if(p.id)await delImg(p.id);t.skus[t.skus.indexOf(ex)]=c}else t.skus.push(c);
+   t.updated=Date.now();await idbPut("m","r:"+t.id,t);syMark(t.id);busyEnd();
+   if(confirm(`Đã sao chép item ${k.code} sang báo cáo ${t.cover.po||"mới"}. Mở báo cáo đó ngay?`)){S=t;V={p:"sku",s:c.id};render()}}
+  catch(err){busyEnd();alert("Không sao chép được: "+(err&&err.message||err))}})}
+/* ===== Di chuyển ảnh đã chọn sang mục kiểm khác (cùng item) ===== */
+async function movePhotos(k,fromKey,idx,toKey){const src=k.sec[fromKey];if(!src)return;const pick=idx.sort((a,b)=>b-a).map(i=>src.ph[i]).filter(p=>p&&p.id&&!p.ref);
+ const dst=k.sec[toKey]||(k.sec[toKey]={ph:[],note:""});if(!dst.dn){dst.dn=1;if(!dst.note&&DN[toKey])dst.note=DN[toKey].join("\n")}
+ src.ph=src.ph.filter(p=>!pick.includes(p));pick.reverse().forEach(p=>{const n=dst.ph.filter(q=>!q.up&&!q.ref).length;dst.ph.push({id:p.id,cap:toKey==="man"?"Actual AI. Page":toKey==="def"?(p.cap||""):dc(toKey,n)})});await save();return pick.length}
+
 /* ===== Xoay ảnh trái/phải (xoay cả bản báo cáo lẫn ảnh gốc) ===== */
 const loadIm=src=>new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>no(new Error("Không đọc được ảnh"));i.src=src});
 async function rotCv(src,dir){const i=await loadIm(src),c=document.createElement("canvas");c.width=i.naturalHeight;c.height=i.naturalWidth;const g=c.getContext("2d");g.translate(c.width/2,c.height/2);g.rotate(dir*Math.PI/2);g.drawImage(i,-i.naturalWidth/2,-i.naturalHeight/2);return c}
