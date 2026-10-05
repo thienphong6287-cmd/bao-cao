@@ -498,7 +498,13 @@ const THEME=XH+`<a:theme xmlns:a="http://schemas.openxmlformats.org/drawingml/20
 const MASTER=XH+`<p:sldMaster ${NS}><p:cSld><p:bg><p:bgRef idx="1001"><a:schemeClr val="bg1"/></p:bgRef></p:bg><p:spTree>${GRP}</p:spTree></p:cSld><p:clrMap bg1="lt1" tx1="dk1" bg2="lt2" tx2="dk2" accent1="accent1" accent2="accent2" accent3="accent3" accent4="accent4" accent5="accent5" accent6="accent6" hlink="hlink" folHlink="folHlink"/><p:sldLayoutIdLst><p:sldLayoutId id="2147483649" r:id="rId1"/></p:sldLayoutIdLst><p:txStyles><p:titleStyle><a:lvl1pPr><a:defRPr sz="1800"/></a:lvl1pPr></p:titleStyle><p:bodyStyle><a:lvl1pPr><a:defRPr sz="1800"/></a:lvl1pPr></p:bodyStyle><p:otherStyle><a:lvl1pPr><a:defRPr sz="1800"/></a:lvl1pPr></p:otherStyle></p:txStyles></p:sldMaster>`;
 const PHL=(idx,type,x,y,w,h,prompt,sz,an,bu,dash)=>`<p:sp><p:nvSpPr><p:cNvPr id="${idx}" name="Placeholder ${idx}"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr><p:ph ${type?`type="${type}" `:""}sz="quarter" idx="${idx}"/></p:nvPr></p:nvSpPr><p:spPr><a:xfrm><a:off x="${x*7527}" y="${y*7527}"/><a:ext cx="${w*7527}" cy="${h*7527}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln w="9525"><a:solidFill><a:srgbClr val="000000"/></a:solidFill>${dash?'<a:prstDash val="sysDot"/>':""}</a:ln></p:spPr><p:txBody><a:bodyPr lIns="72000" tIns="36000" rIns="72000" bIns="36000" anchor="${an}"><a:normAutofit/></a:bodyPr><a:lstStyle><a:lvl1pPr ${bu?'marL="285750" indent="-285750"':'marL="0" indent="0"'}>${bu?'<a:buFont typeface="Arial"/><a:buChar char="•"/>':"<a:buNone/>"}<a:defRPr sz="${sz}"><a:solidFill><a:srgbClr val="000000"/></a:solidFill><a:latin typeface="Arial"/></a:defRPr></a:lvl1pPr></a:lstStyle><a:p><a:r><a:rPr lang="en-US"/><a:t>${prompt}</a:t></a:r></a:p></p:txBody></p:sp>`;
 const LAYOUT=XH+`<p:sldLayout ${NS}><p:cSld name="Report"><p:spTree>${GRP}${[0,1,2,3,4,5].map(i=>PHL(10+i,"",88+(i%3)*391,88+Math.floor(i/3)*312,358,245,"Add Photo/ Thả hình",1423,"t",0,1)).join("")}${[0,1,2,3,4,5].map(i=>PHL(20+i,"body",88+(i%3)*391,335+Math.floor(i/3)*312,358,32,"Add text/ ghi chú",1405,"ctr",0,0)).join("")}${PHL(30,"body",445,752,820,100,"Thêm ghi chú nếu có",1197,"t",1,0)}</p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sldLayout>`;
-async function savePptx(){
+const SVGC=new Map(),SHR=new Map();
+/* ảnh trong PowerPoint: thu về cạnh dài 1280px (đủ nét khi chiếu/in), mỗi ảnh xử lý 1 lần */
+function shrinkP(src){if(!SHR.has(src))SHR.set(src,(async()=>{let d=src;if(/^pptx:/.test(src)){const id=src.slice(5);d=mem[id]||await idbGet("i",id);if(!d){d=await img(id);delete mem[id]}if(!d)return{w:4,h:3,b:null,miss:1}}
+  return await new Promise(ok=>{const i=new Image();i.onload=()=>{const w=i.naturalWidth,h=i.naturalHeight,k=Math.min(1,1280/Math.max(w,h));
+  if(k>=1){ok({w,h,b:/^pptx:/.test(src)?b64(d):null});return}const c=document.createElement("canvas");c.width=Math.round(w*k);c.height=Math.round(h*k);c.getContext("2d").drawImage(i,0,0,c.width,c.height);
+  const b=b64(c.toDataURL("image/jpeg",.8));c.width=c.height=0;ok({w,h,b})};i.onerror=()=>ok({w:4,h:3,b:null,miss:1});i.src=d})})());return SHR.get(src)}
+async function savePptx(){SVGC.clear();SHR.clear();
  const bt=$("#pp"),old=bt&&bt.textContent,E=v=>Math.round(v*7527.36),W=1316,Hh=911,enc=new TextEncoder();
  const xf=(x,y,w,h)=>`<a:xfrm><a:off x="${E(x)}" y="${E(y)}"/><a:ext cx="${E(w)}" cy="${E(h)}"/></a:xfrm>`,RECT='<a:prstGeom prst="rect"><a:avLst/></a:prstGeom>';
  const pic=(id,rid,x,y,w,h,c="",ph="",hl="")=>`<p:pic><p:nvPicPr><p:cNvPr id="${id}" name="Picture ${id}">${hl?`<a:hlinkClick r:id="${hl}" action="ppaction://hlinksldjump"/>`:""}</p:cNvPr><p:cNvPicPr>${ph?'<a:picLocks noGrp="1" noChangeAspect="1"/>':""}</p:cNvPicPr><p:nvPr>${ph}</p:nvPr></p:nvPicPr><p:blipFill><a:blip r:embed="${rid}"/>${c}<a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr>${xf(x,y,w,h)}${RECT}</p:spPr></p:pic>`;
@@ -551,26 +557,26 @@ async function savePptx(){
    for(const ch of el.children)if(getComputedStyle(ch).display!=="inline")walk(ch,out,r0,nl)};
   const data=els.map(el=>{const r0=el.getBoundingClientRect(),out=[];for(const ch of el.children)walk(ch,out,r0,-1);return out});
   tmp.remove();
-  const jobs=[];for(const o of data)for(const it of o){
-   if(it.k==="photo"&&it.src)jobs.push(new Promise(r=>{const i=new Image();i.onload=()=>{it.nw=i.naturalWidth;it.nh=i.naturalHeight;r()};i.onerror=()=>r();i.src=it.src}));
-   if(it.k==="svg")jobs.push((async()=>{const i=new Image();i.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(it.xml);try{await i.decode();const c=document.createElement("canvas");c.width=Math.round(it.w*3);c.height=Math.round(it.h*3);c.getContext("2d").drawImage(i,0,0,c.width,c.height);it.png=b64(c.toDataURL("image/png"))}catch(e){}})())}
-  await Promise.all(jobs);
-  const media=[],slides=[];
+  const jobs=[],J=f=>jobs.push(f);for(const o of data)for(const it of o){
+   if((it.k==="photo"||it.k==="img")&&it.src&&!/^data:image\/png/.test(it.src))J(async()=>{const r=await shrinkP(it.src);it.nw=r.w;it.nh=r.h;it.bin=r.b;if(/^pptx:/.test(it.src)&&!r.b)it.src=null});
+   if(it.k==="svg")J(async()=>{if(!SVGC.has(it.xml))SVGC.set(it.xml,(async()=>{const i=new Image();i.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(it.xml);try{await i.decode();const c=document.createElement("canvas");c.width=Math.round(it.w*2);c.height=Math.round(it.h*2);c.getContext("2d").drawImage(i,0,0,c.width,c.height);const o=b64(c.toDataURL("image/png"));c.width=c.height=0;return o}catch(e){return null}})());it.png=await SVGC.get(it.xml)})}
+  for(let q=0;q<jobs.length;q+=4){busyMsg(`Đang chuẩn bị ảnh ${Math.min(q+4,jobs.length)}/${jobs.length}`);await Promise.all(jobs.slice(q,q+4).map(f=>f()))}
+  const media=[],slides=[],MC=new Map();
   data.forEach((o,i)=>{let id=1,sh="",kp=0;const rl=[["rId1","slideLayout","../slideLayouts/slideLayout1.xml"]],hs={};
    if(bt)bt.textContent="PPT "+(i+1)+"/"+data.length;busyMsg("Đang tạo PowerPoint "+(i+1)+"/"+data.length);
-   const med=(b,ext)=>{media.push({b,ext});rl.push(["rId"+(rl.length+1),"image","../media/image"+media.length+"."+ext]);return"rId"+rl.length};
+   const med=(b,ext,key)=>{let n=key!=null&&MC.get(key);if(!n){media.push({b:typeof b==="function"?b():b,ext});n=media.length;if(key!=null)MC.set(key,n)}rl.push(["rId"+(rl.length+1),"image","../media/image"+n+"."+ext]);return"rId"+rl.length};
    const hl=t=>t>=0?(hs[t]||(rl.push(["rId"+(rl.length+1),"slide","slide"+(t+1)+".xml"]),hs[t]="rId"+rl.length)):"";
    for(const it of o){
     if(it.k==="table")sh+=tblx(++id,it,hl);
     else if(it.k==="rect")sh+=rct(++id,it);
     else if(it.k==="line")sh+=cxn(++id,it);
     else if(it.k==="text")sh+=tbx(++id,it,hl);
-    else if(it.k==="img")sh+=pic(++id,med(b64(it.src),/^data:image\/png/.test(it.src)?"png":"jpeg"),it.x,it.y,it.w,it.h);
-    else if(it.k==="svg"){if(it.png)sh+=pic(++id,med(it.png,"png"),it.x,it.y,it.w,it.h,"","",hl(it.l))}
+    else if(it.k==="img")sh+=pic(++id,/^data:image\/png/.test(it.src)?med(()=>b64(it.src),"png",it.src):med(()=>it.bin||b64(it.src),"jpeg",it.src),it.x,it.y,it.w,it.h);
+    else if(it.k==="svg"){if(it.png)sh+=pic(++id,med(it.png,"png",it.xml),it.x,it.y,it.w,it.h,"","",hl(it.l))}
     else if(it.k==="cb")sh+=phsp(++id,it.x,it.y,it.w,it.h,'<p:ph type="body" sz="quarter" idx="30"/>',it.li.map(t=>it.nb?P2(t,it.px).replace("<a:p>",'<a:p><a:pPr marL="0" indent="0"><a:buNone/></a:pPr>'):P2(t,it.px)).join(""));
     else if(it.k==="photo"){const ix=10+kp++,ph=`<p:ph sz="quarter" idx="${ix}"/>`;
-     if(it.src&&it.fit==="contain"){const k=Math.min(it.w/(it.nw||4),it.h/(it.nh||3)),w=(it.nw||4)*k,h=(it.nh||3)*k;sh+=pic(++id,med(b64(it.src),"jpeg"),it.x+(it.w-w)/2,it.y+(it.h-h)/2,w,h,"",ph)}
-     else if(it.src){const bx=it.w/it.h,iy=(it.nw||4)/(it.nh||3);let c="";if(iy>bx){const v=Math.round((1-bx/iy)/2*1e5);c=`<a:srcRect l="${v}" r="${v}"/>`}else if(iy<bx){const v=Math.round((1-iy/bx)/2*1e5);c=`<a:srcRect t="${v}" b="${v}"/>`}sh+=pic(++id,med(b64(it.src),"jpeg"),it.x,it.y,it.w,it.h,c,ph)}
+     if(it.src&&it.fit==="contain"){const k=Math.min(it.w/(it.nw||4),it.h/(it.nh||3)),w=(it.nw||4)*k,h=(it.nh||3)*k;sh+=pic(++id,med(()=>it.bin||b64(it.src),"jpeg",it.src),it.x+(it.w-w)/2,it.y+(it.h-h)/2,w,h,"",ph)}
+     else if(it.src){const bx=it.w/it.h,iy=(it.nw||4)/(it.nh||3);let c="";if(iy>bx){const v=Math.round((1-bx/iy)/2*1e5);c=`<a:srcRect l="${v}" r="${v}"/>`}else if(iy<bx){const v=Math.round((1-iy/bx)/2*1e5);c=`<a:srcRect t="${v}" b="${v}"/>`}sh+=pic(++id,med(()=>it.bin||b64(it.src),"jpeg",it.src),it.x,it.y,it.w,it.h,c,ph)}
      else sh+=phsp(++id,it.x,it.y,it.w,it.h,ph,"");
      if(it.cap)sh+=phsp(++id,it.cap.x,it.cap.y,it.cap.w,it.cap.h,`<p:ph type="body" sz="quarter" idx="${ix+10}"/>`,it.cap.t?P2(it.cap.t,it.cap.px):"")}}
    slides.push({xml:XH+`<p:sld ${NS}><p:cSld><p:spTree>${GRP}${sh}</p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sld>`,rl})});
@@ -583,7 +589,7 @@ async function savePptx(){
    f("ppt/slideMasters/slideMaster1.xml",MASTER),f("ppt/slideMasters/_rels/slideMaster1.xml.rels",relX([["rId1","slideLayout","../slideLayouts/slideLayout1.xml"],["rId2","theme","../theme/theme1.xml"]])),
    f("ppt/slideLayouts/slideLayout1.xml",LAYOUT),f("ppt/slideLayouts/_rels/slideLayout1.xml.rels",relX([["rId1","slideMaster","../slideMasters/slideMaster1.xml"]])),f("ppt/theme/theme1.xml",THEME),
    ...slides.flatMap((s,i)=>[f(`ppt/slides/slide${i+1}.xml`,s.xml),f(`ppt/slides/_rels/slide${i+1}.xml.rels`,relX(s.rl))]),...media.map((m,i)=>f(`ppt/media/image${i+1}.${m.ext}`,m.b))];
-  offerFile(zipB(files),"bao-cao-"+(S.cover.po||"kiem-hang")+".pptx");
+  const out=zipB(files);files.length=0;media.length=0;SHR.clear();SVGC.clear();offerFile(out,"bao-cao-"+(S.cover.po||"kiem-hang")+(XPART?XPART.suf:"")+".pptx");
  }catch(e){alert("Không tạo được file PowerPoint ("+e.message+").")}
  if(bt)bt.textContent=old;
 }
@@ -618,11 +624,11 @@ const CK=["#Carton Check",["Carton Size",A,CL,"+/-1cm"],["Carton Weight",A,CW,"+
 
 const busyMsg=t=>{let z=document.getElementById("bz");if(!z){z=document.createElement("div");z.id="bz";z.style.cssText="position:fixed;inset:0;background:#000b;z-index:98;display:grid;place-items:center;color:#fff;font:600 18px system-ui;text-align:center;padding:20px";document.body.append(z)}z.textContent="⏳ "+t},busyEnd=()=>{const z=document.getElementById("bz");if(z)z.remove()};
 const doExp0=async mode=>{
-const cf=CF(),lg=(cf.logo&&await img("logo"))||DEFLOGO;const c=S.cover,t=tot(),ok=verdict(),n=Math.max(8,S.skus.length),H=[],rc=ok?"#00b050":"#c00000",I2=id=>mem[id]||"";
-await Promise.all(S.skus.flatMap(k=>Object.values(k.sec).flatMap(x=>x.ph.map(p=>img(p.id)))));
+const cf=CF(),lg=(cf.logo&&await img("logo"))||DEFLOGO;const c=S.cover,t=tot(),ok=verdict(),n=Math.max(8,S.skus.length),H=[],rc=ok?"#00b050":"#c00000",I2=id=>mode===2&&id?"pptx:"+id:(mem[id]||"");
+if(mode!==2)await Promise.all(S.skus.filter(k=>!XPART||XPART.ids.has(k.id)).flatMap(k=>Object.values(k.sec).flatMap(x=>x.ph.map(p=>img(p.id)))));
 const has=(k,y)=>{const x=k.sec[y];return x&&(x.ph.some(p=>p.id)||x.note)};
 const hd=(en,vi,sk,cl="",st="")=>`<div class="hd ${cl} ${vi?"t2":""}" style="${st}"><div class=ht><b>${esc(en)}</b>${vi?`<small>${esc(vi)}</small>`:""}</div><span class=sk>${esc(sk||"")}</span>${IXA}</div>`;
-const P=(id,h,nof)=>H.push(`<section class=P ${id?`id="${id}"`:""}>${lg?`<img class=lg src="${lg}">`:""}${h}${nof?"":'<div class=ft>Final Inspection Report</div>'}</section>`);
+const P=(id,h,nof)=>(XPART&&!XPART.head&&["cover","idx","proto","chk","res"].includes(id))?0:H.push(`<section class=P ${id?`id="${id}"`:""}>${lg?`<img class=lg src="${lg}">`:""}${h}${nof?"":'<div class=ft>Final Inspection Report</div>'}</section>`);
 /* Trang bìa */
 const fl=(x,y,w,l,v)=>`<u class=fl style="left:${x}px;top:${y+16}px">${l}</u><div class=fb style="left:${x<700?195:935}px;top:${y}px;width:${w}px;font-size:${String(v).length>(w>400?46:24)?15:20}px">${esc(v)}</div>`;
 const dt=c.date?c.date.split("-").reverse().join("/"):"";
@@ -656,7 +662,7 @@ P("res",`<div class="hd o"><div class=ht><b style="font-size:40px">General Inspe
  `<tr style="height:${rh}px"><td></td><td colspan=4></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`.repeat(Math.max(0,nr-S.skus.length))+
  `<tr style="height:${rh}px;font-weight:700"><td colspan=5>Total</td><td>${sum(pq)}</td><td>${sum(cq)}</td><td>${sum(sk)}</td><td>${t[0]}</td><td>${t[1]}</td><td class="${t[2]?"bad":""}">${t[2]}</td></tr></table>`);
 /* Từng SKU */
-for(const k of S.skus){const f=k.f||{};
+for(const k of S.skus){if(XPART&&!XPART.ids.has(k.id))continue;const f=k.f||{};
  const rows=PF.map(([fk,e,v])=>`<tr><td class=lb>${e}<br><i>${v}</i></td><td class=vl>${esc(fk==="desc"?(f.desc||k.name):(f[fk]||(fk==="po"&&k.q?.po?k.q.po+" boxes":"")||(fk==="ins"&&k.q?.sm?k.q.sm+" boxes":"")||DF[fk]||""))}</td></tr>`).join("");
  const pp=k.sec.pph?.ph[0],cp=(()=>{const a=(k.sec.col?.ph||[]).filter(p=>p.id);return a[2]||a[0]})(),emp=(t,l)=>`<div class="eb sa" style="position:absolute;left:${l}px;top:${t}px;width:426px;height:310px"></div>`;
  P("p-"+k.id,hd("Product Information","",k.code,"y","height:80px")+`<table class="og it" style="left:17.4px;top:89.8px;width:751.4px"><colgroup><col style="width:302.8px"><col style="width:448.6px"></colgroup><tr style="height:49.3px"><th>Item #/ SKU#</th><th>${esc(k.code)}</th></tr>${rows}</table><div class=vd></div><b class=pt style="top:91px">Product Photo</b>${pp?`<img class=ri style="left:844px;top:153px;width:426px;height:310px" src="${I2(pp.id)}">`:emp(153,844)}<b class=pt style="top:496px">Color Photo</b>${cp?`<img class=ri style="left:849px;top:555px;width:418px;height:315px" src="${I2(cp.id)}">`:emp(555,849)}`);
@@ -675,15 +681,31 @@ for(const k of S.skus){const f=k.f||{};
     (spec(key,{...x,note:NOTE},first)||(side?(key==="col"?`<div class=cl style="left:35px;top:114px">Inspector Comments:</div><div class="cb nb" style="left:34px;top:151px;width:411px;height:655px;padding:8px 12px">${bl(NOTE)}</div>`:`<div class=cl style="left:35px;top:122px">Inspector Comments:</div><div class="cb sd${one?" nb":""}" style="left:35px;top:157px;width:411px;height:656px">${bl(NOTE)}</div>`)
     :`<div class=cl style="left:200px;top:776px">Inspector Comments:</div><div class=cb style="left:479px;top:774px;width:749px;height:99px">${bl(NOTE)}</div>`));
    P(first?`s-${k.id}-${key}`:"",hd(first?tt[0]:tt[0]+" (Continued)",first?tt[1]:tt[1]+" (Tiếp Theo)",k.code,side?(key==="col"?"cc":"cc c73"):"")+b)}}}
-H.push(`<section class=P style="background:#fff"><svg style="position:absolute;left:0;top:0" width=1316 height=911 viewBox="0 0 1316 911"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#bfcdea"/><stop offset=".45" stop-color="#cfdaea"/><stop offset=".7" stop-color="#d3e2d6"/><stop offset="1" stop-color="#b9d6a3"/></linearGradient></defs><ellipse cx="1046" cy="488" rx="372" ry="492" transform="rotate(-10.0 1046 488)" fill="url(#eg)"/><ellipse cx="1048" cy="484" rx="354" ry="476" transform="rotate(-9.2 1048 484)" fill="#fff" fill-opacity=".3"/><ellipse cx="1050" cy="480" rx="335" ry="459" transform="rotate(-8.4 1050 480)" fill="#fff" fill-opacity=".3"/><ellipse cx="1052" cy="476" rx="317" ry="443" transform="rotate(-7.6 1052 476)" fill="#fff" fill-opacity=".3"/><ellipse cx="1054" cy="472" rx="298" ry="426" transform="rotate(-6.8 1054 472)" fill="#fff" fill-opacity=".3"/><ellipse cx="1056" cy="468" rx="280" ry="410" transform="rotate(-6.0 1056 468)" fill="#fff"/></svg><svg style="position:absolute;left:893px;top:312px" width=295 height=378 viewBox="0 0 295 378"><path d="M0 0H176L295 104V378H0Z" fill="#4472c4"/><path d="M33 33H145V125H262V345H33Z" fill="#fff"/><path d="M176 46V98H228Z" fill="#fff"/><g fill="#4472c4"><rect x="57" y="135" width="66" height="26"/><rect x="57" y="175" width="190" height="26"/><rect x="57" y="215" width="190" height="26"/><rect x="57" y="255" width="190" height="26"/><rect x="57" y="295" width="190" height="26"/></g></svg><div style="position:absolute;left:117px;top:419px;font-size:47px;font-weight:400;color:#44546a;font-family:'Calibri Light','Segoe UI','Open Sans',Arial,sans-serif;white-space:nowrap">ENDS REPORT</div></section>`);
+if(!XPART||XPART.end)H.push(`<section class=P style="background:#fff"><svg style="position:absolute;left:0;top:0" width=1316 height=911 viewBox="0 0 1316 911"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#bfcdea"/><stop offset=".45" stop-color="#cfdaea"/><stop offset=".7" stop-color="#d3e2d6"/><stop offset="1" stop-color="#b9d6a3"/></linearGradient></defs><ellipse cx="1046" cy="488" rx="372" ry="492" transform="rotate(-10.0 1046 488)" fill="url(#eg)"/><ellipse cx="1048" cy="484" rx="354" ry="476" transform="rotate(-9.2 1048 484)" fill="#fff" fill-opacity=".3"/><ellipse cx="1050" cy="480" rx="335" ry="459" transform="rotate(-8.4 1050 480)" fill="#fff" fill-opacity=".3"/><ellipse cx="1052" cy="476" rx="317" ry="443" transform="rotate(-7.6 1052 476)" fill="#fff" fill-opacity=".3"/><ellipse cx="1054" cy="472" rx="298" ry="426" transform="rotate(-6.8 1054 472)" fill="#fff" fill-opacity=".3"/><ellipse cx="1056" cy="468" rx="280" ry="410" transform="rotate(-6.0 1056 468)" fill="#fff"/></svg><svg style="position:absolute;left:893px;top:312px" width=295 height=378 viewBox="0 0 295 378"><path d="M0 0H176L295 104V378H0Z" fill="#4472c4"/><path d="M33 33H145V125H262V345H33Z" fill="#fff"/><path d="M176 46V98H228Z" fill="#fff"/><g fill="#4472c4"><rect x="57" y="135" width="66" height="26"/><rect x="57" y="175" width="190" height="26"/><rect x="57" y="215" width="190" height="26"/><rect x="57" y="255" width="190" height="26"/><rect x="57" y="295" width="190" height="26"/></g></svg><div style="position:absolute;left:117px;top:419px;font-size:47px;font-weight:400;color:#44546a;font-family:'Calibri Light','Segoe UI','Open Sans',Arial,sans-serif;white-space:nowrap">ENDS REPORT</div></section>`);
 $("#print").innerHTML=H.join("");
-await Promise.all([...document.querySelectorAll("#print img")].map(i=>i.decode().catch(()=>{})));
+await Promise.all([...document.querySelectorAll("#print img")].filter(i=>!/^pptx:/.test(i.getAttribute("src")||"")).map(i=>i.decode().catch(()=>{})));
 fitAll();
 if(mode===2){await savePptx();return}
 if(mode){alert("Ở hộp thoại in tiếp theo: chọn Hướng = Ngang (Landscape), Lề = Không, Tỷ lệ = Vừa trang, rồi Lưu dưới dạng PDF.");print();return}
 await savePdf()};
 const doExp=async mode=>{const b=$("#exp");b.disabled=true;busyMsg("Đang chuẩn bị báo cáo…");await new Promise(r=>setTimeout(r,50));try{await doExp0(mode)}catch(e){alert("Không xuất được file: "+(e&&e.message||e))}busyEnd();b.disabled=false};
 $("#exp").onclick=()=>doExp(0);
+
+/* ===== PowerPoint lớn: chia thành nhiều file theo item ===== */
+let XPART=null;
+async function pptxAsk(){const cnt=k=>Object.values(k.sec).reduce((a,x)=>a+x.ph.filter(p=>p.id).length,0),tot=S.skus.reduce((a,k)=>a+cnt(k),0),LIM=120;
+ if(tot<=LIM)return doExp(2);
+ const parts=[];let cur=[],n=0;for(const k of S.skus){const c=cnt(k);if(cur.length&&n+c>LIM){parts.push(cur);cur=[];n=0}cur.push(k);n+=c}if(cur.length)parts.push(cur);
+ const m=document.createElement("div");m.style.cssText="position:fixed;inset:0;background:#000a;z-index:99;display:grid;place-items:center;padding:16px";
+ m.innerHTML=`<div class=c style="max-width:460px;width:100%"><h2>Báo cáo có ${tot} ảnh</h2><p class=tip>File PowerPoint một khối sẽ rất nặng, điện thoại có thể không tạo được. Nên chia thành ${parts.length} file theo item:</p>
+ ${parts.map((p,i)=>`<p class=tip style="margin:4px 0">• <b>Phần ${i+1}</b>${i===0?" (kèm trang bìa, index, kết quả)":""}: ${p.map(k=>esc(k.code)).join(", ")}</p>`).join("")}
+ <button class="b y" id=ps1 style="width:100%;margin-top:8px">Chia ${parts.length} file (khuyên dùng)</button><button class="b g" id=ps2 style="width:100%;margin-top:8px">Vẫn xuất 1 file</button><button class="b g" id=ps3 style="width:100%;margin-top:8px">Hủy</button></div>`;document.body.append(m);
+ m.querySelector("#ps3").onclick=()=>m.remove();m.querySelector("#ps2").onclick=()=>{m.remove();doExp(2)};
+ m.querySelector("#ps1").onclick=async()=>{m.remove();for(let i=0;i<parts.length;i++){XPART={ids:new Set(parts[i].map(k=>k.id)),head:i===0,end:i===parts.length-1,suf:`-phan${i+1}of${parts.length}`};
+   try{await doExp(2)}finally{XPART=null}
+   for(const k of parts[i])for(const x of Object.values(k.sec))for(const p of x.ph)if(p.id)delete mem[p.id];
+   await new Promise(r=>{const t=setInterval(()=>{if(!document.getElementById("shf")){clearInterval(t);r()}},300)})}
+  toast(`✓ Đã xuất xong ${parts.length} file PowerPoint`)}}
 
 const INAPP=/Zalo|FBAN|FBAV|FB_IAB|Instagram|Messenger|Line\/|MicroMessenger|TikTok|Telegram/i.test(navigator.userAgent);
 function toast(t){let e=document.getElementById("tst");if(!e){e=document.createElement("div");e.id="tst";document.body.append(e)}e.textContent=t;e.className="on";clearTimeout(toast.t);toast.t=setTimeout(()=>e.className="",2600)}
