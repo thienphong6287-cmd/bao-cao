@@ -1,5 +1,5 @@
 /* Báo cáo kiểm hàng — chạy offline. Có mạng: lấy bản mới; mất mạng / mạng chậm: dùng bản đã lưu. */
-const C="kiem-hang-v17",F=["./","./index.html","./manifest.webmanifest","./apple-touch-icon.png","./icon-192.png","./icon-512.png"];
+const C="kiem-hang-v18",F=["./","./index.html","./manifest.webmanifest","./apple-touch-icon.png","./icon-192.png","./icon-512.png"];
 const XL="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"; // bộ đọc Excel, lưu sẵn để nhập Excel khi offline
 self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(async c=>{await c.addAll(F);try{await c.add(new Request(XL,{mode:"cors"}))}catch(_){}}));self.skipWaiting()});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))));self.clients.claim()});
