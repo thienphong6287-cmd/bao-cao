@@ -312,7 +312,7 @@ async function camOpen(onShot,onDel){
   r.querySelector(".ru").onclick=()=>{t.classList.add("ok");r.remove()}};
  /* chụp: cắt theo zoom số + xoay theo cách cầm máy */
  const grab=async()=>{const rot=rotNeed(),dz=hw?1:z;
-  if(ic&&!rot&&dz<=1){try{const b=await ic.takePhoto();if(b&&b.size)return b}catch(e){}}
+  if(ic&&!rot&&dz<=1){try{const b=await ic.takePhoto();if(b&&b.size){let ok=false;try{const bm=await createImageBitmap(b);ok=(bm.width>bm.height)===(v.videoWidth>v.videoHeight);bm.close&&bm.close()}catch(e){}if(ok)return b}}catch(e){}}
   const W=v.videoWidth,H=v.videoHeight,cw=W/dz,ch=H/dz,c=document.createElement("canvas"),sw=rot%180===90;c.width=Math.round(sw?ch:cw);c.height=Math.round(sw?cw:ch);
   const g=c.getContext("2d");g.translate(c.width/2,c.height/2);g.rotate(rot*Math.PI/180);g.drawImage(v,(W-cw)/2,(H-ch)/2,cw,ch,-cw/2,-ch/2,cw,ch);
   let b=await new Promise(r=>{try{c.toBlob(r,"image/jpeg",.92)}catch(e){r(null)}});
@@ -357,6 +357,9 @@ function viewer(x,i){const m=document.createElement("div");m.className="vw";m.in
 /* nhận biết ảnh dọc / ngang theo kích thước thật của ảnh */
 function oriFix(i){const f=i.closest("figure");if(!f||!i.naturalWidth)return;const P=i.naturalHeight>i.naturalWidth*1.05;f.classList.toggle("pt",P);f.dataset.o=P?"▯ DỌC":"▭ NGANG"}
 /* mô tả SP trang bìa: tên đầu của từng item, VD Willow/Paul/Lowell */
+/* SL kiểm trang bìa: số mẫu / tổng số lượng đơn của các item (VD 50/488) */
+const totPO=()=>S.skus.reduce((a,k)=>a+(parseInt(k.q?.po||k.f?.po)||0),0),totSM=()=>S.skus.reduce((a,k)=>a+(parseInt(k.q?.sm||k.f?.ins)||0),0);
+const coverQty=()=>{const q=String(S.cover.qty||"").trim(),tp=totPO();if(!q){const ts=totSM();return ts&&tp?ts+"/"+tp:""}if(!q.includes("/")&&tp)return q+"/"+tp;return q};
 const autoDesc=()=>{const o=[];for(const k of S.skus){const w=String(k.name||"").trim().split(/[\s,;\-–]+/)[0];if(w&&!o.some(z=>z.toLowerCase()===w.toLowerCase()))o.push(w)}return o.join("/")};
 const sku=()=>S.skus.find(s=>s.id===V.s);
 const sec=()=>{const k=sku();return k.sec[V.k]||(k.sec[V.k]={ph:[],note:""})};
@@ -371,7 +374,7 @@ let _lastSec="";async function render(){if(V.p!=="sec"||_lastSec!==(V.s+"/"+V.k)
   const a=$("#app"),b=$("#back");b.hidden=V.p==="list";$("#exp").hidden=V.p==="list";
   if(V.p==="list"){await renderList(a)}else if(V.p==="home"){$("#ttl").textContent="Báo cáo kiểm hàng";const c=S.cover,t=tot(),ok=verdict();
     const f=(k,l,ty="text")=>`<label>${l}</label><input type="${ty}" value="${esc(c[k])}" data-c="${k}">`;
-    a.innerHTML=`${/iPhone|iPad/.test(navigator.userAgent)&&!navigator.standalone?'<div class=c style="border-color:#f0a800"><h2>⚠ Hãy cài app lên màn hình chính</h2><p class=tip>Nếu chỉ mở trong Safari, iPhone có thể <b>tự xóa toàn bộ báo cáo và ảnh</b> sau 7 ngày không mở trang. Mở bằng Safari → nút Chia sẻ → "Thêm vào MH chính", rồi luôn mở app từ biểu tượng đó. Mở 1 lần khi có mạng, sau đó dùng offline.</p></div>':""}<div class=c><h2>Thông tin chung</h2>${f("no","Số báo cáo")}${f("cust","Khách hàng")}${f("po","PO#")}${`<label>Mô tả sản phẩm <small>(để trống = tự lấy tên đầu của từng item)</small></label><input type="text" value="${esc(c.desc||autoDesc())}" data-c="desc"${c.desc?"":' style="color:#889"'}>`}<div class=r><div>${f("qty","SL kiểm / tổng (vd 50/285)")}</div><div>${f("date","Ngày kiểm","date")}</div></div>${f("fac","Nhà máy")}${f("insp","Inspector")}</div>
+    a.innerHTML=`${/iPhone|iPad/.test(navigator.userAgent)&&!navigator.standalone?'<div class=c style="border-color:#f0a800"><h2>⚠ Hãy cài app lên màn hình chính</h2><p class=tip>Nếu chỉ mở trong Safari, iPhone có thể <b>tự xóa toàn bộ báo cáo và ảnh</b> sau 7 ngày không mở trang. Mở bằng Safari → nút Chia sẻ → "Thêm vào MH chính", rồi luôn mở app từ biểu tượng đó. Mở 1 lần khi có mạng, sau đó dùng offline.</p></div>':""}<div class=c><h2>Thông tin chung</h2>${f("no","Số báo cáo")}${f("cust","Khách hàng")}${f("po","PO#")}${`<label>Mô tả sản phẩm <small>(để trống = tự lấy tên đầu của từng item)</small></label><input type="text" value="${esc(c.desc||autoDesc())}" data-c="desc"${c.desc?"":' style="color:#889"'}>`}<div class=r><div>${`<label>SL kiểm / tổng đơn (vd 50/488)</label><input type="text" value="${esc(c.qty)}" data-c="qty" placeholder="${esc(coverQty())}">${totPO()?`<small class=tip>Tổng đơn các item: <b>${totPO()}</b> · in ra: <b>${esc(coverQty())}</b></small>`:""}`}</div><div>${f("date","Ngày kiểm","date")}</div></div>${f("fac","Nhà máy")}${f("insp","Inspector")}</div>
     <div class=c><h2>Kết quả AQL</h2><div class=r><div>${f("aC","Critical tối đa","number")}</div><div>${f("aMa","Major tối đa","number")}</div><div>${f("aMi","Minor tối đa","number")}</div></div>
     <p>Lỗi: Critical <b>${t[0]}</b> · Major <b>${t[1]}</b> · Minor <b>${t[2]}</b></p><div class="res ${ok?"pass":"fail"}">${ok?"PASS":"FAIL"}</div></div>
     <div class=c><h2>Sản phẩm (SKU)</h2>${S.skus.map(k=>{const n=SEC.reduce((s,x)=>s+cnt(k,x[0]),0);return`<div class=row data-s="${k.id}"><div class=t><b>${esc(k.code||"(chưa có mã)")}</b><small>${esc(k.name)}</small></div><span class="n ${n?"on":""}">${n} ảnh</span></div>`}).join("")||'<p class=tip>Chưa có SKU. Thêm SKU đầu tiên bên dưới.</p>'}
@@ -434,7 +437,7 @@ let _lastSec="";async function render(){if(V.p!=="sec"||_lastSec!==(V.s+"/"+V.k)
     a.querySelectorAll("[data-e]").forEach(e=>e.onclick=async()=>{const p=x.ph[+e.dataset.e];if(p&&p.id&&await editImg(p.id))render()});
     a.querySelectorAll("[data-r]").forEach(e=>e.onclick=async()=>{const[i,d]=e.dataset.r.split(":").map(Number),p=x.ph[i];if(!p||!p.id)return;e.disabled=true;await rotImg(p.id,d);render()});
     a.querySelectorAll("[data-i]").forEach(i=>i.oninput=()=>{x.ph[i.dataset.i].cap=i.value;save()});
-    if($("#ocr"))$("#ocr").onclick=()=>ocrLabel(k,x);$("#cps").onclick=()=>copySec(k,V.k);
+    $("#cps").onclick=()=>copySec(k,V.k);
     $("#nt").oninput=e=>{x.note=e.target.value;save()};
     a.querySelectorAll("[data-t]").forEach(i=>i.oninput=()=>{(x.t||(x.t={}))[i.dataset.t]=i.value;save()});
     a.querySelectorAll("[data-m]").forEach(e=>e.onclick=()=>{const[i,d]=e.dataset.m.split(":").map(Number),j=nbI(i,d);if(j<0)return;const A=x.ph[i],B=x.ph[j];[A.id,B.id]=[B.id,A.id];[A.sev,B.sev]=[B.sev,A.sev];save();render()});
@@ -529,7 +532,7 @@ function cfgCard(){const c=CF(),g=(k,l)=>`<label>${l}</label><input data-g="${k}
  <label>Độ nét PDF</label><select data-g="q">${[[2,"Vừa (2x)"],[3,"Nét (3x)"],[4,"Rất nét (4x)"]].map(o=>`<option value=${o[0]} ${c.q==o[0]?"selected":""}>${o[1]}</option>`).join("")}</select>
  <label>Logo chân trang</label><input type=file accept="image/*" id=lg>${c.logo?'<p><button class="b g" id=lgx>Xóa logo</button></p>':""}</div>`}
 function secForm(k,x){const t=x.t||{},f=(n,l)=>`<div><label>${l}</label><input data-t="${n}" value="${esc(t[n]??"")}"></div>`;
- return k==="wt"?`<div class=c><h2>Cân nặng (kg)</h2><p class=tip>In trên thùng</p><div class=r>${f("n0","NW")}${f("g0","GW")}</div><button class="b y" id=ocr style="width:100%;margin-top:8px">🔎 Tự đọc NW / GW từ ảnh tem thùng</button><p class=tip>Thực tế</p><div class=r>${f("n1","NW")}${f("g1","GW")}</div></div>`
+ return k==="wt"?`<div class=c><h2>Cân nặng (kg)</h2><p class=tip>In trên thùng</p><div class=r>${f("n0","NW")}${f("g0","GW")}</div><p class=tip>Thực tế</p><div class=r>${f("n1","NW")}${f("g1","GW")}</div></div>`
  :k==="psz"?`<div class=c><h2>Kích thước thùng</h2><div class=r>${f("p0","In trên thùng (cm)")}${f("p1","Thực tế (cm)")}</div></div>`
  :k==="bar"?`<div class=c><label>Kết quả quét</label><select data-t="rd"><option value="1" ${t.rd!=="0"?"selected":""}>Readable (đọc được)</option><option value="0" ${t.rd==="0"?"selected":""}>Unreadable (không đọc được)</option></select></div>`:""}
 function offerFile(bl,name,imgs){const m=document.createElement("div");m.style.cssText="position:fixed;inset:0;background:#000a;z-index:99;display:grid;place-items:center;padding:20px";
@@ -715,7 +718,7 @@ const P=(id,h,nof)=>H.push(`<section class=P ${id?`id="${id}"`:""}>${lg?`<img cl
 const fl=(x,y,w,l,v)=>`<u class=fl style="left:${x}px;top:${y+16}px">${l}</u><div class=fb style="left:${x<700?195:935}px;top:${y}px;width:${w}px;font-size:${String(v).length>(w>400?46:24)?15:20}px">${esc(v)}</div>`;
 const dt=c.date?c.date.split("-").reverse().join("/"):"";
 P("cover",`<div class=hd style="height:115px;padding-left:12px"><div class=ht><b style="font-size:48px">FINAL INSPECTION REPORT</b></div><table class=rh><tr><th style="width:150px">Report#</th><td>${esc(c.no)}</td></tr><tr><th>Result</th><td style="color:${rc}">${ok?"PASS":"FAIL"}</td></tr></table></div>`+
- fl(12,197,538,"Customer:",c.cust)+fl(12,269,538,"PO#:",c.po)+fl(12,341,538,"ProducDescription:",c.desc||autoDesc())+fl(12,413,538,"Inspection Q’ty:",c.qty)+fl(20,485,538,"Factory:",c.fac)+
+ fl(12,197,538,"Customer:",c.cust)+fl(12,269,538,"PO#:",c.po)+fl(12,341,538,"ProducDescription:",c.desc||autoDesc())+fl(12,413,538,"Inspection Q’ty:",coverQty())+fl(20,485,538,"Factory:",c.fac)+
  fl(768,197,367,"Inspection Party:",cf.party)+fl(768,269,367,"Inspectors:",c.insp)+fl(768,341,367,"Inspection Date:",dt)+fl(768,413,367,"Report Version:",cf.ver));
 /* Mục lục (đúng kích thước file gốc) */
 const NC=Math.max(11,S.skus.length),c0=186.3,cw=(1316-c0)/NC,cell=f=>S.skus.map(f).join("")+"<td></td>".repeat(NC-S.skus.length);
@@ -846,33 +849,6 @@ function copySec(k,key){const src=k.sec[key],nm=SEC.find(z=>z[0]===key);if(!src|
      if(!p.id)continue;const nid=await dupImg(p.id);if(!nid)continue;d.ph.push({...p,id:nid});n++;busyMsg(`Đang sao chép ảnh ${n}…`)}
     if(wn){if(repl||!d.note||d.note.trim()===dn)d.note=src.note;d.t={...(d.t||{}),...(src.t||{})}}d.dn=1}
    await save();busyEnd();render();toast(`✓ Đã sao chép ${n} ảnh sang ${ts.length} item`)}catch(e){busyEnd();alert("Không sao chép được: "+(e&&e.message||e))}}}
-/* ===== Đọc NW / GW (và kích thước thùng) từ ảnh tem bằng nhận dạng chữ ===== */
-async function loadOCR(){if(window.Tesseract)return window.Tesseract;await new Promise((ok,no)=>{const t=document.createElement("script");t.src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";t.onload=ok;t.onerror=()=>{t.remove();no(new Error(navigator.onLine?"Không tải được bộ đọc chữ.":"Cần có mạng để tải bộ đọc chữ (chỉ lần đầu)."))};document.head.append(t)});return window.Tesseract}
-function ocrPick(k){return new Promise(async done=>{const ids=[];for(const key of["lbl","bar","wt","psz","pack","box"])for(const p of k.sec[key]?.ph||[])if(p.id&&!ids.includes(p.id))ids.push(p.id);
- const m=document.createElement("div");m.style.cssText="position:fixed;inset:0;background:#000c;z-index:99;overflow:auto;padding:14px";
- m.innerHTML=`<div class=c style="max-width:640px;margin:auto"><h2>Chọn ảnh tem thùng có in NW / GW</h2><p class=tip>Ảnh nên chụp thẳng, rõ chữ, đủ sáng.</p><label class="b y" style="margin:8px 0">📷 Chụp / chọn ảnh tem<input type=file accept="image/*" hidden></label>${ids.length?`<p class=tip>Hoặc chọn ảnh đã có của item ${esc(k.code)}:</p>`:""}<div class=og2 style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px"></div><p><button class="b g" id=opx style="width:100%;margin-top:10px">Hủy</button></p></div>`;document.body.append(m);
- const fin=v=>{m.remove();done(v)};m.querySelector("#opx").onclick=()=>fin(null);m.querySelector("input").onchange=e=>{const f=e.target.files[0];if(f)fin(f)};
- const g=m.querySelector(".og2");for(const id of ids){const t=await thumb(id);if(!document.body.contains(m))return;const i=document.createElement("img");i.src=t;i.style.cssText="width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px;cursor:pointer;background:#333";i.onclick=async()=>fin(await imgBlob(id));g.append(i)}})}
-const ocrParse=txt=>{const T=String(txt||"").toUpperCase().replace(/(\d)\s*[,]\s*(\d)/g,"$1.$2"),N="(\\d{1,4}(?:\\.\\d{1,3})?)",K="\\s*(?:\\(?\\s*(?:KGS?|KG\\.?|LBS?)\\s*\\)?)?\\s*[:：=\\-]?\\s*";
- const g=src=>{const m=T.match(new RegExp(src+K+N));return m?m[1]:""};
- const nw=g("(?:\\bN\\s*[.,]?\\s*W\\b\\.?|NET\\s*(?:WEIGHT|WT|WGT)\\b\\.?)"),gw=g("(?:\\bG\\s*[.,]?\\s*W\\b\\.?|GROSS\\s*(?:WEIGHT|WT|WGT)\\b\\.?)");
- const d=T.match(/(\d{1,4}(?:\.\d{1,2})?)\s*(?:CM)?\s*[X×*]\s*(\d{1,4}(?:\.\d{1,2})?)\s*(?:CM)?\s*[X×*]\s*(\d{1,4}(?:\.\d{1,2})?)/);
- return{nw,gw,dim:d?`${d[1]} x ${d[2]} x ${d[3]}`:"",lb:/\bLBS?\b/.test(T)&&!/\bKGS?\b/.test(T)}};
-async function ocrLabel(k,x){const f=await ocrPick(k);if(!f)return;let Tz,w;busyMsg("Đang tải bộ đọc chữ… (lần đầu cần mạng)");
- try{Tz=await loadOCR();const im=await loadIm(URL.createObjectURL(f));const prep=rot=>{const k2=Math.min(1,2400/Math.max(im.naturalWidth,im.naturalHeight)),W=im.naturalWidth*k2,H=im.naturalHeight*k2,c=document.createElement("canvas"),q=rot%180;c.width=Math.round(q?H:W);c.height=Math.round(q?W:H);const g=c.getContext("2d");g.filter="grayscale(1) contrast(1.4)";g.translate(c.width/2,c.height/2);g.rotate(rot*Math.PI/180);g.drawImage(im,-W/2,-H/2,W,H);return c};
-  w=await Tz.createWorker("eng",1,{logger:e=>{if(e.status==="recognizing text")busyMsg("Đang đọc chữ trên tem… "+Math.round((e.progress||0)*100)+"%");else if(/load/.test(e.status||""))busyMsg("Đang tải bộ đọc chữ… (lần đầu cần mạng)")}});
-  let best={nw:"",gw:"",dim:""},txt="";for(const r of[0,90,270,180]){const c=prep(r),o=await w.recognize(c);c.width=c.height=0;const t=o.data.text||"",R=ocrParse(t);if(!txt)txt=t;if((R.nw?1:0)+(R.gw?1:0)>(best.nw?1:0)+(best.gw?1:0)){best=R;txt=t}if(best.nw&&best.gw)break}
-  await w.terminate();busyEnd();ocrConfirm(k,x,best,txt)}catch(e){try{w&&w.terminate()}catch(_){}busyEnd();alert("Không đọc được tem: "+(e&&e.message||e))}}
-function ocrConfirm(k,x,R,txt){const m=document.createElement("div");m.style.cssText="position:fixed;inset:0;background:#000a;z-index:99;display:grid;place-items:center;padding:16px";const t=x.t||{};
- m.innerHTML=`<div class=c style="max-width:460px;width:100%;max-height:90vh;overflow:auto"><h2>Kết quả đọc tem</h2><p class=tip>${R.nw||R.gw?"Kiểm tra lại số trước khi lưu.":"⚠ Không tìm thấy NW / GW trên ảnh — nhập tay hoặc chụp lại rõ hơn."}${R.lb?" <b>Tem ghi LBS, không phải KGS.</b>":""}</p>
-  <div class=r><div><label>NW in trên thùng</label><input id=on value="${esc(R.nw||t.n0||"")}"></div><div><label>GW in trên thùng</label><input id=og value="${esc(R.gw||t.g0||"")}"></div></div>
-  ${R.dim?`<label style="display:flex;gap:8px;align-items:center;font-weight:400;color:var(--ink);margin-top:10px"><input type=checkbox id=od checked style="width:auto"> Điền luôn kích thước thùng in trên thùng: <b>${esc(R.dim)}</b></label>`:""}
-  <details style="margin-top:10px"><summary class=tip>Chữ đọc được</summary><pre style="white-space:pre-wrap;font-size:12px;max-height:200px;overflow:auto">${esc(txt)}</pre></details>
-  <div class=r style="margin-top:12px"><button class="b y" id=ook>Lưu</button><button class="b g" id=onx>Hủy</button></div></div>`;document.body.append(m);
- m.querySelector("#onx").onclick=()=>m.remove();
- m.querySelector("#ook").onclick=async()=>{x.t={...(x.t||{}),n0:m.querySelector("#on").value.trim(),g0:m.querySelector("#og").value.trim()};
-  if(R.dim&&m.querySelector("#od")?.checked){const z=k.sec.psz||(k.sec.psz={ph:[],note:"",dn:1});if(!z.dn){z.dn=1;if(!z.note&&DN.psz)z.note=DN.psz.join("\n")}z.t={...(z.t||{}),p0:R.dim}}
-  m.remove();await save();render();toast("✓ Đã điền số liệu in trên thùng")}}
 /* ===== Sửa ảnh đơn giản: cắt khung, chỉnh nghiêng, xoay 90°, lật ===== */
 function edDraw(im,st,maxSide,full){const sw=im.naturalWidth||im.width,sh=im.naturalHeight||im.height,q=st.r%2,W0=q?sh:sw,H0=q?sw:sh,c0=full?{x:0,y:0,w:1,h:1}:st.c;
  const cw=c0.w*W0,ch=c0.h*H0,k=Math.min(1,maxSide/Math.max(cw,ch)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(cw*k));c.height=Math.max(1,Math.round(ch*k));const g=c.getContext("2d");
@@ -950,7 +926,7 @@ function xlParse(X,wb){const nz=v=>String(v??"").replace(/\s+/g," ").trim(),lw=v
  if(!out.cover.date)delete out.cover.date;
  /* SL kiểm dạng 50/485 (số mẫu / số lượng đơn hàng) */
  if(!out.cover.qty)for(const nm of wb.SheetNames){const A=X.utils.sheet_to_json(wb.Sheets[nm],{header:1,defval:"",raw:false});for(let r=0;r<A.length&&!out.cover.qty;r++){const row=A[r].map(nz);if(!row.some(v=>/aql|sample|inspect|kiểm|mẫu|q'?ty/i.test(v)))continue;const hit=row.find(v=>/^\d+\s*\/\s*\d+$/.test(v));if(hit)out.cover.qty=hit.replace(/\s+/g,"")}if(out.cover.qty)break}
- const tq=out.items.reduce((a,x)=>a+(+x.po||0),0),ts=out.items.reduce((a,x)=>a+(+x.sm||0),0);if(!out.cover.qty&&tq)out.cover.qty=ts?ts+"/"+tq:String(tq);
+ const tq=out.items.reduce((a,x)=>a+(+x.po||0),0),ts=out.items.reduce((a,x)=>a+(+x.sm||0),0);if(!out.cover.qty&&tq)out.cover.qty=ts?ts+"/"+tq:String(tq);else if(out.cover.qty&&!out.cover.qty.includes("/")&&tq)out.cover.qty=String(out.cover.qty).replace(/\D+$/,"")+"/"+tq;
  return out}
 async function xlImport(f){let X;try{busyMsg("Đang đọc file Excel…");X=await loadXLSX();const wb=X.read(await f.arrayBuffer(),{type:"array",cellDates:false});var R=xlParse(X,wb)}catch(e){busyEnd();return alert("Không đọc được file: "+(e&&e.message||e))}busyEnd();
  if(!R.items.length&&!Object.keys(R.cover).length)return alert("Không tìm thấy thông tin PO hay danh sách item trong file. Cột mã hàng cần có tiêu đề như: Item#, SKU, Model, Mã hàng…");
