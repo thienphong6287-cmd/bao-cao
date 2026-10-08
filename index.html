@@ -380,7 +380,8 @@ const sec=()=>{const k=sku();return k.sec[V.k]||(k.sec[V.k]={ph:[],note:""})};
 const cnt=(k,key)=>(k.sec[key]?.ph||[]).filter(p=>p.id).length;
 /* lỗi: mỗi ảnh ở mục "Lỗi tìm thấy" = 1 lỗi, chọn Major / Minor cho từng ảnh; Critical nhập tay */
 const defL=k=>{const x=k.sec.def;if(!x)return[];const c=x.ph.filter(p=>!p.up&&p.id);return c.length?c:x.ph.filter(p=>p.up&&p.id)};
-const dd=k=>{const L=defL(k),cr=+k.d[0]||0;if(!L.length)return[cr,+k.d[1]||0,+k.d[2]||0];return[cr,L.filter(p=>p.sev==="ma").length,L.filter(p=>p.sev!=="ma").length]};
+/* Major/Minor luôn đếm theo ảnh ở mục Lỗi tìm thấy (xóa ảnh = bớt lỗi); Critical nhập tay */
+const dd=k=>{const L=defL(k);return[+k.d[0]||0,L.filter(p=>p.sev==="ma").length,L.filter(p=>p.sev!=="ma").length]};
 const tot=()=>S.skus.reduce((a,k)=>{const d=dd(k);a[0]+=d[0];a[1]+=d[1];a[2]+=d[2];return a},[0,0,0]);
 const verdict=()=>{const t=tot(),c=S.cover;return t[0]<=+c.aC&&t[1]<=+c.aMa&&t[2]<=+c.aMi};
 
@@ -406,8 +407,8 @@ let _lastSec="";async function render(){if(V.p!=="sec"||_lastSec!==(V.s+"/"+V.k)
     if($("#lgx"))$("#lgx").onclick=async()=>{delete S.cfg.logo;await idbDel("i","logo");memDrop("logo");save();render()};
     $("#bk").onclick=backup;$("#zi").onclick=()=>zipPhotos();$("#sa").onclick=async()=>{busyMsg("Đang chuẩn bị ảnh…");try{await prepPhotos()}finally{busyEnd()}confirmSaveAll()};$("#dlq").onchange=e=>{try{localStorage.setItem("fir_dlq",e.target.value)}catch(_){}toast("Đã chọn độ nét ảnh tải về")};
     $("#rm").onclick=async()=>{if(!confirm("Xóa báo cáo này và toàn bộ ảnh? Không thể hoàn tác."))return;await delReport(S);V={p:"list"};render()};
-  }else if(V.p==="sku"){const k=sku();$("#ttl").textContent=k.code;ocrAuto(k);
-    a.innerHTML=`<div class=c><h2>Mã &amp; tên item</h2><div class=r><div><label>Mã item</label><input id=kc value="${esc(k.code)}"></div><div><label>Tên sản phẩm</label><input id=kn value="${esc(k.name)}"></div></div></div><div class=c><p class=tip>Số lỗi tìm thấy (tính vào kết quả AQL).${defL(k).length?" Major / Minor đang <b>tự đếm</b> theo ảnh ở mục Lỗi tìm thấy (mỗi ảnh = 1 lỗi).":""}</p><div class=r>${["Critical","Major","Minor"].map((l,i)=>{const D=dd(k),au=i&&defL(k).length;return`<div><label>${l}${au?" · tự đếm":""}</label><input type=number min=0 value="${D[i]}" data-d="${i}"${au?' readonly style="opacity:.75"':""}></div>`}).join("")}</div></div>
+  }else if(V.p==="sku"){const k=sku();$("#ttl").textContent=k.code;
+    a.innerHTML=`<div class=c><h2>Mã &amp; tên item</h2><div class=r><div><label>Mã item</label><input id=kc value="${esc(k.code)}"></div><div><label>Tên sản phẩm</label><input id=kn value="${esc(k.name)}"></div></div></div><div class=c><p class=tip>Số lỗi tìm thấy (tính vào kết quả AQL). Major / Minor <b>tự đếm</b> theo ảnh ở mục Lỗi tìm thấy (mỗi ảnh = 1 lỗi, xóa ảnh là bớt lỗi). Critical nhập tay.</p><div class=r>${["Critical","Major","Minor"].map((l,i)=>{const D=dd(k),au=i>0;return`<div><label>${l}${au?" · tự đếm":""}</label><input type=number min=0 value="${D[i]}" data-d="${i}"${au?' readonly style="opacity:.75"':""}></div>`}).join("")}</div></div>
     <div class=c><h2>Số lượng (bảng kết quả)</h2><div class=r>${[["po","PO Q'ty"],["ct","Carton Q'ty"],["sm","Sample Size"]].map(([f,l])=>`<div><label>${l}</label><input type=number min=0 data-q="${f}" value="${esc(k.q?.[f]??"")}"></div>`).join("")}</div><p class=tip>Carton để trống = lấy bằng PO Q'ty.</p></div><div class=c><h2>Hạng mục kiểm</h2>${SEC.map(x=>{const n=cnt(k,x[0]);return`<div class=row data-k="${x[0]}"><div class=t>${x[1]}<small>${x[2]}</small></div><span class="n ${n?"on":""}">${n}</span></div>`}).join("")}</div><div class=c><details><summary style="font-weight:700;cursor:pointer">Thông tin sản phẩm (bấm để mở)</summary>${PF.map(([f,e,v])=>`<label>${e} · ${v}</label><input data-f="${f}" value="${esc(pfv(k,f))}"${k.f?.[f]&&pfv(k,f)===k.f[f]?"":` style="color:#667"`}>`).join("")}<p class=tip>Chữ xám = tự điền (Màu SP lấy sau dấu phẩy của tên; kích thước, cân nặng lấy từ trang Weight / Package / Product Measurement). Sửa tay thì giữ theo giá trị bạn nhập.</p></details></div>
     <div class=c><button class="b g" id=kz style="width:100%">📦 Tải ảnh của item này (.zip)</button><button class="b g" id=kcp style="width:100%;margin-top:8px">📋 Sao chép item này sang báo cáo khác</button></div>
     <p><button class="b x" id=ds>Xóa SKU này</button></p>`;
@@ -451,7 +452,7 @@ let _lastSec="";async function render(){if(V.p!=="sec"||_lastSec!==(V.s+"/"+V.k)
     a.querySelectorAll("[data-sv]").forEach(b=>b.onclick=()=>{const[i,v]=b.dataset.sv.split(":");if(x.ph[+i]){x.ph[+i].sev=v;save();render()}});
     a.querySelectorAll("[data-e]").forEach(e=>e.onclick=async()=>{const p=x.ph[+e.dataset.e];if(p&&p.id&&await editImg(p.id))render()});
     a.querySelectorAll("[data-r]").forEach(e=>e.onclick=async()=>{const[i,d]=e.dataset.r.split(":").map(Number),p=x.ph[i];if(!p||!p.id)return;e.disabled=true;await rotImg(p.id,d);render()});
-    if($("#ocr"))$("#ocr").onclick=()=>ocrWt(k,true);if(V.k==="wt")ocrAuto(k);
+    if($("#ocr"))$("#ocr").onclick=()=>ocrPickRead(k);
     if($("#mno"))$("#mno").onchange=e=>{x.mo=e.target.value;manCaps(x);save();render()};
     a.querySelectorAll("[data-i]").forEach(i=>{if(V.k==="man"&&!x.ph[i.dataset.i]?.ref){i.readOnly=true;i.style.opacity=.75}i.oninput=()=>{x.ph[i.dataset.i].cap=i.value;autoMeas(V.k,x);autoWt(V.k,x);save()};
      /* gõ số xong tự thêm đơn vị: kích thước → cm, cân nặng → KGS */
@@ -558,7 +559,7 @@ function cfgCard(){const c=CF(),g=(k,l)=>`<label>${l}</label><input data-g="${k}
  <label>Độ nét PDF</label><select data-g="q">${[[2,"Vừa (2x)"],[3,"Nét (3x)"],[4,"Rất nét (4x)"]].map(o=>`<option value=${o[0]} ${c.q==o[0]?"selected":""}>${o[1]}</option>`).join("")}</select>
  <label>Logo chân trang</label><input type=file accept="image/*" id=lg>${c.logo?'<p><button class="b g" id=lgx>Xóa logo</button></p>':""}</div>`}
 function secForm(k,x){const t=x.t||{},f=(n,l)=>`<div><label>${l}</label><input data-t="${n}" value="${esc(t[n]??"")}"></div>`;
- return k==="wt"?`<div class=c><h2>Cân nặng (kg)</h2><p class=tip>In trên thùng</p><div class=r>${f("n0","NW")}${f("g0","GW")}</div><button class="b y" id=ocr style="width:100%;margin-top:8px">🔎 Đọc NW / GW từ ảnh tem thùng</button><p class=tip id=ocrs style="margin:4px 0 0">Tự đọc từ ảnh ở mục Package Labels / Barcode khi ô còn trống.</p><p class=tip>Thực tế</p><div class=r>${f("n1","NW")}${f("g1","GW")}</div></div>`
+ return k==="wt"?`<div class=c><h2>Cân nặng (kg)</h2><p class=tip>In trên thùng</p><div class=r>${f("n0","NW")}${f("g0","GW")}</div><button class="b y" id=ocr style="width:100%;margin-top:8px">🔎 Đọc NW / GW từ ảnh tem thùng</button><p class=tip style="margin:4px 0 0">Chọn ảnh tem đã chụp ở mục Chất lượng in / Barcode, khoanh vùng số cân rồi đọc.</p><p class=tip>Thực tế</p><div class=r>${f("n1","NW")}${f("g1","GW")}</div></div>`
  :k==="psz"?`<div class=c><h2>Kích thước thùng</h2><div class=r>${f("p0","In trên thùng (cm)")}${f("p1","Thực tế (cm)")}</div></div>`
  :k==="bar"?`<div class=c><label>Kết quả quét</label><select data-t="rd"><option value="1" ${t.rd!=="0"?"selected":""}>Readable (đọc được)</option><option value="0" ${t.rd==="0"?"selected":""}>Unreadable (không đọc được)</option></select></div>`:""}
 function offerFile(bl,name,imgs){const m=document.createElement("div");m.style.cssText="position:fixed;inset:0;background:#000a;z-index:99;display:grid;place-items:center;padding:20px";
@@ -903,12 +904,20 @@ function deskew(cv){const k=Math.min(1,700/cv.width),w=Math.round(cv.width*k),h=
  for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(d[(y*w+x)*4]<128)P.push(x,y);let best=0,bs=-1;const H=new Float64Array(h+w+10),o=Math.round(w*.1)+2;
  for(let a=-6;a<=6.001;a+=.2){const tn=Math.tan(a*Math.PI/180);H.fill(0);for(let i=0;i<P.length;i+=2){const yy=Math.round(P[i+1]-P[i]*tn)+o;if(yy>=0&&yy<H.length)H[yy]++}let sc=0;for(let i=0;i<H.length;i++)sc+=H[i]*H[i];if(sc>bs){bs=sc;best=a}}
  if(Math.abs(best)<.3)return cv;const r=document.createElement("canvas");r.width=cv.width;r.height=cv.height;const q=r.getContext("2d");q.fillStyle="#fff";q.fillRect(0,0,r.width,r.height);q.translate(r.width/2,r.height/2);q.rotate(-best*Math.PI/180);q.drawImage(cv,-cv.width/2,-cv.height/2);return r}
+/* đọc 1 ô số: chữ số lấy từ chế độ "1 dòng thô" (psm 13, đọc chuẩn hơn), vị trí dấu chấm lấy từ chế độ dòng (psm 7); ô được phóng tới chiều cao ~100-170px vì phóng quá to dễ đọc 8 thành 6 */
+async function readNum(w,src,c){const p=Math.round(Math.min(c.x1-c.x0,c.y1-c.y0)*.06),sx=c.x0+p,sy=c.y0+p,sw=c.x1-c.x0-2*p,sh=c.y1-c.y0-2*p;if(sw<4||sh<4)return null;const D={},F={};
+ for(const th of[100,130,170]){const k=th/sh,cv=ocrGray(src,sx,sy,sw,sh,sw*k,sh*k,false);
+  await w.setParameters({tessedit_pageseg_mode:"13",tessedit_char_whitelist:"0123456789"});const d=((await w.recognize(cv)).data.text||"").replace(/\D/g,"");if(d)D[d]=(D[d]||0)+2;
+  await w.setParameters({tessedit_pageseg_mode:"7",tessedit_char_whitelist:"0123456789."});const t=((await w.recognize(cv)).data.text||"").replace(/[^\d.]/g,"");cv.width=0;
+  if(t){const q=t.replace(/\./g,"");if(q)D[q]=(D[q]||0)+1;const m=t.match(/\.(\d+)$/);const dec=m?m[1].length:0;F[dec]=(F[dec]||0)+1}}
+ const best=o=>Object.entries(o).sort((x,y)=>y[1]-x[1])[0];const bd=best(D);if(!bd)return null;let s=bd[0].replace(/^0+(?=\d)/,"");const bf=best(F),dec=bf?+bf[0]:0;
+ if(dec>0&&s.length>dec)s=s.slice(0,-dec)+"."+s.slice(-dec);const v=+s;return v>0&&v<1000?v:null}
 async function gridKG(w,full,msg){full=deskew(full);const bw=ocrGray(full,0,0,full.width,full.height,full.width,full.height,true),cells=gridCells(bw);if(cells.length<3||cells.length>60)return null;
  const read=async(c,wl,alt)=>{const p=Math.round(Math.min(c.x1-c.x0,c.y1-c.y0)*.06),sw=c.x1-c.x0-2*p,sh=c.y1-c.y0-2*p,k=alt?alt*Math.max(.5,60/sh):(sh<70?2:1),cv=ocrGray(alt?full:bw,c.x0+p,c.y0+p,sw,sh,sw*k,sh*k,!alt);
   await w.setParameters({tessedit_pageseg_mode:"6",tessedit_char_whitelist:wl||""});const t=(await w.recognize(cv)).data.text||"";cv.width=0;return t};
  msg&&msg("Đang đọc các ô trong bảng tem…");const T=[];for(const c of cells)T.push(await read(c));
  const anc=cells.filter((c,i)=>/\bK\s?G\s?S?\b/i.test(T[i])&&!/\d/.test(T[i])||/GR?OSS|\(N[EI]T\)|\bNET\b|\bG\.?\s?W\b|\bN\.?\s?W\b/i.test(T[i])),vals=[];
- for(const a of anc){const cx=(a.x0+a.x1)/2;for(let r=a.row+1;r<=a.row+3;r++){const b=cells.find(c=>c.row===r&&c.x0<=cx&&c.x1>=cx);if(!b)continue;const vt={};for(const[t,wt]of[[T[cells.indexOf(b)],1],[await read(b,"0123456789.,"),1],[await read(b,"0123456789.,",1.5),1],[await read(b,"0123456789.,",2.2),1],[await read(b,"0123456789.,",3),1]])for(const n of ocrNum(t).slice(0,1))vt[n]=(vt[n]||0)+wt*(/\./.test(t)?1:.5);const bv=Object.entries(vt).sort((p,q)=>q[1]-p[1])[0];if(bv){vals.push(+bv[0]);break}}}
+ for(const a of anc){const cx=(a.x0+a.x1)/2;for(let r=a.row+1;r<=a.row+3;r++){const b=cells.find(c=>c.row===r&&c.x0<=cx&&c.x1>=cx);if(!b)continue;const nv=await readNum(w,full,b);if(nv!=null){vals.push(nv);break}}}
  const v=[...new Set(vals)].sort((p,q)=>q-p);return v.length>=2?{gw:String(v[0]),nw:String(v[v.length-1])}:null}
 async function readKG(bl,msg){const w=await ocrWorker(),u=URL.createObjectURL(bl);let im;try{im=await loadIm(u)}finally{URL.revokeObjectURL(u)}
  for(const rot of[0,90,270])for(const crop of[1,0]){const src=ocrRot(im,rot),lb=crop?labelBox(src):null;if(crop&&!lb)continue;const X=lb?lb.x:0,Y=lb?lb.y:0,SW=lb?lb.w:(src.width||src.naturalWidth),SH=lb?lb.h:(src.height||src.naturalHeight),K=Math.min(3,2400/Math.max(SW,SH)),full=ocrGray(src,X,Y,SW,SH,SW*K,SH*K,false);
@@ -930,20 +939,37 @@ const ocrParse=txt=>{const T=String(txt||"").toUpperCase().replace(/(\d)\s*,\s*(
 const ocrIds=k=>{const o=[];for(const key of["lbl","bar"])for(const p of k.sec[key]?.ph||[])if(p.id&&!p.ref&&!o.includes(p.id))o.push(p.id);return o};
 let ocrBusy=0;const ocrDone=new Set();
 const ocrFill=(k,R)=>{const x=k.sec.wt||(k.sec.wt={ph:[],note:"",dn:1}),t=x.t||(x.t={});t.g0=R.gw+" KGS";t.n0=R.nw+" KGS";for(const[f,v]of[["g0",t.g0],["n0",t.n0]]){const e=document.querySelector(`[data-t="${f}"]`);if(e&&V.k==="wt")e.value=v}save()};
-/* tự đọc ngầm khi ô "In trên thùng" còn trống và có ảnh tem chưa đọc */
-async function ocrAuto(k){const t=k.sec.wt?.t||{};if(ocrBusy||t.n0||t.g0||!navigator.onLine&&!window.Tesseract)return;const ids=ocrIds(k).filter(id=>!ocrDone.has(id)).slice(-6);if(!ids.length)return;ocrBusy=1;
- const st=m=>{const e=document.getElementById("ocrs");if(e)e.textContent=m};
- try{for(const id of ids.reverse()){ocrDone.add(id);st("⏳ Đang đọc số cân trên ảnh tem…");const bl=await imgBlob(id);if(!bl)continue;const R=await readKG(bl);const t2=k.sec.wt?.t||{};if(t2.n0||t2.g0)break;
-   if(R){ocrFill(k,R);st(`✓ Đã đọc từ ảnh tem: GW ${R.gw} KGS · NW ${R.nw} KGS — kiểm tra lại`);toast(`✓ Đọc cân trên tem ${k.code}: GW ${R.gw} · NW ${R.nw} KGS`);break}}
-  st(document.getElementById("ocrs")?.textContent.startsWith("⏳")?"Chưa đọc được số cân trên ảnh tem — bấm nút để thử ảnh khác.":document.getElementById("ocrs")?.textContent||"")}catch(e){st("")}finally{ocrBusy=0}}
-/* bấm nút: thử ảnh tem có sẵn, không được thì cho chọn / chụp ảnh tem */
-async function ocrWt(k,ask){if(ocrBusy)return toast("Đang đọc ảnh tem, chờ chút…");ocrBusy=1;let R=null;
- try{busyMsg("Đang tải bộ đọc chữ… (lần đầu cần mạng)");await ocrWorker();const ids=ocrIds(k);let n=0;for(const id of ids.slice(-6).reverse()){busyMsg(`Đang đọc ảnh tem ${++n}/${Math.min(6,ids.length)}…`);const bl=await imgBlob(id);if(bl&&(R=await readKG(bl,m=>busyMsg(m))))break}
-  if(!R&&ask){busyEnd();const f=await new Promise(ok=>{const m=document.createElement("div");m.style.cssText="position:fixed;inset:0;background:#000a;z-index:99;display:grid;place-items:center;padding:16px";m.innerHTML=`<div class=c style="max-width:420px;width:100%"><h2>Chưa đọc được số cân</h2><p class=tip>${ids.length?"Không thấy số KG trên ảnh tem hiện có.":"Chưa có ảnh tem ở mục Package Labels / Barcode."} Chọn hoặc chụp ảnh tem rõ, thẳng, đủ sáng.</p><label class="b y">📷 Chụp / chọn ảnh tem<input type=file accept="image/*" hidden></label><p><button class="b g" style="width:100%;margin-top:8px">Hủy</button></p></div>`;document.body.append(m);m.querySelector("input").onchange=e=>{m.remove();ok(e.target.files[0])};m.querySelector("button").onclick=()=>{m.remove();ok(null)}});if(f){busyMsg("Đang đọc ảnh tem…");R=await readKG(f,m=>busyMsg(m))}}
-  busyEnd();if(!R)return alert(ids.length?"Không tìm thấy số cân (KG) trên ảnh tem. Hãy chụp tem thẳng, rõ, đủ sáng rồi thử lại, hoặc nhập tay.":"Chưa có ảnh tem ở mục Package Labels / Barcode. Chọn hoặc chụp ảnh tem để đọc.");
-  const gw=prompt("Kiểm tra số cân đọc được trên tem\nGW (Weight Gross):",R.gw);if(gw==null)return;const nw=prompt("NW (Weight Net):",R.nw);if(nw==null)return;
-  ocrFill(k,{gw:gw.replace(/\s*kgs?$/i,"").trim(),nw:nw.replace(/\s*kgs?$/i,"").trim()});render();toast("✓ Đã điền NW / GW in trên thùng")}
- catch(e){busyEnd();alert("Không đọc được tem: "+(e&&e.message||e))}finally{ocrBusy=0}}
+/* Đọc số cân theo cách người dùng chọn: 1) chọn ảnh tem (Chất lượng in / Tem thùng / Barcode) 2) kéo khung quanh vùng số KG 3) đọc 4) xác nhận */
+function ocrChoose(k){return new Promise(async done=>{const G=[["pack","Kiểm tra thùng / chất lượng in"],["lbl","Tem thùng"],["bar","Barcode"]].map(([key,t])=>[t,(k.sec[key]?.ph||[]).filter(p=>p.id)]).filter(g=>g[1].length);
+ const m=document.createElement("div");m.style.cssText="position:fixed;inset:0;background:#000c;z-index:99;overflow:auto;padding:14px";
+ m.innerHTML=`<div class=c style="max-width:640px;margin:auto"><h2>Chọn ảnh tem có in số cân</h2>${G.length?G.map(([t,a],gi)=>`<p class=tip style="margin:10px 0 4px"><b>${esc(t)}</b></p><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px">${a.map((p,j)=>`<img data-oi="${gi}:${j}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px;cursor:pointer;background:#333">`).join("")}</div>`).join(""):'<p class=tip>Chưa có ảnh ở mục Chất lượng in / Tem thùng / Barcode.</p>'}
+  <label class="b g" style="margin-top:12px">📷 Chụp / chọn ảnh khác<input type=file accept="image/*" hidden></label><p><button class="b g" id=opx style="width:100%;margin-top:8px">Hủy</button></p></div>`;document.body.append(m);
+ const fin=v=>{m.remove();done(v)};m.querySelector("#opx").onclick=()=>fin(null);m.querySelector("input").onchange=e=>{const f=e.target.files[0];if(f)fin(f)};
+ m.querySelectorAll("[data-oi]").forEach(async e=>{const[gi,j]=e.dataset.oi.split(":").map(Number),p=G[gi][1][j];e.onclick=async()=>{const h=await idbGet("i","h:"+p.id);fin(h&&h.size?h:await imgBlob(p.id))};e.src=await thumb(p.id)})})}
+function ocrCrop(bl){return new Promise(async done=>{const u=URL.createObjectURL(bl);let im;try{im=await loadIm(u)}catch(e){URL.revokeObjectURL(u);return done(null)}
+ const m=document.createElement("div");m.className="ed";m.innerHTML=`<div class=edt><button class=no>Hủy</button><span>Khoanh vùng số cân (KG)</span><button class=ok>Đọc số</button></div><div class=edw><img style="max-width:100%;max-height:100%;display:block" src="${u}"><div class=ecb>${["nw","n","ne","e","se","s","sw","w"].map(h=>`<i data-h=${h}></i>`).join("")}</div></div><p class=eda>Kéo khung bao quanh ô "Weight (Gross)", "Weight (Net)" và hàng số bên dưới — khung càng sát càng đọc đúng.</p>`;document.body.append(m);
+ const pic=m.querySelector(".edw img"),box=m.querySelector(".ecb"),wrap=m.querySelector(".edw");let c={x:.15,y:.2,w:.7,h:.6},drag=null;
+ const place=()=>{const r=pic.getBoundingClientRect(),w=wrap.getBoundingClientRect();Object.assign(box.style,{left:(r.left-w.left+c.x*r.width)+"px",top:(r.top-w.top+c.y*r.height)+"px",width:c.w*r.width+"px",height:c.h*r.height+"px"})};
+ box.onpointerdown=e=>{e.preventDefault();box.setPointerCapture(e.pointerId);drag={h:e.target.dataset.h||"m",x:e.clientX,y:e.clientY,c:{...c}}};
+ box.onpointermove=e=>{if(!drag)return;const r=pic.getBoundingClientRect(),dx=(e.clientX-drag.x)/r.width,dy=(e.clientY-drag.y)/r.height,o=drag.c,h=drag.h,MN=.04;let{x,y,w,h:hh}=o;
+  if(h==="m"){x=Math.min(1-w,Math.max(0,o.x+dx));y=Math.min(1-hh,Math.max(0,o.y+dy))}else{if(h.includes("w")){x=Math.min(o.x+o.w-MN,Math.max(0,o.x+dx));w=o.x+o.w-x}if(h.includes("e"))w=Math.min(1-o.x,Math.max(MN,o.w+dx));if(h.includes("n")){y=Math.min(o.y+o.h-MN,Math.max(0,o.y+dy));hh=o.y+o.h-y}if(h.includes("s"))hh=Math.min(1-o.y,Math.max(MN,o.h+dy))}c={x,y,w,h:hh};place()};
+ box.onpointerup=box.onpointercancel=()=>{drag=null};const ro=()=>place();addEventListener("resize",ro);if(pic.complete)place();else pic.onload=place;
+ const close=v=>{removeEventListener("resize",ro);m.remove();URL.revokeObjectURL(u);done(v)};m.querySelector(".no").onclick=()=>close(null);
+ m.querySelector(".ok").onclick=()=>{const W=im.naturalWidth,H=im.naturalHeight,sx=c.x*W,sy=c.y*H,sw=c.w*W,sh=c.h*H,K=Math.min(4,1800/Math.max(sw,sh));close(ocrGray(im,sx,sy,sw,sh,sw*K,sh*K,false))}})}
+/* đọc vùng đã khoanh: thử dạng bảng (ô KG → ô số bên dưới), rồi đọc chữ thường; GW = số lớn, NW = số nhỏ */
+async function readCrop(cv,msg){const w=await ocrWorker();msg("Đang đọc bảng số cân…");try{const G=await gridKG(w,cv,msg);if(G)return G}catch(e){}
+ msg("Đang đọc chữ trong vùng đã khoanh…");const nums=[];let txt="";
+ for(const[psm,bin]of[["6",0],["6",1],["11",0]]){const c=bin?ocrGray(cv,0,0,cv.width,cv.height,cv.width,cv.height,true):cv;await w.setParameters({tessedit_pageseg_mode:psm,tessedit_char_whitelist:""});const t=(await w.recognize(c)).data.text||"";txt+=t+"\n";
+  const P=ocrParse(t);if(P.gw&&P.nw)return{gw:P.gw,nw:P.nw};for(const m of t.replace(/(\d)\s*,\s*(\d)/g,"$1.$2").matchAll(/(^|[^\d.])(\d{1,3}\.\d{1,2})(?![\d.])/g))nums.push(+m[2])}
+ const cnt={};for(const n of nums)cnt[n]=(cnt[n]||0)+1;const v=Object.keys(cnt).map(Number).sort((a,b)=>cnt[b]-cnt[a]||b-a).slice(0,2).sort((a,b)=>b-a);
+ return v.length?{gw:String(v[0]),nw:v[1]!=null?String(v[1]):""}:null}
+async function ocrPickRead(k){const bl=await ocrChoose(k);if(!bl)return;const cv=await ocrCrop(bl);if(!cv)return;let R=null;
+ try{busyMsg("Đang tải bộ đọc chữ… (lần đầu cần mạng)");R=await readCrop(cv,t=>busyMsg(t))}catch(e){busyEnd();return alert("Không đọc được: "+(e&&e.message||e))}busyEnd();cv.width=0;
+ const t=k.sec.wt?.t||{},m=document.createElement("div");m.style.cssText="position:fixed;inset:0;background:#000a;z-index:99;display:grid;place-items:center;padding:16px";
+ m.innerHTML=`<div class=c style="max-width:420px;width:100%"><h2>Số cân in trên thùng</h2><p class=tip>${R?"Kiểm tra lại số đọc được, sửa nếu sai rồi bấm Lưu.":"⚠ Không đọc được số — nhập tay hoặc khoanh vùng sát hơn rồi thử lại."}</p><div class=r><div><label>GW (Gross)</label><input id=og inputmode=decimal value="${esc(R?.gw||String(t.g0||"").replace(/\s*KGS?$/i,""))}"></div><div><label>NW (Net)</label><input id=on inputmode=decimal value="${esc(R?.nw||String(t.n0||"").replace(/\s*KGS?$/i,""))}"></div></div><div class=r style="margin-top:12px"><button class="b y" id=ook>Lưu</button><button class="b g" id=orr>Đọc lại</button><button class="b g" id=onx>Hủy</button></div></div>`;document.body.append(m);
+ m.querySelector("#onx").onclick=()=>m.remove();m.querySelector("#orr").onclick=()=>{m.remove();ocrPickRead(k)};
+ m.querySelector("#ook").onclick=()=>{const g=m.querySelector("#og").value.trim().replace(/\s*kgs?$/i,"").replace(",","."),n=m.querySelector("#on").value.trim().replace(/\s*kgs?$/i,"").replace(",",".");m.remove();
+  const x=k.sec.wt||(k.sec.wt={ph:[],note:"",dn:1}),tt=x.t||(x.t={});tt.g0=g?g+" KGS":"";tt.n0=n?n+" KGS":"";save();render();toast("✓ Đã điền NW / GW in trên thùng")}}
 /* ===== Sao chép 1 mục kiểm (ảnh + ghi chú + số liệu) sang item khác trong cùng báo cáo ===== */
 async function dupImg(id){const d=asBlob(await idbGet("i",id))||await imgBlob(id);if(!d)return null;const nid=uid();if(!(await idbPut("i",nid,d)))return null;const h=await idbGet("i","h:"+id);if(h&&h.size)await idbPut("i","h:"+nid,h);const t=await idbGet("i","t:"+id);if(t)await idbPut("i","t:"+nid,t);return nid}
 function copySec(k,key){const src=k.sec[key],nm=SEC.find(z=>z[0]===key);if(!src||!(src.ph.some(p=>p.id)||secUsed(src,key)))return alert("Mục này chưa có ảnh hay ghi chú để sao chép.");
