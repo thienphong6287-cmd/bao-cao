@@ -406,7 +406,7 @@ let _lastSec="";async function render(){if(V.p!=="sec"||_lastSec!==(V.s+"/"+V.k)
     if($("#lgx"))$("#lgx").onclick=async()=>{delete S.cfg.logo;await idbDel("i","logo");memDrop("logo");save();render()};
     $("#bk").onclick=backup;$("#zi").onclick=()=>zipPhotos();$("#sa").onclick=async()=>{busyMsg("Đang chuẩn bị ảnh…");try{await prepPhotos()}finally{busyEnd()}confirmSaveAll()};$("#dlq").onchange=e=>{try{localStorage.setItem("fir_dlq",e.target.value)}catch(_){}toast("Đã chọn độ nét ảnh tải về")};
     $("#rm").onclick=async()=>{if(!confirm("Xóa báo cáo này và toàn bộ ảnh? Không thể hoàn tác."))return;await delReport(S);V={p:"list"};render()};
-  }else if(V.p==="sku"){const k=sku();$("#ttl").textContent=k.code;
+  }else if(V.p==="sku"){const k=sku();$("#ttl").textContent=k.code;ocrAuto(k);
     a.innerHTML=`<div class=c><h2>Mã &amp; tên item</h2><div class=r><div><label>Mã item</label><input id=kc value="${esc(k.code)}"></div><div><label>Tên sản phẩm</label><input id=kn value="${esc(k.name)}"></div></div></div><div class=c><p class=tip>Số lỗi tìm thấy (tính vào kết quả AQL).${defL(k).length?" Major / Minor đang <b>tự đếm</b> theo ảnh ở mục Lỗi tìm thấy (mỗi ảnh = 1 lỗi).":""}</p><div class=r>${["Critical","Major","Minor"].map((l,i)=>{const D=dd(k),au=i&&defL(k).length;return`<div><label>${l}${au?" · tự đếm":""}</label><input type=number min=0 value="${D[i]}" data-d="${i}"${au?' readonly style="opacity:.75"':""}></div>`}).join("")}</div></div>
     <div class=c><h2>Số lượng (bảng kết quả)</h2><div class=r>${[["po","PO Q'ty"],["ct","Carton Q'ty"],["sm","Sample Size"]].map(([f,l])=>`<div><label>${l}</label><input type=number min=0 data-q="${f}" value="${esc(k.q?.[f]??"")}"></div>`).join("")}</div><p class=tip>Carton để trống = lấy bằng PO Q'ty.</p></div><div class=c><h2>Hạng mục kiểm</h2>${SEC.map(x=>{const n=cnt(k,x[0]);return`<div class=row data-k="${x[0]}"><div class=t>${x[1]}<small>${x[2]}</small></div><span class="n ${n?"on":""}">${n}</span></div>`}).join("")}</div><div class=c><details><summary style="font-weight:700;cursor:pointer">Thông tin sản phẩm (bấm để mở)</summary>${PF.map(([f,e,v])=>`<label>${e} · ${v}</label><input data-f="${f}" value="${esc(pfv(k,f))}"${k.f?.[f]&&pfv(k,f)===k.f[f]?"":` style="color:#667"`}>`).join("")}<p class=tip>Chữ xám = tự điền (Màu SP lấy sau dấu phẩy của tên; kích thước, cân nặng lấy từ trang Weight / Package / Product Measurement). Sửa tay thì giữ theo giá trị bạn nhập.</p></details></div>
     <div class=c><button class="b g" id=kz style="width:100%">📦 Tải ảnh của item này (.zip)</button><button class="b g" id=kcp style="width:100%;margin-top:8px">📋 Sao chép item này sang báo cáo khác</button></div>
@@ -451,6 +451,7 @@ let _lastSec="";async function render(){if(V.p!=="sec"||_lastSec!==(V.s+"/"+V.k)
     a.querySelectorAll("[data-sv]").forEach(b=>b.onclick=()=>{const[i,v]=b.dataset.sv.split(":");if(x.ph[+i]){x.ph[+i].sev=v;save();render()}});
     a.querySelectorAll("[data-e]").forEach(e=>e.onclick=async()=>{const p=x.ph[+e.dataset.e];if(p&&p.id&&await editImg(p.id))render()});
     a.querySelectorAll("[data-r]").forEach(e=>e.onclick=async()=>{const[i,d]=e.dataset.r.split(":").map(Number),p=x.ph[i];if(!p||!p.id)return;e.disabled=true;await rotImg(p.id,d);render()});
+    if($("#ocr"))$("#ocr").onclick=()=>ocrWt(k,true);if(V.k==="wt")ocrAuto(k);
     if($("#mno"))$("#mno").onchange=e=>{x.mo=e.target.value;manCaps(x);save();render()};
     a.querySelectorAll("[data-i]").forEach(i=>{if(V.k==="man"&&!x.ph[i.dataset.i]?.ref){i.readOnly=true;i.style.opacity=.75}i.oninput=()=>{x.ph[i.dataset.i].cap=i.value;autoMeas(V.k,x);autoWt(V.k,x);save()};
      /* gõ số xong tự thêm đơn vị: kích thước → cm, cân nặng → KGS */
@@ -469,8 +470,12 @@ let _lastSec="";async function render(){if(V.p!=="sec"||_lastSec!==(V.s+"/"+V.k)
 $("#back").onclick=()=>{V=V.p==="sec"?{p:"sku",s:V.s}:V.p==="home"?{p:"list"}:{p:"home"};render();scrollTo(0,0)};
 
 /* ===== Sao lưu: 1 file .zip gồm report.json + ảnh báo cáo + ảnh gốc (đọc từng ảnh, không dồn RAM) ===== */
-async function backup(){busyMsg("Đang tạo file sao lưu…");try{const fs=[],seen=new Set();let n=0;
- for(const id of imgIds(S)){if(seen.has(id))continue;seen.add(id);const bl=await imgBlob(id);if(bl)fs.push({n:"img/"+id+".jpg",blob:bl});if(id!=="logo"){const h=await idbGet("i","h:"+id);if(h&&h.size)fs.push({n:"orig/"+id+".jpg",blob:h})}busyMsg(`Đang gom ảnh ${++n}…`)}
+async function backup(){busyMsg("Đang tính dung lượng…");let wo=true;
+ /* ảnh gốc rất nặng: báo cáo lớn thì cho chọn sao lưu nhẹ (chỉ ảnh báo cáo 2560px), và luôn dưới giới hạn 4 GB của file zip */
+ try{let os=0,cs=0;for(const id of new Set(imgIds(S))){const h=await idbGet("i","h:"+id);if(h&&h.size)os+=h.size;const c=asBlob(await idbGet("i",id));if(c)cs+=c.size}busyEnd();const M=v=>Math.round(v/1048576);
+  if(os+cs>3.8e9)wo=false;else if(os>300*1048576)wo=confirm(`Sao lưu kèm ảnh gốc sẽ nặng khoảng ${M(os+cs)} MB.\n\nOK = kèm ảnh gốc (${M(os+cs)} MB)\nHủy = chỉ ảnh báo cáo, nhẹ hơn (khoảng ${M(cs)} MB) — vẫn đủ để xuất lại báo cáo.`)}catch(e){busyEnd()}
+ busyMsg("Đang tạo file sao lưu…");try{const fs=[],seen=new Set();let n=0;
+ for(const id of imgIds(S)){if(seen.has(id))continue;seen.add(id);const bl=await imgBlob(id);if(bl)fs.push({n:"img/"+id+".jpg",blob:bl});if(wo&&id!=="logo"){const h=await idbGet("i","h:"+id);if(h&&h.size)fs.push({n:"orig/"+id+".jpg",blob:h})}busyMsg(`Đang gom ảnh ${++n}…`)}
  fs.unshift({n:"report.json",blob:new Blob([JSON.stringify({v:2,app:"kiem-hang",at:Date.now(),S})],{type:"application/json"})});
  busyMsg("Đang đóng gói…");const z=await zipBlobs(fs);busyEnd();await save();S.bk=S.updated;await idbPut("m","r:"+S.id,S);
  offerFile(z,"saoluu-"+String(S.cover.po||"bao-cao").replace(/[\\/:*?"<>|\s]+/g,"_")+"-"+new Date().toISOString().slice(0,10)+".zip")}catch(e){busyEnd();alert("Không tạo được file sao lưu: "+(e&&e.message||e))}}
@@ -480,17 +485,17 @@ async function unzipStored(f){const tail=Math.min(f.size,65557),tb=new DataView(
  for(let k=0;k<n&&p+46<=cd.byteLength;k++){if(cd.getUint32(p,true)!==0x02014b50)break;const meth=cd.getUint16(p+10,true),sz=cd.getUint32(p+20,true),nl=cd.getUint16(p+28,true),xl=cd.getUint16(p+30,true),cl=cd.getUint16(p+32,true),lo=cd.getUint32(p+42,true),name=dec.decode(new Uint8Array(cd.buffer,cd.byteOffset+p+46,nl));p+=46+nl+xl+cl;
   out.push({name,meth,get:async()=>{const lh=new DataView(await f.slice(lo,lo+30).arrayBuffer()),ds=lo+30+lh.getUint16(26,true)+lh.getUint16(28,true);return f.slice(ds,ds+sz)}})}return out}
 /* khôi phục: luôn tạo mã ảnh MỚI để không bao giờ dùng chung ảnh với báo cáo đang có trong máy */
-function restore(f){if(!f)return;(async()=>{busyMsg("Đang đọc file sao lưu…");try{let R,imgs={},origs={};const hd=new Uint8Array(await f.slice(0,2).arrayBuffer());
+function restore(f){if(!f)return;(async()=>{const W=[];busyMsg("Đang đọc file sao lưu…");try{let R,imgs={},origs={};const hd=new Uint8Array(await f.slice(0,2).arrayBuffer());
  if(hd[0]===0x50&&hd[1]===0x4b){const es=await unzipStored(f),rj=es.find(e=>e.name==="report.json");if(!rj)throw new Error("file không có report.json");if(rj.meth)throw new Error("file zip đã bị nén lại bằng ứng dụng khác — hãy dùng file gốc app tạo ra");
    R=(JSON.parse(await (await rj.get()).text())||{}).S;for(const e of es){const m=e.name.match(/^(img|orig)\/(.+)\.jpg$/);if(m&&!e.meth)(m[1]==="img"?imgs:origs)[m[2]]=e}}
  else{const d=JSON.parse(await f.text());if(!d||!d.S||!d.im)throw new Error("sai định dạng");R=d.S;for(const id in d.im)if(d.im[id]){const v=d.im[id];imgs[id]={get:async()=>asBlob(v)}}}
  if(!R||!Array.isArray(R.skus))throw new Error("sai định dạng");const map={};let n=0,miss=0;
  for(const k of R.skus)for(const x of Object.values(k.sec||{}))for(const p of x.ph||[]){if(!p.id)continue;const o=p.id;if(map[o]){p.id=map[o];continue}
   let bl=imgs[o]?await imgs[o].get():null;const ob=origs[o]?new Blob([await origs[o].get()],{type:"image/jpeg"}):null;bl=bl&&bl.size?new Blob([bl],{type:"image/jpeg"}):ob?await comp(ob):null;
-  if(!bl){p.id=null;miss++;continue}const id=uid();if(!(await idbPut("i",id,bl)))throw new Error("bộ nhớ máy đã đầy");if(ob)await idbPut("i","h:"+id,ob);map[o]=p.id=id;busyMsg(`Đang khôi phục ảnh ${++n}…`)}
+  if(!bl){p.id=null;miss++;continue}const id=uid();if(!(await idbPut("i",id,bl)))throw new Error("bộ nhớ máy đã đầy");if(ob)await idbPut("i","h:"+id,ob);map[o]=p.id=id;W.push(id);busyMsg(`Đang khôi phục ảnh ${++n}…`)}
  if(R.cfg&&R.cfg.logo&&imgs.logo){const lb=await imgs.logo.get();if(lb&&lb.size){await idbPut("i","logo",new Blob([lb],{type:"image/jpeg"}));memDrop("logo")}}
  R.id=uid();R.created=R.created||Date.now();S=R;await save();S.bk=S.updated;await idbPut("m","r:"+S.id,S);busyEnd();V={p:"home"};render();alert(`Đã khôi phục báo cáo ${R.cover&&R.cover.po||""} · ${n} ảnh`+(miss?`\n⚠ ${miss} ảnh không có trong file sao lưu.`:""))}
- catch(e){busyEnd();alert("Không khôi phục được: "+(e&&e.message||e))}})()}
+ catch(e){/* khôi phục dở dang: xóa ảnh đã ghi để không chiếm bộ nhớ */for(const id of W)await delImg(id);busyEnd();alert("Không khôi phục được: "+(e&&e.message||e)+(W.length?"\nĐã dọn "+W.length+" ảnh ghi dở.":""))}})()}
 
 /* ===== Tạo PDF trực tiếp (khổ ngang, không qua hộp thoại in) ===== */
 function mkPdf(pg,PW,PH){
@@ -553,7 +558,7 @@ function cfgCard(){const c=CF(),g=(k,l)=>`<label>${l}</label><input data-g="${k}
  <label>Độ nét PDF</label><select data-g="q">${[[2,"Vừa (2x)"],[3,"Nét (3x)"],[4,"Rất nét (4x)"]].map(o=>`<option value=${o[0]} ${c.q==o[0]?"selected":""}>${o[1]}</option>`).join("")}</select>
  <label>Logo chân trang</label><input type=file accept="image/*" id=lg>${c.logo?'<p><button class="b g" id=lgx>Xóa logo</button></p>':""}</div>`}
 function secForm(k,x){const t=x.t||{},f=(n,l)=>`<div><label>${l}</label><input data-t="${n}" value="${esc(t[n]??"")}"></div>`;
- return k==="wt"?`<div class=c><h2>Cân nặng (kg)</h2><p class=tip>In trên thùng</p><div class=r>${f("n0","NW")}${f("g0","GW")}</div><p class=tip>Thực tế</p><div class=r>${f("n1","NW")}${f("g1","GW")}</div></div>`
+ return k==="wt"?`<div class=c><h2>Cân nặng (kg)</h2><p class=tip>In trên thùng</p><div class=r>${f("n0","NW")}${f("g0","GW")}</div><button class="b y" id=ocr style="width:100%;margin-top:8px">🔎 Đọc NW / GW từ ảnh tem thùng</button><p class=tip id=ocrs style="margin:4px 0 0">Tự đọc từ ảnh ở mục Package Labels / Barcode khi ô còn trống.</p><p class=tip>Thực tế</p><div class=r>${f("n1","NW")}${f("g1","GW")}</div></div>`
  :k==="psz"?`<div class=c><h2>Kích thước thùng</h2><div class=r>${f("p0","In trên thùng (cm)")}${f("p1","Thực tế (cm)")}</div></div>`
  :k==="bar"?`<div class=c><label>Kết quả quét</label><select data-t="rd"><option value="1" ${t.rd!=="0"?"selected":""}>Readable (đọc được)</option><option value="0" ${t.rd==="0"?"selected":""}>Unreadable (không đọc được)</option></select></div>`:""}
 function offerFile(bl,name,imgs){const m=document.createElement("div");m.style.cssText="position:fixed;inset:0;background:#000a;z-index:99;display:grid;place-items:center;padding:20px";
@@ -802,7 +807,7 @@ for(const k of S.skus){const f=k.f||{};
    else b=ph.map((p,j)=>{if(!p)return"";if(Array.isArray(p)){const l=[88,479,870][j%3],tp=401,cap=esc(p[0].cap||"Approved AI. Page");
      if(p.length===1)return`<figure class="t" style="left:${l}px;top:${tp}px"><img class=fc style="border:1px solid #000" src="${I2(p[0].id)}"><figcaption>${cap}</figcaption></figure>`;
      return`<figure class="t" style="left:${l}px;top:${tp}px"><div class=eb style="background:#fff;height:269px;border:1px solid #000"></div><figcaption>${cap}</figcaption></figure>`+p.map((q,h)=>`<img class="ri fp" style="left:${l+1+h*178}px;top:${tp+1}px;width:178px;height:267px;object-fit:contain;background:#fff" src="${I2(q.id)}">`).join("")+`<div style="position:absolute;left:${l+179}px;top:${tp+1}px;width:1px;height:267px;background:#999"></div>`}
-    let jj=key==="bar"?j+1:j,row=side?Math.floor(j/2):key==="wt"?Math.floor(j/2)%2:Math.floor(jj/3),l=side?[491,882][j%2]:key==="wt"?[337,864][j%2]:key==="bar"?[61,494,885][jj%3]:[88,479,870][jj%3],tp=side?[157,469][row]:key==="wt"?[95,408][row]:key==="bar"?[157,469][row]:[88,401][row];const cc=key==="col"&&side;if(cc)tp=[151,457][row];return`<figure class="${row&&!cc?"t":""}" style="left:${l}px;top:${tp}px${key==="wt"?";width:328px":""}">${p.id?`<img${cc?` class=fc style="height:${row?282:245}px"`:side?" class=fc":""} src="${I2(p.id)}">`:`<div class=eb${cc?` style="height:${row?282:245}px"`:""}></div>`}<figcaption${cc?` style="${row?"margin-top:7px;height:59px":"margin-top:9px;height:34px"}"`:""}>${esc(p.cap||(p._fc!=null?p._fc:gr?dcc(key,j):i>0?dcc(key,j):dc(key,i*per+j)))}</figcaption></figure>`}).join("")+
+    let jj=key==="bar"?j+1:j,row=side?Math.floor(j/2):key==="wt"?Math.floor(j/2)%2:Math.floor(jj/3),l=side?[491,882][j%2]:key==="wt"?[337,864][j%2]:key==="bar"?[61,494,885][jj%3]:[88,479,870][jj%3],tp=side?[157,469][row]:key==="wt"?[95,408][row]:key==="bar"?[157,469][row]:[88,401][row];const cc=key==="col"&&side;if(cc)tp=[151,457][row];return`<figure class="${row&&!cc?"t":""}" style="left:${l}px;top:${tp}px${key==="wt"?";width:328px":""}">${p.id?`<img${cc?` class=fc style="height:${row?282:245}px"`:side||p.ref?" class=fc":""} src="${I2(p.id)}">`:`<div class=eb${cc?` style="height:${row?282:245}px"`:""}></div>`}<figcaption${cc?` style="${row?"margin-top:7px;height:59px":"margin-top:9px;height:34px"}"`:""}>${esc(p.cap||(p._fc!=null?p._fc:gr?dcc(key,j):i>0?dcc(key,j):dc(key,i*per+j)))}</figcaption></figure>`}).join("")+
     (spec(key,{...x,note:NOTE},first)||(side?(key==="col"?`<div class=cl style="left:35px;top:114px">Inspector Comments:</div><div class="cb nb" style="left:34px;top:151px;width:411px;height:655px;padding:8px 12px">${bl(NOTE)}</div>`:`<div class=cl style="left:35px;top:122px">Inspector Comments:</div><div class="cb sd${one?" nb":""}" style="left:35px;top:157px;width:411px;height:656px">${bl(NOTE)}</div>`)
     :`<div class=cl style="left:200px;top:776px">Inspector Comments:</div><div class=cb style="left:479px;top:774px;width:749px;height:99px">${bl(NOTE)}</div>`));
    P(first?`s-${k.id}-${key}`:"",hd(first?tt[0]:tt[0]+" (Continued)",first?tt[1]:tt[1]+" (Tiếp Theo)",k.code,side?(key==="col"?"cc":"cc c73"):"")+b)}}}
@@ -840,7 +845,7 @@ async function copyItem(k){const all=(await allReports()).filter(r=>r.id!==S.id)
 /* ===== Di chuyển ảnh đã chọn sang mục kiểm khác (cùng item) ===== */
 async function movePhotos(k,fromKey,idx,toKey){const src=k.sec[fromKey];if(!src)return;const pick=idx.sort((a,b)=>b-a).map(i=>src.ph[i]).filter(p=>p&&p.id&&!p.ref);
  const dst=k.sec[toKey]||(k.sec[toKey]={ph:[],note:""});if(!dst.dn){dst.dn=1;if(!dst.note&&DN[toKey])dst.note=DN[toKey].join("\n")}
- src.ph=src.ph.filter(p=>!pick.includes(p));pick.reverse().forEach(p=>{const n=dst.ph.filter(q=>!q.up&&!q.ref).length;dst.ph.push({id:p.id,cap:toKey==="man"?"Actual AI. Page":toKey==="def"?(p.cap||""):dc(toKey,n)})});await save();return pick.length}
+ src.ph=src.ph.filter(p=>!pick.includes(p));pick.reverse().forEach(p=>{const n=dst.ph.filter(q=>!q.up&&!q.ref).length;dst.ph.push({id:p.id,cap:toKey==="man"?"Actual AI. Page":toKey==="def"?(p.cap||""):dc(toKey,n),...(p.sev&&toKey==="def"?{sev:p.sev}:{})})});await save();return pick.length}
 
 /* ===== Dung lượng & tìm ảnh thất lạc ===== */
 async function storageUI(){const e=document.getElementById("stg");if(!e)return;try{const q=await navigator.storage.estimate(),u=q.usage||0,t=q.quota||0,p=t?u/t:0,mb=v=>(v/1048576).toFixed(0)+" MB";
@@ -864,6 +869,81 @@ async function findLost(){busyMsg("Đang tìm ảnh…");const used=new Set();fo
  m.querySelector("#lzp").onclick=async()=>{busyMsg("Đang nén…");const fs=[];let j=0;for(const id of L){let b=await idbGet("i","h:"+id);if(!(b&&b.size)){b=asBlob(await idbGet("i",id));if(!b)continue}fs.push({n:`anh-that-lac/${String(++j).padStart(3,"0")} ${tm(id).replace(/[\/:]/g,"-")}.jpg`,blob:b})}
   const z=await zipBlobs(fs);busyEnd();offerFile(z,"anh-that-lac.zip")}}
 
+/* ===== Đọc số cân (KG) in trên tem thùng: dạng bảng "Weight (Gross) | Weight (Net) / KG | KG / 13.8 | 10.4" hoặc dạng chữ "N.W: 10.4 KGS" =====
+   Bước 1: đọc cả ảnh tìm chữ "KG" (tiêu đề cột). Bước 2: cắt ô ngay dưới mỗi chữ KG, đọc riêng chỉ số. GW = số lớn, NW = số nhỏ. */
+const TESS="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js";
+async function loadOCR(){if(window.Tesseract)return window.Tesseract;await new Promise((ok,no)=>{const t=document.createElement("script");t.src=TESS;t.onload=ok;t.onerror=()=>{t.remove();no(new Error(navigator.onLine?"Không tải được bộ đọc chữ.":"Cần có mạng để tải bộ đọc chữ (chỉ lần đầu)."))};document.head.append(t)});return window.Tesseract}
+let ocrW=null;const ocrWorker=async()=>ocrW||(ocrW=await (await loadOCR()).createWorker("eng"));
+const ocrWords=d=>{if(d.words&&d.words.length)return d.words;const o=[];for(const b of d.blocks||[])for(const p of b.paragraphs||[])for(const l of p.lines||[])for(const w of l.words||[])o.push(w);return o};
+/* ảnh xám, kéo tương phản (Safari không có ctx.filter nên tự xử lý điểm ảnh) */
+function ocrGray(src,sx,sy,sw,sh,W,H,bin){const c=document.createElement("canvas");c.width=Math.max(1,Math.round(W));c.height=Math.max(1,Math.round(H));const g=c.getContext("2d");g.drawImage(src,sx,sy,sw,sh,0,0,c.width,c.height);
+ const d=g.getImageData(0,0,c.width,c.height),a=d.data,n=a.length/4,L=new Uint8Array(n),hist=new Array(256).fill(0);for(let i=0;i<n;i++){const v=(a[i*4]*.299+a[i*4+1]*.587+a[i*4+2]*.114)|0;L[i]=v;hist[v]++}
+ let lo=0,hi=255,cnt=0;while(lo<255&&(cnt+=hist[lo])<n*.01)lo++;cnt=0;while(hi>0&&(cnt+=hist[hi])<n*.01)hi--;const k=255/Math.max(1,hi-lo);
+ let th=128;if(bin){/* ngưỡng Otsu */const h2=new Array(256).fill(0);for(let i=0;i<n;i++)h2[Math.max(0,Math.min(255,((L[i]-lo)*k)|0))]++;let sum=0;for(let i=0;i<256;i++)sum+=i*h2[i];let sB=0,wB=0,best=0;for(let i=0;i<256;i++){wB+=h2[i];if(!wB)continue;const wF=n-wB;if(!wF)break;sB+=i*h2[i];const mB=sB/wB,mF=(sum-sB)/wF,v=wB*wF*(mB-mF)**2;if(v>best){best=v;th=i}}}
+ for(let i=0;i<n;i++){let v=Math.max(0,Math.min(255,((L[i]-lo)*k)|0));if(bin)v=v>th?255:0;a[i*4]=a[i*4+1]=a[i*4+2]=v}g.putImageData(d,0,0);return c}
+/* tìm vùng tem (giấy trắng) trên nền thùng carton để đọc rõ hơn */
+function labelBox(src){const SW=src.width||src.naturalWidth,SH=src.height||src.naturalHeight,k=Math.min(1,400/Math.max(SW,SH)),w=Math.max(1,Math.round(SW*k)),h=Math.max(1,Math.round(SH*k)),c=document.createElement("canvas");c.width=w;c.height=h;const g=c.getContext("2d");g.drawImage(src,0,0,w,h);
+ const a=g.getImageData(0,0,w,h).data,L=new Float32Array(w*h);let sum=0;for(let i=0;i<w*h;i++){L[i]=a[i*4]*.299+a[i*4+1]*.587+a[i*4+2]*.114;sum+=L[i]}const th=Math.max(sum/(w*h),150);
+ const run=(n,m,f)=>{let s=-1,e=-1;for(let i=0;i<n;i++){let b=0;for(let j=0;j<m;j++)if(f(i,j)>th)b++;if(b>m*.3){if(s<0)s=i;e=i}}return[s,s<0?0:e-s+1]};
+ const[ry,rh]=run(h,w,(y,x)=>L[y*w+x]),[rx,rw]=run(w,h,(x,y)=>L[y*w+x]);if(ry<0||rx<0||rw*rh<w*h*.12||rw*rh>w*h*.97)return null;
+ const m=4;return{x:Math.max(0,(rx-m)/k),y:Math.max(0,(ry-m)/k),w:Math.min(SW,(rw+2*m)/k),h:Math.min(SH,(rh+2*m)/k)}}
+function ocrRot(im,rot){if(!rot)return im;const c=document.createElement("canvas"),q=rot%180;c.width=q?im.naturalHeight:im.naturalWidth;c.height=q?im.naturalWidth:im.naturalHeight;const g=c.getContext("2d");g.translate(c.width/2,c.height/2);g.rotate(rot*Math.PI/180);g.drawImage(im,-im.naturalWidth/2,-im.naturalHeight/2);return c}
+const ocrNum=t=>{const m=String(t||"").replace(/,/g,".").match(/\d{1,3}(?:\.\d{1,2})?/g)||[];return m.map(Number).filter(v=>v>0&&v<1000)};
+/* tách ô của bảng trên tem: tìm đường kẻ ngang dài, rồi đường kẻ dọc trong từng hàng */
+function gridCells(c){const W=c.width,H=c.height,a=c.getContext("2d").getImageData(0,0,W,H).data,D=new Uint8Array(W*H);for(let i=0;i<W*H;i++)D[i]=a[i*4]<128?1:0;
+ const merge=v=>{const o=[];for(const y of v){if(o.length&&y-o[o.length-1][1]<=3)o[o.length-1][1]=y;else o.push([y,y])}return o.map(([p,q])=>[p,q])};
+ const hy=[];for(let y=0;y<H;y++){let r=0,b=0;for(let x=0;x<W;x++){if(D[y*W+x]||(y>0&&D[(y-1)*W+x])||(y<H-1&&D[(y+1)*W+x])){if(++r>b)b=r}else r=0}if(b>W*.22)hy.push(y)}
+ const L=merge(hy),cells=[];
+ for(let i=0;i+1<L.length;i++){const y0=L[i][1]+1,y1=L[i+1][0]-1;if(y1-y0<H*.04)continue;const ry0=y0+Math.round((y1-y0)*.08),ry1=y1-Math.round((y1-y0)*.08),vx=[];
+  for(let x=0;x<W;x++){let n=0;for(let y=ry0;y<=ry1;y++)if(D[y*W+x]||(x>0&&D[y*W+x-1])||(x<W-1&&D[y*W+x+1]))n++;if(n>=(ry1-ry0+1)*.92)vx.push(x)}
+  const V=merge(vx);for(let j=0;j+1<V.length;j++){const x0=V[j][1]+1,x1=V[j+1][0]-1;if(x1-x0>W*.04)cells.push({x0,y0,x1,y1,row:i})}}
+ return cells}
+/* chỉnh nghiêng ảnh tem: thử góc -5°..5°, chọn góc làm các đường kẻ ngang "sắc" nhất */
+function deskew(cv){const k=Math.min(1,700/cv.width),w=Math.round(cv.width*k),h=Math.round(cv.height*k),t=ocrGray(cv,0,0,cv.width,cv.height,w,h,true),d=t.getContext("2d").getImageData(0,0,w,h).data,P=[];t.width=0;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(d[(y*w+x)*4]<128)P.push(x,y);let best=0,bs=-1;const H=new Float64Array(h+w+10),o=Math.round(w*.1)+2;
+ for(let a=-6;a<=6.001;a+=.2){const tn=Math.tan(a*Math.PI/180);H.fill(0);for(let i=0;i<P.length;i+=2){const yy=Math.round(P[i+1]-P[i]*tn)+o;if(yy>=0&&yy<H.length)H[yy]++}let sc=0;for(let i=0;i<H.length;i++)sc+=H[i]*H[i];if(sc>bs){bs=sc;best=a}}
+ if(Math.abs(best)<.3)return cv;const r=document.createElement("canvas");r.width=cv.width;r.height=cv.height;const q=r.getContext("2d");q.fillStyle="#fff";q.fillRect(0,0,r.width,r.height);q.translate(r.width/2,r.height/2);q.rotate(-best*Math.PI/180);q.drawImage(cv,-cv.width/2,-cv.height/2);return r}
+async function gridKG(w,full,msg){full=deskew(full);const bw=ocrGray(full,0,0,full.width,full.height,full.width,full.height,true),cells=gridCells(bw);if(cells.length<3||cells.length>60)return null;
+ const read=async(c,wl,alt)=>{const p=Math.round(Math.min(c.x1-c.x0,c.y1-c.y0)*.06),sw=c.x1-c.x0-2*p,sh=c.y1-c.y0-2*p,k=alt?alt*Math.max(.5,60/sh):(sh<70?2:1),cv=ocrGray(alt?full:bw,c.x0+p,c.y0+p,sw,sh,sw*k,sh*k,!alt);
+  await w.setParameters({tessedit_pageseg_mode:"6",tessedit_char_whitelist:wl||""});const t=(await w.recognize(cv)).data.text||"";cv.width=0;return t};
+ msg&&msg("Đang đọc các ô trong bảng tem…");const T=[];for(const c of cells)T.push(await read(c));
+ const anc=cells.filter((c,i)=>/\bK\s?G\s?S?\b/i.test(T[i])&&!/\d/.test(T[i])||/GR?OSS|\(N[EI]T\)|\bNET\b|\bG\.?\s?W\b|\bN\.?\s?W\b/i.test(T[i])),vals=[];
+ for(const a of anc){const cx=(a.x0+a.x1)/2;for(let r=a.row+1;r<=a.row+3;r++){const b=cells.find(c=>c.row===r&&c.x0<=cx&&c.x1>=cx);if(!b)continue;const vt={};for(const[t,wt]of[[T[cells.indexOf(b)],1],[await read(b,"0123456789.,"),1],[await read(b,"0123456789.,",1.5),1],[await read(b,"0123456789.,",2.2),1],[await read(b,"0123456789.,",3),1]])for(const n of ocrNum(t).slice(0,1))vt[n]=(vt[n]||0)+wt*(/\./.test(t)?1:.5);const bv=Object.entries(vt).sort((p,q)=>q[1]-p[1])[0];if(bv){vals.push(+bv[0]);break}}}
+ const v=[...new Set(vals)].sort((p,q)=>q-p);return v.length>=2?{gw:String(v[0]),nw:String(v[v.length-1])}:null}
+async function readKG(bl,msg){const w=await ocrWorker(),u=URL.createObjectURL(bl);let im;try{im=await loadIm(u)}finally{URL.revokeObjectURL(u)}
+ for(const rot of[0,90,270])for(const crop of[1,0]){const src=ocrRot(im,rot),lb=crop?labelBox(src):null;if(crop&&!lb)continue;const X=lb?lb.x:0,Y=lb?lb.y:0,SW=lb?lb.w:(src.width||src.naturalWidth),SH=lb?lb.h:(src.height||src.naturalHeight),K=Math.min(3,2400/Math.max(SW,SH)),full=ocrGray(src,X,Y,SW,SH,SW*K,SH*K,false);
+  msg&&msg("Đang đọc chữ trên tem…");await w.setParameters({tessedit_pageseg_mode:"11",tessedit_char_whitelist:""});const d=(await w.recognize(full,{},{text:true,blocks:true})).data,txt=d.text||"";
+  const P=ocrParse(txt);if(P.nw&&P.gw)return{nw:P.nw,gw:P.gw,txt};
+  if(crop){const G=await gridKG(w,full,msg);if(G)return{...G,txt}}
+  const W=ocrWords(d).filter(x=>x.bbox),anc=W.filter(x=>/^K\s*G\s*S?$/i.test(String(x.text).replace(/[^A-Za-z]/g,""))).slice(0,4);
+  if(anc.length){const vals=[];msg&&msg("Đang đọc số cân trong bảng…");await w.setParameters({tessedit_pageseg_mode:"7",tessedit_char_whitelist:"0123456789."});
+   for(const a of anc){const b=a.bbox,ww=b.x1-b.x0,ch=Math.min(b.y1-b.y0,ww*.7),hits={};
+    for(let s=1.5;s<=5.5&&Object.values(hits).every(v=>v<2);s+=.75){const y0=b.y0+s*ch,x0=b.x0-ww,cw=ww*3,chh=ch*3;if(y0+chh>full.height)break;
+     const c=ocrGray(full,Math.max(0,x0),y0,cw,chh,cw*(ch<30?2:1),chh*(ch<30?2:1),true),r=(await w.recognize(c)).data.text;c.width=0;for(const v of ocrNum(r))if(/\./.test(String(v))||v<100)hits[v]=(hits[v]||0)+(/\./.test(r)?2:1)}
+    const best=Object.entries(hits).sort((p,q)=>q[1]-p[1])[0];if(best)vals.push(+best[0])}
+   await w.setParameters({tessedit_pageseg_mode:"11",tessedit_char_whitelist:""});
+   const v=[...new Set(vals)].sort((p,q)=>q-p);if(v.length>=2)return{gw:String(v[0]),nw:String(v[1]),txt}}}
+ return null}
+/* chữ dạng N.W: 10.4 KGS / G.W: 13.8 KGS */
+const ocrParse=txt=>{const T=String(txt||"").toUpperCase().replace(/(\d)\s*,\s*(\d)/g,"$1.$2"),N="(\\d{1,3}(?:\\.\\d{1,2})?)",K="\\s*(?:\\(?\\s*(?:KGS?|KG\\.?)\\s*\\)?)?\\s*[:：=\\-]?\\s*";
+ const g=src=>{const m=T.match(new RegExp(src+K+N));return m?m[1]:""};return{nw:g("(?:\\bN\\s*[.,]?\\s*W\\b\\.?|NET\\s*(?:WEIGHT|WT|WGT)\\b\\.?)"),gw:g("(?:\\bG\\s*[.,]?\\s*W\\b\\.?|GROSS\\s*(?:WEIGHT|WT|WGT)\\b\\.?)")}};
+const ocrIds=k=>{const o=[];for(const key of["lbl","bar"])for(const p of k.sec[key]?.ph||[])if(p.id&&!p.ref&&!o.includes(p.id))o.push(p.id);return o};
+let ocrBusy=0;const ocrDone=new Set();
+const ocrFill=(k,R)=>{const x=k.sec.wt||(k.sec.wt={ph:[],note:"",dn:1}),t=x.t||(x.t={});t.g0=R.gw+" KGS";t.n0=R.nw+" KGS";for(const[f,v]of[["g0",t.g0],["n0",t.n0]]){const e=document.querySelector(`[data-t="${f}"]`);if(e&&V.k==="wt")e.value=v}save()};
+/* tự đọc ngầm khi ô "In trên thùng" còn trống và có ảnh tem chưa đọc */
+async function ocrAuto(k){const t=k.sec.wt?.t||{};if(ocrBusy||t.n0||t.g0||!navigator.onLine&&!window.Tesseract)return;const ids=ocrIds(k).filter(id=>!ocrDone.has(id)).slice(-6);if(!ids.length)return;ocrBusy=1;
+ const st=m=>{const e=document.getElementById("ocrs");if(e)e.textContent=m};
+ try{for(const id of ids.reverse()){ocrDone.add(id);st("⏳ Đang đọc số cân trên ảnh tem…");const bl=await imgBlob(id);if(!bl)continue;const R=await readKG(bl);const t2=k.sec.wt?.t||{};if(t2.n0||t2.g0)break;
+   if(R){ocrFill(k,R);st(`✓ Đã đọc từ ảnh tem: GW ${R.gw} KGS · NW ${R.nw} KGS — kiểm tra lại`);toast(`✓ Đọc cân trên tem ${k.code}: GW ${R.gw} · NW ${R.nw} KGS`);break}}
+  st(document.getElementById("ocrs")?.textContent.startsWith("⏳")?"Chưa đọc được số cân trên ảnh tem — bấm nút để thử ảnh khác.":document.getElementById("ocrs")?.textContent||"")}catch(e){st("")}finally{ocrBusy=0}}
+/* bấm nút: thử ảnh tem có sẵn, không được thì cho chọn / chụp ảnh tem */
+async function ocrWt(k,ask){if(ocrBusy)return toast("Đang đọc ảnh tem, chờ chút…");ocrBusy=1;let R=null;
+ try{busyMsg("Đang tải bộ đọc chữ… (lần đầu cần mạng)");await ocrWorker();const ids=ocrIds(k);let n=0;for(const id of ids.slice(-6).reverse()){busyMsg(`Đang đọc ảnh tem ${++n}/${Math.min(6,ids.length)}…`);const bl=await imgBlob(id);if(bl&&(R=await readKG(bl,m=>busyMsg(m))))break}
+  if(!R&&ask){busyEnd();const f=await new Promise(ok=>{const m=document.createElement("div");m.style.cssText="position:fixed;inset:0;background:#000a;z-index:99;display:grid;place-items:center;padding:16px";m.innerHTML=`<div class=c style="max-width:420px;width:100%"><h2>Chưa đọc được số cân</h2><p class=tip>${ids.length?"Không thấy số KG trên ảnh tem hiện có.":"Chưa có ảnh tem ở mục Package Labels / Barcode."} Chọn hoặc chụp ảnh tem rõ, thẳng, đủ sáng.</p><label class="b y">📷 Chụp / chọn ảnh tem<input type=file accept="image/*" hidden></label><p><button class="b g" style="width:100%;margin-top:8px">Hủy</button></p></div>`;document.body.append(m);m.querySelector("input").onchange=e=>{m.remove();ok(e.target.files[0])};m.querySelector("button").onclick=()=>{m.remove();ok(null)}});if(f){busyMsg("Đang đọc ảnh tem…");R=await readKG(f,m=>busyMsg(m))}}
+  busyEnd();if(!R)return alert(ids.length?"Không tìm thấy số cân (KG) trên ảnh tem. Hãy chụp tem thẳng, rõ, đủ sáng rồi thử lại, hoặc nhập tay.":"Chưa có ảnh tem ở mục Package Labels / Barcode. Chọn hoặc chụp ảnh tem để đọc.");
+  const gw=prompt("Kiểm tra số cân đọc được trên tem\nGW (Weight Gross):",R.gw);if(gw==null)return;const nw=prompt("NW (Weight Net):",R.nw);if(nw==null)return;
+  ocrFill(k,{gw:gw.replace(/\s*kgs?$/i,"").trim(),nw:nw.replace(/\s*kgs?$/i,"").trim()});render();toast("✓ Đã điền NW / GW in trên thùng")}
+ catch(e){busyEnd();alert("Không đọc được tem: "+(e&&e.message||e))}finally{ocrBusy=0}}
 /* ===== Sao chép 1 mục kiểm (ảnh + ghi chú + số liệu) sang item khác trong cùng báo cáo ===== */
 async function dupImg(id){const d=asBlob(await idbGet("i",id))||await imgBlob(id);if(!d)return null;const nid=uid();if(!(await idbPut("i",nid,d)))return null;const h=await idbGet("i","h:"+id);if(h&&h.size)await idbPut("i","h:"+nid,h);const t=await idbGet("i","t:"+id);if(t)await idbPut("i","t:"+nid,t);return nid}
 function copySec(k,key){const src=k.sec[key],nm=SEC.find(z=>z[0]===key);if(!src||!(src.ph.some(p=>p.id)||secUsed(src,key)))return alert("Mục này chưa có ảnh hay ghi chú để sao chép.");
@@ -890,11 +970,15 @@ async function loadPDF(){if(!window.pdfjsLib){await new Promise((ok,no)=>{const 
  if(!window.pdfjsLib)throw new Error("Không tải được bộ đọc PDF.");if(!pdfjsLib.GlobalWorkerOptions.workerSrc)pdfjsLib.GlobalWorkerOptions.workerSrc=PDFW;return pdfjsLib}
 /* viền đen quanh mỗi trang PDF */
 const pdfFrame=c=>{const g=c.getContext("2d"),w=Math.max(3,Math.round(Math.max(c.width,c.height)/600));g.strokeStyle="#000";g.lineWidth=w;g.strokeRect(w/2,w/2,c.width-w,c.height-w)};
-async function pdfPage(pdf,pn){const pg=await pdf.getPage(pn),v0=pg.getViewport({scale:1}),vp=pg.getViewport({scale:Math.min(4,2200/Math.max(v0.width,v0.height))}),c=document.createElement("canvas");c.width=Math.round(vp.width);c.height=Math.round(vp.height);const g=c.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,c.width,c.height);await pg.render({canvasContext:g,viewport:vp}).promise;try{pg.cleanup()}catch(e){}pdfFrame(c);const bl=await cvBlob(c,.9);c.width=c.height=0;return bl}
+function trimWhite(c){const W=c.width,H=c.height,d=c.getContext("2d").getImageData(0,0,W,H).data;let x0=W,y0=H,x1=-1,y1=-1;const st=Math.max(1,Math.round(Math.max(W,H)/1500));
+ for(let y=0;y<H;y+=st)for(let x=0;x<W;x+=st){const i=(y*W+x)*4;if(d[i]+d[i+1]+d[i+2]<705){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}}
+ if(x1<0)return c;const pd=Math.round(Math.max(W,H)*.015);x0=Math.max(0,x0-pd);y0=Math.max(0,y0-pd);x1=Math.min(W-1,x1+pd);y1=Math.min(H-1,y1+pd);if((x1-x0)*(y1-y0)>W*H*.92)return c;
+ const o=document.createElement("canvas");o.width=x1-x0+1;o.height=y1-y0+1;const g=o.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,o.width,o.height);g.drawImage(c,x0,y0,o.width,o.height,0,0,o.width,o.height);c.width=c.height=0;return o}
+async function pdfPage(pdf,pn,trim){const pg=await pdf.getPage(pn),v0=pg.getViewport({scale:1}),vp=pg.getViewport({scale:Math.min(4,2200/Math.max(v0.width,v0.height))});let c=document.createElement("canvas");c.width=Math.round(vp.width);c.height=Math.round(vp.height);const g=c.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,c.width,c.height);await pg.render({canvasContext:g,viewport:vp}).promise;try{pg.cleanup()}catch(e){}if(trim)c=trimWhite(c);pdfFrame(c);const bl=await cvBlob(c,.9);c.width=c.height=0;return bl}
 /* ---- 3) Tem thùng / Barcode: lấy "Approved Carton Layout" từ 1 trang PDF */
 async function pdfToRef(x,file){let pdf;busyMsg("Đang mở file PDF…");try{const L=await loadPDF();pdf=await L.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;const N=pdf.numPages;busyEnd();let pn=1;
   if(N>1){const r=prompt(`File có ${N} trang. Lấy trang số mấy làm Approved Carton Layout?`,"1");if(r==null)return;pn=Math.min(N,Math.max(1,parseInt(r)||1))}
-  busyMsg("Đang chuyển trang PDF thành ảnh…");const bl=await pdfPage(pdf,pn);if(!bl)throw new Error("không tạo được ảnh");const id=uid();if(!(await idbPut("i",id,bl)))throw new Error("không lưu được");memSet(id,bl);await saveThumb(id);
+  busyMsg("Đang chuyển trang PDF thành ảnh…");const bl=await pdfPage(pdf,pn,1);if(!bl)throw new Error("không tạo được ảnh");const id=uid();if(!(await idbPut("i",id,bl)))throw new Error("không lưu được");memSet(id,bl);await saveThumb(id);
   if(!x.ph[0]?.ref)x.ph.unshift({ref:1,id:null,cap:"Approved Carton Layout"});if(x.ph[0].id)await delImg(x.ph[0].id);x.ph[0].id=id;await save();busyEnd();render();toast("✓ Đã lấy trang "+pn+" làm Approved Carton Layout")}
  catch(e){busyEnd();alert("Không đọc được file PDF: "+(e&&e.message||e))}finally{try{pdf&&pdf.destroy()}catch(e){}}}
 const pgRange=(t,N)=>{const o=[];for(const part of String(t||"").split(/[,;\s]+/)){const m=part.match(/^(\d+)(?:-(\d+))?$/);if(!m)continue;let a=+m[1],b=m[2]?+m[2]:a;if(a>b)[a,b]=[b,a];for(let i=Math.max(1,a);i<=Math.min(N,b);i++)if(!o.includes(i))o.push(i)}return o};
