@@ -1,5 +1,5 @@
 /* Báo cáo kiểm hàng — chạy offline. Có mạng: lấy bản mới; mất mạng / mạng chậm: dùng bản đã lưu. */
-const C="kiem-hang-v39",F=["./","./index.html","./manifest.webmanifest","./apple-touch-icon.png","./icon-192.png","./icon-512.png"];
+const C="kiem-hang-v40",F=["./","./index.html","./manifest.webmanifest","./apple-touch-icon.png","./icon-192.png","./icon-512.png"];
 const XL="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"; // bộ đọc Excel, lưu sẵn để nhập Excel khi offline
 const LIBS=[XL,"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js","https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js","https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"]; // + bộ đọc PDF HDLR
 self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(async c=>{await c.addAll(F);for(const u of LIBS)try{await c.add(new Request(u,{mode:"cors"}))}catch(_){}}));self.skipWaiting()});

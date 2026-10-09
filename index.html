@@ -175,7 +175,7 @@ label.b input,.pk input{position:absolute;left:0;top:0;width:100%;height:100%;op
 <div id="net" hidden></div><main id="app"></main><div id="print"></div>
 <script>
 const SEC=[["box","Box Selection","Chọn thùng"],["pack","Packaging Check","Kiểm tra thùng / chất lượng in"],["wt","Weight Check","Kiểm tra cân nặng"],["psz","Package Measurements","Kích thước thùng"],["lbl","Package Labels","Tem thùng"],["bar","Barcode Check","Kiểm tra mã vạch"],["mat","Package Materials","Vật liệu đóng gói"],["cmp","Components Check","Kiểm tra chi tiết rời"],["man","Manual Check","Hướng dẫn lắp ráp"],["moi","Moisture Check","Kiểm tra độ ẩm"],["col","Color Check","Kiểm tra màu"],["fit","Materials / Fittings","Kiểm vật tư"],["asm","Assembly on Site","Kiểm tra lắp ráp"],["psize","Product Measurement","Kích thước sản phẩm"],["pph","Product Photos","Hình sản phẩm"],["def","Defects Found","Lỗi tìm thấy"]];
-const APPV="v39";const $=s=>document.querySelector(s);
+const APPV="v40";const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 let db,S,V={p:"list"},mem={};
@@ -219,7 +219,9 @@ async function renderList(a){$("#ttl").textContent="Báo cáo của tôi";const 
  a.querySelectorAll("[data-d]").forEach(e=>e.onclick=async ev=>{ev.stopPropagation();const r=rs.find(z=>z.id===e.dataset.d);if(confirm("Xóa báo cáo "+(r.cover.po||"này")+" và toàn bộ ảnh?")){await delReport(r);render()}});
  $("#dy").onchange=e=>{try{localStorage.setItem("fir_days",Math.max(1,+e.target.value||10))}catch(x){}render()};
  $("#rsf").onchange=e=>{const f=e.target.files[0];e.target.value="";restore(f)}}
-const delImg=async id=>{await idbDel("i",id);await idbDel("i","h:"+id);await idbDel("i","t:"+id);await idbDel("m","u:"+id);memDrop(id);delete memT[id]};
+/* ghi nhớ item / ảnh đã xóa để đồng bộ không "hồi sinh" chúng từ máy khác */
+const gone=(kind,id)=>{if(!S||!id)return;const g=S.gone||(S.gone={k:[],p:[]});const a=g[kind]||(g[kind]=[]);if(!a.includes(id)){a.push(id);if(a.length>5000)a.splice(0,a.length-5000)}};
+const delImg=async id=>{gone("p",id);await idbDel("i",id);await idbDel("i","h:"+id);await idbDel("i","t:"+id);await idbDel("m","u:"+id);memDrop(id);delete memT[id]};
 const memT={};const mkThumb=src=>new Promise(ok=>{const i=new Image();i.onload=()=>{const k=Math.min(1,360/Math.max(i.naturalWidth,i.naturalHeight)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(i.naturalWidth*k));c.height=Math.max(1,Math.round(i.naturalHeight*k));c.getContext("2d").drawImage(i,0,0,c.width,c.height);const o=c.toDataURL("image/jpeg",.72);c.width=c.height=0;ok(o)};i.onerror=()=>ok("");i.src=src});
 /* ảnh nhỏ cho màn hình sửa báo cáo — tạo 1 lần, lưu lại; không nạp ảnh lớn vào bộ nhớ */
 const saveThumb=async(id,d)=>{try{const t=await mkThumb(d||mem[id]);if(t){memT[id]=t;await idbPut("i","t:"+id,t)}}catch(e){}};
@@ -423,7 +425,7 @@ let _lastSec="";async function render(){if(V.p!=="sec"||_lastSec!==(V.s+"/"+V.k)
     a.querySelectorAll("[data-f]").forEach(i=>i.oninput=()=>{(k.f||(k.f={}))[i.dataset.f]=i.value;i.style.color="";save()});
     a.querySelectorAll("[data-d]").forEach(i=>i.oninput=()=>{k.d[i.dataset.d]=Math.max(0,+i.value||0);save()});
     a.querySelectorAll("[data-k]").forEach(e=>e.onclick=()=>{V={p:"sec",s:k.id,k:e.dataset.k};render()});
-    $("#ds").onclick=async()=>{if(!confirm("Xóa SKU "+k.code+"?\n(Ảnh vẫn giữ trong máy, tìm lại được ở Cài đặt → Tìm ảnh bị thất lạc hoặc Bản lưu tự động.)"))return;await snap(S,"Trước khi xóa item "+k.code);S.skus=S.skus.filter(z=>z!==k);await save();V={p:"home"};render()};
+    $("#ds").onclick=async()=>{if(!confirm("Xóa SKU "+k.code+"?\n(Ảnh vẫn giữ trong máy, tìm lại được ở Cài đặt → Tìm ảnh bị thất lạc hoặc Bản lưu tự động.)"))return;await snap(S,"Trước khi xóa item "+k.code);gone("k",k.id);S.skus=S.skus.filter(z=>z!==k);await save();V={p:"home"};render()};
   }else{const k=sku(),x=sec(),def=SEC.find(z=>z[0]===V.k);$("#ttl").textContent=def[1];if(["lbl","bar"].includes(V.k)&&!x.ph[0]?.ref)x.ph.unshift({ref:1,id:null,cap:"Approved Carton Layout"});if(!x.dn){x.dn=1;if(!x.note&&DN[V.k])x.note=DN[V.k].join("\n");save()}
     {const keep=new Set(x.ph.map(p=>p.id));for(const k in mem)if(k!=="logo"&&!keep.has(k))memDrop(k)}
     const grp=GR[V.k],sameG=(i,j)=>j>=0&&j<x.ph.length&&!x.ph[j].ref&&!!x.ph[j].up===!!x.ph[i].up,nbI=(i,d)=>{if(x.ph[i].ref)return -1;for(let j=i+d;j>=0&&j<x.ph.length;j+=d)if(sameG(i,j))return j;return -1};
@@ -1174,13 +1176,17 @@ async function syPull(only){if(!syOn()||!navigator.onLine)return 0;
 /* bản trên mây mới hơn: lấy bản mây nhưng KHÔNG làm rơi bất kỳ item / ảnh / ghi chú nào chỉ có trong máy này.
    Khớp item theo id, nếu không có thì theo MÃ item (2 máy cùng nhập 1 PO sẽ có id khác nhau). Không giới hạn 11 item khi gộp để không mất dữ liệu. */
 function mergeRep(rm,lc){const r=JSON.parse(JSON.stringify(rm)),have=new Set(),key=c=>String(c||"").trim().toLowerCase();let add=0;
+ /* những gì đã xóa ở bất kỳ máy nào thì không đưa lại */
+ const GK=new Set([...(rm.gone?.k||[]),...(lc.gone?.k||[])]),GP=new Set([...(rm.gone?.p||[]),...(lc.gone?.p||[])]);r.gone={k:[...GK].slice(-5000),p:[...GP].slice(-5000)};
+ if((lc.gone?.k||[]).some(i=>!(rm.gone?.k||[]).includes(i))||(lc.gone?.p||[]).some(i=>!(rm.gone?.p||[]).includes(i)))add++;
+ r.skus=r.skus.filter(k=>!GK.has(k.id));for(const k of r.skus)for(const x of Object.values(k.sec||{}))x.ph=(x.ph||[]).filter(p=>{if(p.id&&GP.has(p.id)){if(p.ref){p.id=null;return true}return false}return true});
  for(const k of r.skus)for(const x of Object.values(k.sec||{}))for(const p of x.ph||[])if(p.id)have.add(p.id);
  const hasData=lk=>Object.values(lk.sec||{}).some(x=>(x.ph||[]).some(p=>p.id)||String(x.note||"").trim()||Object.values(x.t||{}).some(v=>String(v||"").trim()));
- for(const lk of lc.skus||[]){let k=r.skus.find(z=>z.id===lk.id)||r.skus.find(z=>key(z.code)&&key(z.code)===key(lk.code));
-  if(!k){if(hasData(lk)){r.skus.push(JSON.parse(JSON.stringify(lk)));add++;for(const x of Object.values(lk.sec||{}))for(const p of x.ph||[])if(p.id)have.add(p.id)}continue}
+ for(const lk of lc.skus||[]){if(GK.has(lk.id))continue;let k=r.skus.find(z=>z.id===lk.id)||r.skus.find(z=>key(z.code)&&key(z.code)===key(lk.code));
+  if(!k){if(hasData(lk)){const c=JSON.parse(JSON.stringify(lk));for(const x of Object.values(c.sec||{}))x.ph=(x.ph||[]).filter(p=>!p.id||!GP.has(p.id)||p.ref);r.skus.push(c);add++;for(const x of Object.values(lk.sec||{}))for(const p of x.ph||[])if(p.id)have.add(p.id)}continue}
   for(const f of["name"])if(!k[f]&&lk[f])k[f]=lk[f];if(lk.q)k.q={...lk.q,...(k.q||{})};if(lk.f)k.f={...lk.f,...(k.f||{})};
   for(const[sk,lx]of Object.entries(lk.sec||{})){let x=k.sec[sk];if(!x){x=k.sec[sk]={...JSON.parse(JSON.stringify(lx)),ph:[]}}
-   const nw=(lx.ph||[]).filter(p=>p.id&&!have.has(p.id));for(const p of nw){x.ph.push({...p});have.add(p.id);add++}
+   const nw=(lx.ph||[]).filter(p=>p.id&&!have.has(p.id)&&!GP.has(p.id));for(const p of nw){x.ph.push({...p});have.add(p.id);add++}
    if(!String(x.note||"").trim()&&String(lx.note||"").trim()){x.note=lx.note;add++}if(lx.t)for(const[f,v]of Object.entries(lx.t))if(String(v||"").trim()&&!String(x.t?.[f]||"").trim()){(x.t||(x.t={}))[f]=v;add++}}}
  if(add)r.updated=Date.now();return{r,add}}
 /* ===== Tên báo cáo (PO#) không trùng, item không trùng ===== */
@@ -1196,7 +1202,7 @@ function mergeSku(a,b){const have=new Set();for(const x of Object.values(a.sec||
   if(!String(x.note||"").trim()&&String(bx.note||"").trim())x.note=bx.note;for(const[f,v]of Object.entries(bx.t||{}))if(String(v||"").trim()&&!String(x.t?.[f]||"").trim())(x.t||(x.t={}))[f]=v}}
 const dupItems=r=>{const g={};for(const k of r.skus){const c=nk(k.code);(g[c]||(g[c]=[])).push(k)}return Object.values(g).filter(a=>a.length>1)};
 async function fixDupItems(){const D=dupItems(S);if(!D.length)return;await snap(S,"Trước khi gộp item trùng mã");
- for(const grp of D){const cnt=k=>Object.values(k.sec||{}).reduce((a,x)=>a+(x.ph||[]).filter(p=>p.id).length,0);grp.sort((p,q)=>cnt(q)-cnt(p));const base=grp[0];for(const o of grp.slice(1)){mergeSku(base,o);S.skus=S.skus.filter(z=>z!==o)}}
+ for(const grp of D){const cnt=k=>Object.values(k.sec||{}).reduce((a,x)=>a+(x.ph||[]).filter(p=>p.id).length,0);grp.sort((p,q)=>cnt(q)-cnt(p));const base=grp[0];for(const o of grp.slice(1)){mergeSku(base,o);gone("k",o.id);S.skus=S.skus.filter(z=>z!==o)}}
  await save();render();toast("✓ Đã gộp các item trùng mã")}
 /* gộp các báo cáo trùng PO# thành 1 (giữ toàn bộ ảnh) */
 async function mergeReports(po){const L=(await allReports()).filter(r=>nk(r.cover?.po)===nk(po)).sort((a,b)=>b.updated-a.updated);if(L.length<2)return;
