@@ -175,7 +175,7 @@ label.b input,.pk input{position:absolute;left:0;top:0;width:100%;height:100%;op
 <div id="net" hidden></div><main id="app"></main><div id="print"></div>
 <script>
 const SEC=[["box","Box Selection","Chọn thùng"],["pack","Packaging Check","Kiểm tra thùng / chất lượng in"],["wt","Weight Check","Kiểm tra cân nặng"],["psz","Package Measurements","Kích thước thùng"],["lbl","Package Labels","Tem thùng"],["bar","Barcode Check","Kiểm tra mã vạch"],["mat","Package Materials","Vật liệu đóng gói"],["cmp","Components Check","Kiểm tra chi tiết rời"],["man","Manual Check","Hướng dẫn lắp ráp"],["moi","Moisture Check","Kiểm tra độ ẩm"],["col","Color Check","Kiểm tra màu"],["fit","Materials / Fittings","Kiểm vật tư"],["asm","Assembly on Site","Kiểm tra lắp ráp"],["psize","Product Measurement","Kích thước sản phẩm"],["pph","Product Photos","Hình sản phẩm"],["def","Defects Found","Lỗi tìm thấy"]];
-const APPV="v40";const $=s=>document.querySelector(s);
+const APPV="v43";const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 let db,S,V={p:"list"},mem={};
@@ -207,13 +207,16 @@ function comp(f){return new Promise(res=>{if(!f)return res(null);const u=URL.cre
 /* chuyển ảnh cũ (base64) sang Blob, chạy ngầm từng ảnh một */
 async function migrateImgs(){try{for(const k of await idbKeys("i")){if(String(k).startsWith("t:"))continue;const v=await idbGet("i",k);if(typeof v==="string"&&v.startsWith("data:"))await idbRun("i","readwrite",s=>{s.put(d2b(v),k)}).catch(()=>{});await new Promise(r=>setTimeout(r,5))}}catch(e){}}
 const DAYS=()=>{try{return +localStorage.getItem("fir_days")||10}catch(e){return 10}};
+/* bản đã đồng bộ lần cuối (để so sánh khi đồng bộ) — bọc trong {base} để không bị lẫn vào danh sách báo cáo */
+const bGet=async id=>{const v=await idbGet("m","b:"+id);return v&&v.base?v.base:v},bPut=(id,r)=>idbPut("m","b:"+id,{base:r});
+async function bFix(){try{for(const k of await idbKeys("m"))if(String(k).startsWith("b:")){const v=await idbGet("m",k);if(v&&!v.base&&v.skus)await idbPut("m",k,{base:v})}}catch(e){}}
 const allReports=()=>idbRun("m","readonly",s=>s.getAll()).then(r=>(r||[]).filter(x=>x&&x.id&&x.skus),()=>[]);
-async function delReport(r,local){for(const k of r.skus)for(const x of Object.values(k.sec))for(const p of x.ph)if(p.id)await delImg(p.id);await idbDel("m","r:"+r.id);for(const k of await idbKeys("m"))if(String(k).startsWith("snap:"+r.id+":"))await idbDel("m",k);if(!local)syMark(r.id,1)}
+async function delReport(r,local){for(const k of r.skus)for(const x of Object.values(k.sec))for(const p of x.ph)if(p.id)await delImg(p.id);await idbDel("m","r:"+r.id);await idbDel("m","b:"+r.id);for(const k of await idbKeys("m"))if(String(k).startsWith("snap:"+r.id+":"))await idbDel("m",k);if(!local)syMark(r.id,1)}
 async function openReport(id){S=await idbGet("m","r:"+id);if(S){const ks=(await idbKeys("m")).filter(x=>String(x).startsWith("snap:"+id+":")).sort(),last=ks.length?+String(ks[ks.length-1]).split(":")[2]:0;if(Date.now()-last>18e5)await snap(S,"Khi mở báo cáo")}if(!S){if(syOn())try{await syPull(id);S=await idbGet("m","r:"+id)}catch(e){}if(!S)return render()}V={p:"home"};render();scrollTo(0,0);
  if(syOn()&&navigator.onLine)syPull(id).then(async ch=>{if(!ch||!S||S.id!==id||Object.keys(dq()).includes(id))return;const n=await idbGet("m","r:"+id);if(n&&n.updated>S.updated){S=n;if(V.p!=="sec")render();toast("Đã cập nhật bản mới từ máy khác")}}).catch(()=>{})}
 async function renderList(a){$("#ttl").textContent="Báo cáo của tôi";const rs=(await allReports()).sort((x,y)=>y.updated-x.updated),D=DAYS();
  a.innerHTML=`<div class=c><button class="b y" id=nr style="width:100%">＋ Tạo báo cáo mới</button><p class=tip>Báo cáo và ảnh <b>không bao giờ tự xóa</b>. Báo cáo quá ${D} ngày chưa sửa sẽ được đánh dấu đỏ để bạn sao lưu rồi tự xóa khi máy đầy.</p></div>`+(rs.map(r=>{const age=Math.floor((Date.now()-r.updated)/864e5),old=age>=D,bk=r.bk&&r.bk>=r.updated,st=[old?`Đã ${age} ngày chưa sửa`:"",syOn()?"":bk?"✓ đã sao lưu":"chưa sao lưu bản mới nhất"].filter(Boolean).join(" · ");const dupN=rs.filter(z=>nk(z.cover.po)&&nk(z.cover.po)===nk(r.cover.po)).length;return`<div class="c rp" data-o="${r.id}"><div class=t><b>${esc(r.cover.po||"(chưa có PO)")}</b>${dupN>1?` <span class=n style="background:#c0392b;color:#fff">⚠ trùng tên</span> <button class="b y" data-mg="${esc(r.cover.po)}" style="padding:4px 8px;font-size:12px">Gộp ${dupN} báo cáo</button>`:""}${r.cover.cust?" · "+esc(r.cover.cust):""}<small>${r.skus.length} SKU · sửa ${new Date(r.updated).toLocaleString("vi-VN")}</small><small style="color:${old?"var(--bad)":"var(--mut)"}">${st}</small></div><button class="b x" data-d="${r.id}">Xóa</button></div>`}).join("")||'<p class=tip>Chưa có báo cáo nào.</p>')+`<div class=c><h2>Cài đặt <small style="font-weight:400;color:var(--mut)">· phiên bản ${APPV}</small></h2><p class=tip id=stg>Đang đo dung lượng…</p><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type=checkbox id=hqo style="width:auto" ${hiOn()?"checked":""}> Lưu thêm ảnh gốc 4032×3024 (tốn gấp ~3 lần bộ nhớ)</label><button class="b g" id=orf style="width:100%;margin:8px 0">🔎 Tìm ảnh bị thất lạc</button><label>Đánh dấu báo cáo cũ sau (ngày)</label><input type=number min=1 id=dy value=${D}><label class="b g" style="margin-top:10px">Khôi phục báo cáo từ file sao lưu (.zip / .json)<input type=file accept=".zip,.json,application/zip,application/json" id=rsf></label></div>${syCard()}`;syBind(a);
- $("#nr").onclick=async()=>{if(syOn()&&navigator.onLine){busyMsg("Đang kiểm tra báo cáo trên các máy khác…");try{await syPull()}catch(e){}busyEnd()}const po=await askPO();if(!po)return;S=blank();S.cover.po=po;if(rs[0])S.cfg={...rs[0].cfg};await save();V={p:"home"};render()};
+ $("#nr").onclick=async()=>{const po=await askPO();if(!po)return;S=blank();S.cover.po=po;if(rs[0])S.cfg={...rs[0].cfg};await save();V={p:"home"};render()};
  a.querySelectorAll("[data-o]").forEach(e=>e.onclick=()=>openReport(e.dataset.o));a.querySelectorAll("[data-mg]").forEach(e=>e.onclick=ev=>{ev.stopPropagation();mergeReports(e.dataset.mg)});
  storageUI();$("#orf").onclick=findLost;$("#hqo").onchange=async e=>{const v=e.target.checked?"1":"0";for(const r of await allReports()){r.cfg={...(r.cfg||{}),hq:v};await idbPut("m","r:"+r.id,r)}if(S){S.cfg={...(S.cfg||{}),hq:v}}toast(v==="1"?"Đã bật lưu ảnh gốc":"Đã tắt lưu ảnh gốc — tiết kiệm bộ nhớ")};
  a.querySelectorAll("[data-d]").forEach(e=>e.onclick=async ev=>{ev.stopPropagation();const r=rs.find(z=>z.id===e.dataset.d);if(confirm("Xóa báo cáo "+(r.cover.po||"này")+" và toàn bộ ảnh?")){await delReport(r);render()}});
@@ -1144,8 +1147,11 @@ const syPath=id=>encodeURIComponent(SY.c.code)+"/"+encodeURIComponent(id)+".jpg"
 const dq=()=>{try{return JSON.parse(localStorage.getItem("fir_dirty")||"{}")}catch(e){return{}}},dqS=o=>{try{localStorage.setItem("fir_dirty",JSON.stringify(o))}catch(e){}};
 let syBusy=0,syLast=(()=>{try{return localStorage.getItem("fir_sylast")||""}catch(e){return""}})();
 function syMsg(t,ok){if(ok){syLast=t;try{localStorage.setItem("fir_sylast",t)}catch(e){}}const e=document.getElementById("sys");if(e)e.textContent=t}
-function syMark(id,del){if(!syOn()||!id)return;const o=dq();o[id]=(del?"d":"u")+Date.now();dqS(o);netUI();clearTimeout(syMark.t);syMark.t=setTimeout(syPush,2500)}
-function netUI(){const e=document.getElementById("net");if(!e)return;const n=syOn()?Object.keys(dq()).length:0,off=!navigator.onLine;if(off){e.hidden=false;e.className="";e.textContent="📴 Đang offline — mọi thay đổi vẫn được lưu trong máy"+(n?` · ${n} báo cáo chờ đồng bộ`:syOn()?"":"")}else if(n){e.hidden=false;e.className="on";e.textContent=`⏳ Đang đồng bộ ${n} báo cáo…`}else e.hidden=true}
+function syMark(id,del){if(!syOn()||!id)return;const o=dq();o[id]=(del?"d":"u")+Date.now();dqS(o);netUI()}/* v43: chỉ đánh dấu — đồng bộ khi người dùng bấm */
+const SYC={n:0};
+function netUI(){const e=document.getElementById("net");if(!e)return;const on=syOn(),n=on?Object.keys(dq()).length:0,off=!navigator.onLine;e.onclick=on?()=>syManual():null;e.style.cursor=on?"pointer":"";
+ if(off){e.hidden=false;e.className="";e.textContent="📴 Đang offline — mọi thay đổi vẫn được lưu trong máy"+(n?` · ${n} báo cáo chưa đồng bộ`:"")}
+ else if(on){e.hidden=false;e.className=n||SYC.n?"":"on";e.textContent=(n?`⬆ ${n} báo cáo trên máy này chưa đồng bộ`:"")+(n&&SYC.n?" · ":"")+(SYC.n?`⬇ ${SYC.n} báo cáo có bản mới trên mây`:"")+(n||SYC.n?" — bấm để đồng bộ":"☁ Bấm vào đây để đồng bộ")}else e.hidden=true}
 addEventListener("online",netUI);addEventListener("offline",netUI);
 const imgIds=r=>{const a=[];for(const k of r.skus||[])for(const x of Object.values(k.sec||{}))for(const p of x.ph||[])if(p.id)a.push(p.id);if(r.cfg&&r.cfg.logo)a.push("logo");return a};
 async function syErr(r,w){let t="";try{t=(await r.text()).slice(0,160)}catch(e){}return new Error(w+" (lỗi "+r.status+") "+t)}
@@ -1160,19 +1166,127 @@ async function syPush(){if(!syOn()||syBusy)return;if(!navigator.onLine){netUI();
    if(tk[0]==="d"){try{const g=await fetch(syU("/rest/v1/reports?id=eq."+encodeURIComponent(id)+"&select=data"),{headers:syH()});const[x]=g.ok?await g.json():[];const used=new Set();for(const r of await allReports())for(const i of imgIds(r))used.add(i);const ps=x&&x.data?imgIds(x.data).filter(i=>i!=="logo"&&!used.has(i)).map(syPath).map(decodeURIComponent):[];
      if(ps.length)await fetch(syU("/storage/v1/object/photos"),{method:"DELETE",headers:syH(1),body:JSON.stringify({prefixes:ps})})}catch(e){}
     await syRow({id,data:null,updated:Date.now(),deleted:true})}
-   else{const r=await idbGet("m","r:"+id);if(r){const ids=imgIds(r);let k=0;for(const i of ids){while(document.querySelector(".cam"))await new Promise(r=>setTimeout(r,3000));syMsg("Đang tải ảnh lên… "+(++k)+"/"+ids.length);await syImgUp(i);await new Promise(r=>setTimeout(r,60))}await syRow({id,data:r,updated:r.updated,deleted:false})}}
+   else{let r=await idbGet("m","r:"+id);if(r&&editing(id))continue;if(r){const t0=r.updated,base=await bGet(id);
+     /* có máy khác đã đẩy bản mới từ lần đồng bộ trước → gộp 3 chiều trước khi ghi, không ghi đè mù */
+     const g=await fetch(syU("/rest/v1/reports?id=eq."+encodeURIComponent(id)+"&select=updated,deleted"),{headers:syH()});const[w]=g.ok?await g.json():[];
+     if(w&&!w.deleted&&(!base||+w.updated!==+base.updated)){const g2=await fetch(syU("/rest/v1/reports?id=eq."+encodeURIComponent(id)+"&select=data"),{headers:syH()});const[x]=g2.ok?await g2.json():[];
+      if(x&&x.data&&x.data.skus){const cur=await idbGet("m","r:"+id);if(!cur||cur.updated!==t0||(S&&S.id===id&&J3(S)!==J3(cur)))continue;/* đang sửa dở → để lượt sau */
+       await snap(cur,"Trước khi gộp với bản trên mây");const mg=merge3(base,cur,x.data);mg.updated=Date.now();const c2=await idbGet("m","r:"+id);if(J3(c2)!==J3(cur)||(S&&S.id===id&&J3(S)!==J3(cur)))continue;
+       if(S&&S.id===id){S=mg;LIVE.n=1}await idbPut("m","r:"+id,mg);r=mg;liveRender()}}
+     const ids=imgIds(r);let k=0;for(const i of ids){while(document.querySelector(".cam"))await new Promise(r=>setTimeout(r,3000));syMsg("Đang tải ảnh lên… "+(++k)+"/"+ids.length);await syImgUp(i);await new Promise(r=>setTimeout(r,60))}await syRow({id,data:r,updated:r.updated,deleted:false});await bPut(id,CP3(r))}}
    const o2=dq();if(o2[id]===tk){delete o2[id];dqS(o2)}}
   syMsg("✓ Đã đồng bộ lúc "+new Date().toLocaleTimeString("vi-VN"),1)}
  catch(e){syMsg("⚠ Chưa đồng bộ được: "+(e&&e.message||e)+" — sẽ tự thử lại")}syBusy=0;netUI()}
+const snapT={},LIVE={n:0,wait:0};
+/* đang gõ chữ / chụp ảnh / sửa ảnh trong báo cáo này → chưa gộp, đợi xong rồi mới đồng bộ */
+let lastIn=0;document.addEventListener("input",()=>lastIn=Date.now(),true);document.addEventListener("keydown",()=>lastIn=Date.now(),true);
+const busyUI=()=>{const ae=document.activeElement;return!!(document.querySelector(".cam,.ed,.vw,.shs")||(ae&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)&&Date.now()-lastIn<8000))};
+const editing=id=>!!S&&S.id===id&&busyUI();
+/* rời app (khóa máy / chuyển app) → đẩy ngay những gì vừa gõ */
+const leave=()=>{if(document.visibilityState==="hidden"){lastIn=0;try{syPush()}catch(e){}}};
+/* vẽ lại màn hình khi máy khác vừa sửa — không vẽ khi đang gõ chữ / đang chụp / đang sửa ảnh */
+function liveRender(){if(!LIVE.n)return;if(busyUI()){if(!LIVE.wait){LIVE.wait=1;setTimeout(()=>{LIVE.wait=0;liveRender()},1500)}return}
+ LIVE.n=0;const y=scrollY;try{render()}catch(e){}requestAnimationFrame(()=>scrollTo(0,y));toast("↻ Đã cập nhật thay đổi từ máy khác")}
+/* ===== v43: ĐỒNG BỘ THỦ CÔNG — chỉ chạy khi bấm, xem trước + xác nhận ===== */
+/* so sánh nội dung thật: bỏ qua phần app tự điền khi chỉ MỞ một mục (ghi chú mặc định, ô Approved Carton Layout trống, cờ dn) */
+const body3=r=>{if(!r)return"";const{updated,...o}=CP3(r);for(const k of o.skus||[]){for(const key of Object.keys(k.sec||{})){const x=k.sec[key];if(!x||typeof x!=="object")continue;delete x.dn;
+   x.ph=(x.ph||[]).filter(p=>!(p.ref&&!p.id));const dn=(DN[key]||[]).join("\n");if((x.note||"")===dn)x.note="";if(x.t&&!Object.values(x.t).some(v=>String(v||"").trim()))delete x.t;
+   if(!x.ph.length&&!x.note&&!x.t&&Object.keys(x).every(f=>f==="ph"||f==="note"))delete k.sec[key]}}return J3(o)};
+async function syRows(){const r=await fetch(syU("/rest/v1/reports?code=eq."+encodeURIComponent(SY.c.code)+"&select=id,updated,deleted"),{headers:syH()});if(!r.ok)throw await syErr(r,"Không đọc được dữ liệu trên mây");return r.json()}
+async function syData(id){const g=await fetch(syU("/rest/v1/reports?id=eq."+encodeURIComponent(id)+"&select=data"),{headers:syH()});if(!g.ok)throw await syErr(g,"Không tải được báo cáo");const[x]=await g.json();return x&&x.data&&x.data.skus?x.data:null}
+/* chỉ xem trên mây có gì mới để báo ở thanh trên cùng — KHÔNG thay đổi dữ liệu */
+async function syCheck(){if(!syOn()||!navigator.onLine)return;try{const o=dq();for(const id of Object.keys(o))if(o[id][0]==="u"){const l=await idbGet("m","r:"+id),b=await bGet(id);if(l&&b&&body3(l)===body3(b))delete o[id]}dqS(o);const rows=await syRows();let n=0;for(const w of rows){const loc=await idbGet("m","r:"+w.id),base=await bGet(w.id);
+  if(w.deleted){if(loc&&base)n++;continue}if(!loc){if(!(dq()[w.id]||"").startsWith("d"))n++;continue}if(!base||+w.updated!==+base.updated)n++}SYC.n=n;netUI()}catch(e){}}
+const syInfo=r=>r?`${r.skus.length} item · ${phCount(r)} ảnh · sửa ${new Date(r.updated).toLocaleString("vi-VN")}`:"";
+async function syManual(only){if(!syOn())return alert("Chưa kết nối đồng bộ. Vào Cài đặt để kết nối.");if(!navigator.onLine)return alert("Đang offline. Có mạng rồi bấm đồng bộ lại.");if(syManual.on)return;syManual.on=1;
+ const m=document.createElement("div");m.className="sym";m.style.cssText="position:fixed;inset:0;background:#000a;z-index:99;display:grid;place-items:center;padding:16px";
+ m.innerHTML=`<div class=c style="max-width:560px;width:100%;max-height:88vh;overflow:auto"><h2>Đồng bộ</h2><p class=tip id=smw>Đang so sánh máy này với bản trên mây…</p></div>`;document.body.append(m);const box=m.firstChild,close=()=>{m.remove();syManual.on=0;netUI()};
+ try{if(S&&document.activeElement&&document.activeElement.blur)document.activeElement.blur();
+  const rows=await syRows(),o=dq(),W=new Map(rows.map(w=>[w.id,w])),L=[];
+  for(const r of await allReports())if(!W.has(r.id))W.set(r.id,null);for(const id of Object.keys(o))if(!W.has(id))W.set(id,null);
+  for(const[id,w]of W){if(only&&id!==only)continue;const loc=await idbGet("m","r:"+id),base=await bGet(id),del=(o[id]||"").startsWith("d");let it=null;
+   const name=r=>(r&&r.cover&&r.cover.po)||"(chưa có PO#)";
+   if(del&&!loc){if(w&&!w.deleted){const R=await syData(id).catch(()=>null);it={id,name:(R?name(R):"Báo cáo")+" — đã xóa trên máy này",R,opts:["delc","down","skip"],def:"delc"}}else{delete o[id];dqS(o)}}
+   else if(loc&&!w)it={id,name:name(loc),loc,opts:["up","skip"],def:"up"};
+   else if(loc&&w.deleted)it={id,name:name(loc),loc,cloudDel:1,opts:["dell","up","skip"],def:base&&body3(loc)===body3(base)?"dell":"up"};
+   else if(!loc&&w&&!w.deleted){const R=await syData(id);if(R)it={id,name:name(R),R,opts:["down","skip"],def:"down"}}
+   else if(loc&&w){const lc=!base||body3(loc)!==body3(base),cc=!base||+w.updated!==+base.updated;if(!lc&&!cc)continue;
+    const R=cc?await syData(id):null;if(cc&&!R)continue;
+    if(!base&&R&&body3(R)===body3(loc)){await bPut(id,CP3(R));delete o[id];dqS(o);continue}/* đã giống nhau */
+    if(lc&&!cc)it={id,name:name(loc),loc,opts:["up","skip"],def:"up"};
+    else if(!lc&&cc)it={id,name:name(R),loc,R,opts:["down","skip"],def:"down"};
+    else it={id,name:name(loc),loc,R,both:1,opts:["up","down","mg","skip"],def:base?"up":(+R.updated>+loc.updated?"down":"up")}}
+   if(it)L.push(it)}
+  if(!L.length){box.innerHTML=`<h2>Đồng bộ</h2><p>✓ Máy này và bản trên mây đã giống nhau, không có gì cần đồng bộ.</p><p><button class="b g" id=smx style="width:100%">Đóng</button></p>`;box.querySelector("#smx").onclick=close;SYC.n=0;dqS({});syMsg("✓ Đã đồng bộ lúc "+new Date().toLocaleTimeString("vi-VN"),1);return}
+  const T={up:"⬆ Dùng bản MÁY NÀY (gửi lên)",down:"⬇ Dùng bản TRÊN MÂY (tải về)",mg:"⇅ Gộp cả hai máy",delc:"🗑 Xóa luôn trên mây",dell:"🗑 Xóa khỏi máy này",skip:"Để sau"};
+  box.innerHTML=`<h2>Đồng bộ — xác nhận</h2><p class=tip>Kiểm tra từng báo cáo rồi bấm <b>Xác nhận đồng bộ</b>. Bản bị thay thế vẫn được lưu lại (Bản lưu tự động).</p>
+   ${L.map((x,i)=>`<div class=c style="margin:8px 0;padding:10px"><b>${esc(x.name)}</b>
+    ${x.both?`<div style="color:#ffb454;font-size:13px">⚠ Cả máy này và máy khác đều đã sửa báo cáo này</div>`:""}${x.cloudDel?`<div style="color:#ffb454;font-size:13px">⚠ Máy khác đã xóa báo cáo này</div>`:""}
+    ${x.loc?`<div class=tip>Máy này: ${syInfo(x.loc)}</div>`:""}${x.R?`<div class=tip>Trên mây: ${syInfo(x.R)}</div>`:""}
+    <select data-sa="${i}" style="width:100%;margin-top:6px">${x.opts.map(k=>`<option value=${k}${k===x.def?" selected":""}>${T[k]}</option>`).join("")}</select></div>`).join("")}
+   <p class=tip id=smw></p><div class=r><button class="b g" id=smx>Hủy</button><button class="b y" id=smo>✓ Xác nhận đồng bộ</button></div>`;
+  box.querySelector("#smx").onclick=close;
+  box.querySelector("#smo").onclick=async()=>{const act=L.map((x,i)=>box.querySelector(`[data-sa="${i}"]`).value);
+   const risky=L.filter((x,i)=>act[i]==="down"&&x.loc&&x.loc&&(o[x.id]||"")).length+L.filter((x,i)=>act[i]==="up"&&x.both).length+L.filter((x,i)=>act[i]==="dell"||act[i]==="delc").length;
+   if(risky&&!confirm("Có báo cáo sẽ bị THAY THẾ hoặc XÓA (máy này hoặc trên mây). Bản cũ vẫn được lưu trong Bản lưu tự động.\nTiếp tục đồng bộ?"))return;
+   box.querySelectorAll("button,select").forEach(b=>b.disabled=true);const msg=t=>{const e=box.querySelector("#smw");if(e)e.textContent=t};let ok=0,bad=[];
+   for(let i=0;i<L.length;i++){const x=L[i],a=act[i];if(a==="skip")continue;msg(`Đang đồng bộ ${i+1}/${L.length}: ${x.name}…`);
+    try{await syApply(x,a,msg);ok++;const o2=dq();delete o2[x.id];dqS(o2)}catch(e){bad.push(x.name+": "+(e&&e.message||e))}}
+   await syCheck();if(V.p!=="list"&&S){const n=await idbGet("m","r:"+S.id);if(n)S=n;else{V={p:"list"};S=blank()}}render();
+   box.innerHTML=`<h2>Đồng bộ</h2><p>${bad.length?"⚠ Có lỗi:<br>"+bad.map(esc).join("<br>"):"✓ Đã đồng bộ xong "+ok+" báo cáo."}</p><p><button class="b g" id=smx style="width:100%">Đóng</button></p>`;box.querySelector("#smx").onclick=close;
+   syMsg((bad.length?"⚠ Đồng bộ chưa xong lúc ":"✓ Đã đồng bộ lúc ")+new Date().toLocaleTimeString("vi-VN"),!bad.length)}}
+ catch(e){box.innerHTML=`<h2>Đồng bộ</h2><p>⚠ ${esc(e&&e.message||String(e))}</p><p><button class="b g" id=smx style="width:100%">Đóng</button></p>`;box.querySelector("#smx").onclick=close}}
+async function syUp(r,msg){const ids=imgIds(r);let k=0;for(const i of ids){msg&&msg(`Đang tải ảnh lên… ${++k}/${ids.length}`);await syImgUp(i)}
+ await syRow({id:r.id,data:r,updated:r.updated,deleted:false});await bPut(r.id,CP3(r))}
+async function syApply(x,a,msg){const id=x.id;
+ if(a==="up"){const r=await idbGet("m","r:"+id);if(!r)return;r.updated=Date.now();await idbPut("m","r:"+id,r);if(S&&S.id===id)S=r;await syUp(r,msg)}
+ else if(a==="mg"){const loc=await idbGet("m","r:"+id),base=await bGet(id),R=await syData(id);if(!R)return syApply(x,"up",msg);await snap(loc,"Trước khi gộp đồng bộ");
+  const mg=base?merge3(base,loc,R):mergeRep(R,loc).r;mg.updated=Date.now();await idbPut("m","r:"+id,mg);if(S&&S.id===id)S=mg;await syUp(mg,msg)}
+ else if(a==="down"){const R=await syData(id);if(!R)throw new Error("trên mây không còn báo cáo này");const loc=await idbGet("m","r:"+id);if(loc)await snap(loc,"Trước khi lấy bản trên mây");
+  const ids=imgIds(R);let k=0;for(const i of ids){if(i==="logo")continue;msg&&msg(`Đang tải ảnh về… ${++k}/${ids.length}`);if(!asBlob(await idbGet("i",i)))await syImgDown(i)}
+  await idbPut("m","r:"+id,R);await bPut(id,CP3(R));if(S&&S.id===id)S=R}
+ else if(a==="dell"){const loc=await idbGet("m","r:"+id);if(loc){await snap(loc,"Trước khi xóa theo máy khác");await delReport(loc,1)}}
+ else if(a==="delc"){try{const R=await syData(id);const used=new Set();for(const r of await allReports())for(const i of imgIds(r))used.add(i);const ps=R?imgIds(R).filter(i=>i!=="logo"&&!used.has(i)).map(syPath).map(decodeURIComponent):[];
+   if(ps.length)await fetch(syU("/storage/v1/object/photos"),{method:"DELETE",headers:syH(1),body:JSON.stringify({prefixes:ps})})}catch(e){}
+  await syRow({id,data:null,updated:Date.now(),deleted:true});await idbDel("m","b:"+id)}}
 async function syPull(only){if(!syOn()||!navigator.onLine)return 0;
  const r=await fetch(syU("/rest/v1/reports?code=eq."+encodeURIComponent(SY.c.code)+(only?"&id=eq."+encodeURIComponent(only):"")+"&select=id,updated,deleted"),{headers:syH()});if(!r.ok)throw await syErr(r,"Không đọc được dữ liệu trên mây");
  const rows=await r.json(),o=dq();let ch=0;
- for(const w of rows){if(o[w.id])continue;const loc=await idbGet("m","r:"+w.id);
+ for(const w of rows){const loc=await idbGet("m","r:"+w.id),base=await bGet(w.id);if(o[w.id]&&loc||editing(w.id))continue;/* máy này có thay đổi chưa đẩy: lượt đẩy sẽ tự gộp */
   if(w.deleted){if(loc){await delReport(loc,1);ch++}continue}
-  if(loc&&loc.updated>=w.updated)continue;
+  if(loc&&(base?+base.updated===+w.updated:loc.updated>=w.updated))continue;
   const g=await fetch(syU("/rest/v1/reports?id=eq."+encodeURIComponent(w.id)+"&select=data"),{headers:syH()});if(!g.ok)continue;const[x]=await g.json();
-  if(x&&x.data&&x.data.skus){if(loc)await snap(loc,"Trước khi nhận bản đồng bộ");const mg=loc?mergeRep(x.data,loc):{r:x.data,add:0};await idbPut("m","r:"+w.id,mg.r);if(mg.add)syMark(w.id);ch++}}
+  if(x&&x.data&&x.data.skus){if(editing(w.id)||loc&&S&&S.id===w.id&&J3(S)!==J3(loc))continue;/* đang có chữ chưa lưu → lượt sau */
+   if(loc&&Date.now()-(snapT[w.id]||0)>300000){snapT[w.id]=Date.now();await snap(loc,"Trước khi nhận bản đồng bộ")}
+   let mr;if(!loc)mr=x.data;else if(base)mr=merge3(base,loc,x.data);else mr=mergeRep(x.data,loc).r;
+   const mine=!!loc&&(J3(mr.skus)!==J3(x.data.skus)||J3(mr.cover)!==J3(x.data.cover));if(mine)mr.updated=Date.now();
+   const now=await idbGet("m","r:"+w.id);if(J3(now)!==J3(loc)||(loc&&S&&S.id===w.id&&J3(S)!==J3(loc)))continue;/* vừa sửa trong lúc tải → lượt sau */
+   if(S&&S.id===w.id){S=mr;LIVE.n=1}await idbPut("m","r:"+w.id,mr);await bPut(w.id,CP3(x.data));if(mine)syMark(w.id);ch++}}
  return ch}
+/* ===== Gộp 3 chiều: base = bản đã đồng bộ lần trước, L = máy này, R = trên mây.
+   Chỗ nào máy này đã sửa so với base thì giữ của máy này, chỗ nào chưa sửa thì lấy bản trên mây.
+   Nhờ vậy: xóa ảnh / sửa chữ ở máy tính không bị điện thoại (bản cũ) ghi đè, và ngược lại. ===== */
+const J3=x=>JSON.stringify(x===undefined?null:x),CP3=x=>x==null?x:JSON.parse(JSON.stringify(x));
+const pick3=(b,l,r)=>J3(l)!==J3(b)?CP3(l):CP3(r);
+function obj3(b,l,r,skip){b=b||{};l=l||{};r=r||{};const o={};for(const k of new Set([...Object.keys(b),...Object.keys(l),...Object.keys(r)])){if(skip&&skip.includes(k))continue;const v=pick3(b[k],l[k],r[k]);if(v!==undefined&&v!==null||(k in r)||(k in l&&J3(l[k])!==J3(b[k])))o[k]=v}return o}
+function ph3(b,l,r){b=b||[];l=l||[];r=r||[];if(J3(l)===J3(b))return CP3(r);if(J3(r)===J3(b))return CP3(l);
+ const bi=new Map(b.filter(p=>p.id).map(p=>[p.id,p])),li=new Map(l.filter(p=>p.id).map(p=>[p.id,p])),out=[];
+ const ref=pick3(b.find(p=>p.ref),l.find(p=>p.ref),r.find(p=>p.ref));if(ref)out.push(ref);
+ for(const p of r){if(p.ref)continue;if(p.id&&bi.has(p.id)&&!li.has(p.id))continue;out.push(p.id&&li.has(p.id)?obj3(bi.get(p.id),li.get(p.id),p):CP3(p))}
+ const have=new Set(out.map(p=>p.id).filter(Boolean)),rIds=new Set(r.map(p=>p.id).filter(Boolean));
+ for(const p of l){if(p.ref||!p.id||have.has(p.id))continue;if(bi.has(p.id)&&!rIds.has(p.id))continue;out.push(CP3(p));have.add(p.id)}return out}
+function sec3(b,l,r){if(J3(l)===J3(b))return CP3(r);if(J3(r)===J3(b))return CP3(l);const o=obj3(b,l,r,["ph","t"]);o.t=obj3(b?.t,l?.t,r?.t);o.ph=ph3(b?.ph,l?.ph,r?.ph);return o}
+function sku3(b,l,r){if(J3(l)===J3(b))return CP3(r);if(J3(r)===J3(b))return CP3(l);const o=obj3(b,l,r,["sec","q","f","d"]);o.q=obj3(b?.q,l?.q,r?.q);o.f=obj3(b?.f,l?.f,r?.f);o.d=pick3(b?.d,l?.d,r?.d)||[0,0,0];o.sec={};
+ for(const k of new Set([...Object.keys(b?.sec||{}),...Object.keys(l?.sec||{}),...Object.keys(r?.sec||{})])){const bs=b?.sec?.[k],ls=l?.sec?.[k],rs=r?.sec?.[k];
+  if(!ls&&bs)continue;if(!rs&&bs&&J3(ls)===J3(bs))continue;o.sec[k]=ls&&rs?sec3(bs,ls,rs):CP3(ls||rs)}return o}
+function merge3(B,L,R){if(!B)return mergeRep(R,L).r;if(J3(L)===J3(B))return CP3(R);if(J3(R)===J3(B))return CP3(L);
+ const out=obj3(B,L,R,["skus","cover","cfg","gone"]);out.cover=obj3(B.cover,L.cover,R.cover);out.cfg=obj3(B.cfg,L.cfg,R.cfg);
+ out.gone={k:[...new Set([...(R.gone?.k||[]),...(L.gone?.k||[])])].slice(-5000),p:[...new Set([...(R.gone?.p||[]),...(L.gone?.p||[])])].slice(-5000)};
+ const m=a=>new Map((a||[]).map(k=>[k.id,k])),bS=m(B.skus),lS=m(L.skus),rS=m(R.skus),key=c=>String(c||"").trim().toLowerCase(),sk=[];
+ for(const r of R.skus||[]){const b=bS.get(r.id),l=lS.get(r.id);if(b&&!l)continue;sk.push(l?sku3(b,l,r):CP3(r))}
+ for(const l of L.skus||[]){if(rS.has(l.id))continue;const b=bS.get(l.id);if(b&&J3(l)===J3(b))continue;/* trên mây đã xóa, máy này không sửa */
+  const same=sk.find(z=>key(z.code)&&key(z.code)===key(l.code));if(same&&!b){mergeSku(same,l);continue}sk.push(CP3(l))}
+ out.skus=sk;out.updated=Math.max(+L.updated||0,+R.updated||0,Date.now());return out}
 /* bản trên mây mới hơn: lấy bản mây nhưng KHÔNG làm rơi bất kỳ item / ảnh / ghi chú nào chỉ có trong máy này.
    Khớp item theo id, nếu không có thì theo MÃ item (2 máy cùng nhập 1 PO sẽ có id khác nhau). Không giới hạn 11 item khi gộp để không mất dữ liệu. */
 function mergeRep(rm,lc){const r=JSON.parse(JSON.stringify(rm)),have=new Set(),key=c=>String(c||"").trim().toLowerCase();let add=0;
@@ -1224,23 +1338,23 @@ async function snapUI(){const ks=(await idbKeys("m")).filter(x=>String(x).starts
  m.querySelector("#snx").onclick=()=>m.remove();
  m.querySelectorAll("[data-sn]").forEach(e=>e.onclick=async()=>{const v=L[+e.dataset.sn][1];if(!confirm(`Quay lại bản lúc ${new Date(v.at).toLocaleString("vi-VN")} (${v.r.skus.length} item · ${phCount(v.r)} ảnh)?\nBản hiện tại cũng được lưu lại để có thể quay lại.`))return;
   await snap(S,"Trước khi khôi phục bản lưu");const id=S.id;S=JSON.parse(JSON.stringify(v.r));S.id=id;await save();m.remove();render();toast("✓ Đã khôi phục bản lưu tự động")})}
-async function syNow(show){if(!syOn())return;try{await syPush();const ch=await syPull();if(!dq()||!Object.keys(dq()).length)syMsg("✓ Đã đồng bộ lúc "+new Date().toLocaleTimeString("vi-VN")+(ch?" · nhận "+ch+" thay đổi":""),1);if(ch&&S&&V.p!=="list"&&!dq()[S.id]){const n=await idbGet("m","r:"+S.id);if(n&&n.updated>S.updated){S=n;if(!document.querySelector(".cam,.ed,.vw"))render()}}if(ch&&V.p==="list")render()}catch(e){syMsg("⚠ "+(e&&e.message||e))}}
+async function syNow(show){if(!syOn()||syNow.on)return;syNow.on=1;try{await syPush();const ch=await syPull();if(!dq()||!Object.keys(dq()).length)syMsg("✓ Đã đồng bộ lúc "+new Date().toLocaleTimeString("vi-VN")+(ch?" · nhận "+ch+" thay đổi":""),1);if(V.p!=="list")liveRender();else if(ch){LIVE.n=0;render()}}catch(e){syMsg("⚠ "+(e&&e.message||e))}syNow.on=0}
 function syLink(){const c=SY.c;return location.origin+location.pathname+"#sync="+btoa(unescape(encodeURIComponent(JSON.stringify(c))))}
 function syCard(){const c=SY.c||{};if(!syOn())return`<div class=c><h2>Đồng bộ điện thoại ↔ máy tính</h2><p class=tip>Kết nối kho dữ liệu Supabase (miễn phí) để báo cáo làm trên điện thoại tự hiện trên máy tính. Nếu đã kết nối ở máy khác, chỉ cần mở <b>link kết nối</b> được gửi từ máy đó.</p>
  <label>Supabase Project URL</label><input id=su placeholder="https://xxxx.supabase.co" value="${esc(c.url||"")}"><label>Supabase anon / publishable key</label><input id=sk placeholder="eyJ… hoặc sb_publishable_…" value="${esc(c.key||"")}"><label>Mã nhóm (máy nào cùng mã sẽ thấy chung báo cáo)</label><input id=sc placeholder="vd: qc-team-2026" value="${esc(c.code||"")}">
  <p><button class="b y" id=sok>Kết nối</button></p><p class=tip id=sys></p></div>`;
- return`<div class=c><h2>Đồng bộ điện thoại ↔ máy tính</h2><p class=tip>Đang bật · mã nhóm <b>${esc(c.code)}</b></p><p class=tip id=sys>${esc(syLast||"")}</p><div class=r><button class="b y" id=snw>🔄 Đồng bộ ngay</button><button class="b g" id=slk>🔗 Gửi link kết nối cho máy khác</button></div><p><button class="b x" id=sof>Ngắt đồng bộ trên máy này</button></p></div>`}
+ return`<div class=c><h2>Đồng bộ điện thoại ↔ máy tính</h2><p class=tip>Đang bật · mã nhóm <b>${esc(c.code)}</b>. Chỉ đồng bộ khi bạn bấm <b>🔄 Đồng bộ</b> (hoặc thanh ☁ trên cùng) và xác nhận.</p><p class=tip id=sys>${esc(syLast||"")}</p><div class=r><button class="b y" id=snw>🔄 Đồng bộ</button><button class="b g" id=slk>🔗 Gửi link kết nối cho máy khác</button></div><p><button class="b x" id=sof>Ngắt đồng bộ trên máy này</button></p></div>`}
 function syBind(a){const q=s=>a.querySelector(s);
  if(q("#sok"))q("#sok").onclick=async()=>{const v={url:q("#su").value.trim(),key:q("#sk").value.trim(),code:q("#sc").value.trim()};if(!/^https:\/\/.+/.test(v.url)||!v.key||!v.code)return alert("Điền đủ URL (bắt đầu bằng https://), key và mã nhóm.");SY.set(v);syMsg("Đang kiểm tra kết nối…");
-  try{const r=await fetch(syU("/rest/v1/reports?select=id&limit=1"),{headers:syH()});if(!r.ok)throw await syErr(r,"Supabase từ chối");const o=dq();for(const x of await allReports())o[x.id]="u"+Date.now();dqS(o);await syNow();render()}catch(e){SY.set(null);syMsg("⚠ Không kết nối được: "+(e&&e.message||e))}};
- if(q("#snw"))q("#snw").onclick=()=>{syMsg("Đang đồng bộ…");syNow()};
+  try{const r=await fetch(syU("/rest/v1/reports?select=id&limit=1"),{headers:syH()});if(!r.ok)throw await syErr(r,"Supabase từ chối");render();syManual()}catch(e){SY.set(null);syMsg("⚠ Không kết nối được: "+(e&&e.message||e))}};
+ if(q("#snw"))q("#snw").onclick=()=>syManual();
  if(q("#slk"))q("#slk").onclick=async()=>{const l=syLink();try{if(navigator.share){await navigator.share({title:"Link kết nối báo cáo kiểm hàng",url:l});return}}catch(e){if(e&&e.name==="AbortError")return}try{await navigator.clipboard.writeText(l);alert("Đã sao chép link. Dán và mở link này trên máy tính (hoặc máy khác).")}catch(e){prompt("Sao chép link này và mở trên máy khác:",l)}};
  if(q("#sof"))q("#sof").onclick=()=>{if(confirm("Ngắt đồng bộ trên máy này? Báo cáo trong máy vẫn giữ nguyên.")){SY.set(null);render()}}}
-function syInit(){const h=location.hash.match(/^#sync=(.+)$/);if(h){try{const v=JSON.parse(decodeURIComponent(escape(atob(h[1]))));if(v.url&&v.key&&v.code){SY.set(v);alert("Đã kết nối đồng bộ (mã nhóm: "+v.code+"). Báo cáo từ các máy khác sẽ tự tải về.")}}catch(e){}history.replaceState(null,"",location.pathname)}
- if(!syOn())return;const tick=()=>{if(document.visibilityState==="visible")syNow()};setTimeout(tick,800);setInterval(tick,20000);addEventListener("online",tick);document.addEventListener("visibilitychange",tick)}
+function syInit(){const h=location.hash.match(/^#sync=(.+)$/);if(h){try{const v=JSON.parse(decodeURIComponent(escape(atob(h[1]))));if(v.url&&v.key&&v.code){SY.set(v);alert("Đã kết nối đồng bộ (mã nhóm: "+v.code+"). Bấm thanh ☁ ở trên cùng để lấy báo cáo từ máy khác.")}}catch(e){}history.replaceState(null,"",location.pathname)}
+ if(!syOn())return;const tick=()=>{if(document.visibilityState==="visible")syCheck()};setTimeout(tick,1500);setInterval(tick,60000);addEventListener("online",tick);document.addEventListener("visibilitychange",tick)}
 
 (async()=>{try{db=await openDB();const old=await idbGet("m","s");if(old){old.id=old.id||uid();old.created=old.updated=Date.now();await idbPut("m","r:"+old.id,old);await idbDel("m","s")}
-  syInit();setTimeout(migrateImgs,4000)}catch(e){alert("Trình duyệt không cho lưu dữ liệu. Hãy mở file bằng Chrome/Safari và đừng dùng chế độ ẩn danh.")}
+  await bFix();syInit();setTimeout(migrateImgs,4000)}catch(e){alert("Trình duyệt không cho lưu dữ liệu. Hãy mở file bằng Chrome/Safari và đừng dùng chế độ ẩn danh.")}
   S=S||blank();render();netUI();try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{})}catch(e){}})();
 if("serviceWorker" in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script></body></html>
