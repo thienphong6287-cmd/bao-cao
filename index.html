@@ -175,7 +175,7 @@ label.b input,.pk input{position:absolute;left:0;top:0;width:100%;height:100%;op
 <div id="net" hidden></div><main id="app"></main><div id="print"></div>
 <script>
 const SEC=[["box","Box Selection","Chọn thùng"],["pack","Packaging Check","Kiểm tra thùng / chất lượng in"],["wt","Weight Check","Kiểm tra cân nặng"],["psz","Package Measurements","Kích thước thùng"],["lbl","Package Labels","Tem thùng"],["bar","Barcode Check","Kiểm tra mã vạch"],["mat","Package Materials","Vật liệu đóng gói"],["cmp","Components Check","Kiểm tra chi tiết rời"],["man","Manual Check","Hướng dẫn lắp ráp"],["moi","Moisture Check","Kiểm tra độ ẩm"],["col","Color Check","Kiểm tra màu"],["fit","Materials / Fittings","Kiểm vật tư"],["asm","Assembly on Site","Kiểm tra lắp ráp"],["psize","Product Measurement","Kích thước sản phẩm"],["pph","Product Photos","Hình sản phẩm"],["def","Defects Found","Lỗi tìm thấy"]];
-const APPV="v43";const $=s=>document.querySelector(s);
+const APPV="v45";const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 let db,S,V={p:"list"},mem={};
@@ -216,7 +216,7 @@ async function openReport(id){S=await idbGet("m","r:"+id);if(S){const ks=(await 
  if(syOn()&&navigator.onLine)syPull(id).then(async ch=>{if(!ch||!S||S.id!==id||Object.keys(dq()).includes(id))return;const n=await idbGet("m","r:"+id);if(n&&n.updated>S.updated){S=n;if(V.p!=="sec")render();toast("Đã cập nhật bản mới từ máy khác")}}).catch(()=>{})}
 async function renderList(a){$("#ttl").textContent="Báo cáo của tôi";const rs=(await allReports()).sort((x,y)=>y.updated-x.updated),D=DAYS();
  a.innerHTML=`<div class=c><button class="b y" id=nr style="width:100%">＋ Tạo báo cáo mới</button><p class=tip>Báo cáo và ảnh <b>không bao giờ tự xóa</b>. Báo cáo quá ${D} ngày chưa sửa sẽ được đánh dấu đỏ để bạn sao lưu rồi tự xóa khi máy đầy.</p></div>`+(rs.map(r=>{const age=Math.floor((Date.now()-r.updated)/864e5),old=age>=D,bk=r.bk&&r.bk>=r.updated,st=[old?`Đã ${age} ngày chưa sửa`:"",syOn()?"":bk?"✓ đã sao lưu":"chưa sao lưu bản mới nhất"].filter(Boolean).join(" · ");const dupN=rs.filter(z=>nk(z.cover.po)&&nk(z.cover.po)===nk(r.cover.po)).length;return`<div class="c rp" data-o="${r.id}"><div class=t><b>${esc(r.cover.po||"(chưa có PO)")}</b>${dupN>1?` <span class=n style="background:#c0392b;color:#fff">⚠ trùng tên</span> <button class="b y" data-mg="${esc(r.cover.po)}" style="padding:4px 8px;font-size:12px">Gộp ${dupN} báo cáo</button>`:""}${r.cover.cust?" · "+esc(r.cover.cust):""}<small>${r.skus.length} SKU · sửa ${new Date(r.updated).toLocaleString("vi-VN")}</small><small style="color:${old?"var(--bad)":"var(--mut)"}">${st}</small></div><button class="b x" data-d="${r.id}">Xóa</button></div>`}).join("")||'<p class=tip>Chưa có báo cáo nào.</p>')+`<div class=c><h2>Cài đặt <small style="font-weight:400;color:var(--mut)">· phiên bản ${APPV}</small></h2><p class=tip id=stg>Đang đo dung lượng…</p><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type=checkbox id=hqo style="width:auto" ${hiOn()?"checked":""}> Lưu thêm ảnh gốc 4032×3024 (tốn gấp ~3 lần bộ nhớ)</label><button class="b g" id=orf style="width:100%;margin:8px 0">🔎 Tìm ảnh bị thất lạc</button><label>Đánh dấu báo cáo cũ sau (ngày)</label><input type=number min=1 id=dy value=${D}><label class="b g" style="margin-top:10px">Khôi phục báo cáo từ file sao lưu (.zip / .json)<input type=file accept=".zip,.json,application/zip,application/json" id=rsf></label></div>${syCard()}`;syBind(a);
- $("#nr").onclick=async()=>{const po=await askPO();if(!po)return;S=blank();S.cover.po=po;if(rs[0])S.cfg={...rs[0].cfg};await save();V={p:"home"};render()};
+ $("#nr").onclick=async()=>{if(syOn()&&navigator.onLine){busyMsg("Đang kiểm tra báo cáo trên các máy khác…");try{await syPull()}catch(e){}busyEnd()}const po=await askPO();if(!po)return;S=blank();S.cover.po=po;if(rs[0])S.cfg={...rs[0].cfg};await save();V={p:"home"};render()};
  a.querySelectorAll("[data-o]").forEach(e=>e.onclick=()=>openReport(e.dataset.o));a.querySelectorAll("[data-mg]").forEach(e=>e.onclick=ev=>{ev.stopPropagation();mergeReports(e.dataset.mg)});
  storageUI();$("#orf").onclick=findLost;$("#hqo").onchange=async e=>{const v=e.target.checked?"1":"0";for(const r of await allReports()){r.cfg={...(r.cfg||{}),hq:v};await idbPut("m","r:"+r.id,r)}if(S){S.cfg={...(S.cfg||{}),hq:v}}toast(v==="1"?"Đã bật lưu ảnh gốc":"Đã tắt lưu ảnh gốc — tiết kiệm bộ nhớ")};
  a.querySelectorAll("[data-d]").forEach(e=>e.onclick=async ev=>{ev.stopPropagation();const r=rs.find(z=>z.id===e.dataset.d);if(confirm("Xóa báo cáo "+(r.cover.po||"này")+" và toàn bộ ảnh?")){await delReport(r);render()}});
@@ -530,7 +530,7 @@ function mkPdf(pg,PW,PH){
 async function savePdf(){
  const b=$("#exp"),old=b.textContent;
  try{
-  const raw=printRules(),rules=(raw+"\n.P img,.P svg,.P .ix i{visibility:hidden}").replace(/&/g,"&amp;");
+  const raw=printRules(),rules=(raw+"\n.P img,.P svg,.P .ix i{visibility:hidden}.P .pponly{display:none}").replace(/&/g,"&amp;");
   const els=[...document.querySelectorAll("#print .P")],sc=Math.min(+CF().q||2,/iPhone|iPad/.test(navigator.userAgent)?3:4),out=[],W=1316,Hh=911;
   const tmp=document.createElement("style");tmp.textContent=raw;document.head.append(tmp);
   const info=els.map(el=>{const r=el.getBoundingClientRect(),rc=n=>{const q=n.getBoundingClientRect();return{x:q.left-r.left,y:q.top-r.top,w:q.width,h:q.height}};
@@ -812,7 +812,7 @@ for(const k of S.skus){const f=k.f||{};
    if(gr){const pad=(a,n)=>{const r=a.slice(i*n,i*n+n);while(r.length<n)r.push(null);return r};ph=[...pad(gc,gr[0]),...pad(gu,gr[1])];if(mode===2&&!df)ph=ph.map(p=>p||{id:null,cap:""})}
    else{ph=L.slice(i*per,i*per+per);if(mode===2&&!df&&i===N-1)ph=ph.concat(Array.from({length:per-ph.length},()=>({id:null,cap:""})));if(PAIR[key]&&per===6){ph=ph.map((p,j)=>p?{...p,_fc:dc(key,i*per+j)}:p);ph=[0,2,4,1,3,5].map(q=>ph[q]||(mode===2?{id:null,cap:"",_fc:""}:null))}/* cân nặng: ảnh 1 trên-phải, 2 dưới-phải (thùng GW); 3 trên-trái, 4 dưới-trái (sản phẩm NW) */if(key==="wt"&&per===4){ph=ph.map((p,j)=>p?{...p,_fc:dc(key,i*per+j)}:p);ph=[2,0,3,1].map(q=>ph[q]||(mode===2?{id:null,cap:"",_fc:""}:null))}}
    let b;
-   if(df)b=ph.map((p,j)=>!p?"":`<img class=di src="${I2(p.id)}" style="left:${33+j*637}px"><div class=dc style="left:${33+j*637}px"><b><u>Inspector Comment</u></b>${defL(k).includes(p)?` <b style="color:${p.sev==="ma"?"#c00000":"#c55a11"}">(${p.sev==="ma"?"Major":"Minor"})</b>`:""}<br>${p.cap?"• "+esc(p.cap):""}</div>`).join("")+(first&&NOTE?`<div class=dc style="left:33px;top:790px;width:1200px">${bl(NOTE)}</div>`:"");
+   if(df)b=ph.map((p,j)=>!p?(j===1&&ph[0]?`<div class="dc pponly" style="left:${33+j*637}px;height:150px"><b><u>Inspector Comment</u></b><br>• </div>`:""):`<img class=di src="${I2(p.id)}" style="left:${33+j*637}px"><div class=dc style="left:${33+j*637}px"><b><u>Inspector Comment</u></b>${defL(k).includes(p)?` <b style="color:${p.sev==="ma"?"#c00000":"#c55a11"}">(${p.sev==="ma"?"Major":"Minor"})</b>`:""}<br>${p.cap?"• "+esc(p.cap):""}</div>`).join("")+(first&&NOTE?`<div class=dc style="left:33px;top:790px;width:1200px">${bl(NOTE)}</div>`:"");
    else if(bx)b=ph.map((p,j)=>p.id?`<img class=ri src="${I2(p.id)}" style="left:${[45,671][j]}px;top:130px;width:600px;height:450px">`:`<div class="eb sa" style="position:absolute;left:${[45,671][j]}px;top:130px;width:600px;height:450px"></div>`).join("")+`<div class=cl style="left:200px;top:776px">Inspector Comments:</div><div class=cb style="left:479px;top:774px;width:749px;height:99px">${bl(NOTE)}</div>`;
    else b=ph.map((p,j)=>{if(!p)return"";if(Array.isArray(p)){const l=[88,479,870][j%3],tp=401,cap=esc(p[0].cap||"Approved AI. Page");
      if(p.length===1)return`<figure class="t" style="left:${l}px;top:${tp}px"><img class=fc style="border:1px solid #000" src="${I2(p[0].id)}"><figcaption>${cap}</figcaption></figure>`;
@@ -1147,11 +1147,9 @@ const syPath=id=>encodeURIComponent(SY.c.code)+"/"+encodeURIComponent(id)+".jpg"
 const dq=()=>{try{return JSON.parse(localStorage.getItem("fir_dirty")||"{}")}catch(e){return{}}},dqS=o=>{try{localStorage.setItem("fir_dirty",JSON.stringify(o))}catch(e){}};
 let syBusy=0,syLast=(()=>{try{return localStorage.getItem("fir_sylast")||""}catch(e){return""}})();
 function syMsg(t,ok){if(ok){syLast=t;try{localStorage.setItem("fir_sylast",t)}catch(e){}}const e=document.getElementById("sys");if(e)e.textContent=t}
-function syMark(id,del){if(!syOn()||!id)return;const o=dq();o[id]=(del?"d":"u")+Date.now();dqS(o);netUI()}/* v43: chỉ đánh dấu — đồng bộ khi người dùng bấm */
+function syMark(id,del){if(!syOn()||!id)return;const o=dq();o[id]=(del?"d":"u")+Date.now();dqS(o);netUI();clearTimeout(syMark.t);syMark.t=setTimeout(syPush,1200)}
 const SYC={n:0};
-function netUI(){const e=document.getElementById("net");if(!e)return;const on=syOn(),n=on?Object.keys(dq()).length:0,off=!navigator.onLine;e.onclick=on?()=>syManual():null;e.style.cursor=on?"pointer":"";
- if(off){e.hidden=false;e.className="";e.textContent="📴 Đang offline — mọi thay đổi vẫn được lưu trong máy"+(n?` · ${n} báo cáo chưa đồng bộ`:"")}
- else if(on){e.hidden=false;e.className=n||SYC.n?"":"on";e.textContent=(n?`⬆ ${n} báo cáo trên máy này chưa đồng bộ`:"")+(n&&SYC.n?" · ":"")+(SYC.n?`⬇ ${SYC.n} báo cáo có bản mới trên mây`:"")+(n||SYC.n?" — bấm để đồng bộ":"☁ Bấm vào đây để đồng bộ")}else e.hidden=true}
+function netUI(){const e=document.getElementById("net");if(!e)return;const n=syOn()?Object.keys(dq()).length:0,off=!navigator.onLine;e.onclick=null;e.style.cursor="";if(off){e.hidden=false;e.className="";e.textContent="📴 Đang offline — mọi thay đổi vẫn được lưu trong máy"+(n?` · ${n} báo cáo chờ đồng bộ`:syOn()?"":"")}else if(n){e.hidden=false;e.className="on";e.textContent=`⏳ Đang đồng bộ ${n} báo cáo…`}else e.hidden=true}
 addEventListener("online",netUI);addEventListener("offline",netUI);
 const imgIds=r=>{const a=[];for(const k of r.skus||[])for(const x of Object.values(k.sec||{}))for(const p of x.ph||[])if(p.id)a.push(p.id);if(r.cfg&&r.cfg.logo)a.push("logo");return a};
 async function syErr(r,w){let t="";try{t=(await r.text()).slice(0,160)}catch(e){}return new Error(w+" (lỗi "+r.status+") "+t)}
@@ -1184,20 +1182,27 @@ const busyUI=()=>{const ae=document.activeElement;return!!(document.querySelecto
 const editing=id=>!!S&&S.id===id&&busyUI();
 /* rời app (khóa máy / chuyển app) → đẩy ngay những gì vừa gõ */
 const leave=()=>{if(document.visibilityState==="hidden"){lastIn=0;try{syPush()}catch(e){}}};
+document.addEventListener("visibilitychange",leave);addEventListener("pagehide",()=>{lastIn=0;try{syPush()}catch(e){}});
 /* vẽ lại màn hình khi máy khác vừa sửa — không vẽ khi đang gõ chữ / đang chụp / đang sửa ảnh */
 function liveRender(){if(!LIVE.n)return;if(busyUI()){if(!LIVE.wait){LIVE.wait=1;setTimeout(()=>{LIVE.wait=0;liveRender()},1500)}return}
  LIVE.n=0;const y=scrollY;try{render()}catch(e){}requestAnimationFrame(()=>scrollTo(0,y));toast("↻ Đã cập nhật thay đổi từ máy khác")}
 /* ===== v43: ĐỒNG BỘ THỦ CÔNG — chỉ chạy khi bấm, xem trước + xác nhận ===== */
 /* so sánh nội dung thật: bỏ qua phần app tự điền khi chỉ MỞ một mục (ghi chú mặc định, ô Approved Carton Layout trống, cờ dn) */
-const body3=r=>{if(!r)return"";const{updated,...o}=CP3(r);for(const k of o.skus||[]){for(const key of Object.keys(k.sec||{})){const x=k.sec[key];if(!x||typeof x!=="object")continue;delete x.dn;
+const DEVN=/iPhone|iPad/.test(navigator.userAgent)?"iPhone":/Android/.test(navigator.userAgent)?"điện thoại Android":"máy tính";
+const body3=r=>{if(!r)return"";const{updated,by,...o}=CP3(r);for(const k of o.skus||[]){for(const key of Object.keys(k.sec||{})){const x=k.sec[key];if(!x||typeof x!=="object")continue;delete x.dn;
    x.ph=(x.ph||[]).filter(p=>!(p.ref&&!p.id));const dn=(DN[key]||[]).join("\n");if((x.note||"")===dn)x.note="";if(x.t&&!Object.values(x.t).some(v=>String(v||"").trim()))delete x.t;
    if(!x.ph.length&&!x.note&&!x.t&&Object.keys(x).every(f=>f==="ph"||f==="note"))delete k.sec[key]}}return J3(o)};
 async function syRows(){const r=await fetch(syU("/rest/v1/reports?code=eq."+encodeURIComponent(SY.c.code)+"&select=id,updated,deleted"),{headers:syH()});if(!r.ok)throw await syErr(r,"Không đọc được dữ liệu trên mây");return r.json()}
 async function syData(id){const g=await fetch(syU("/rest/v1/reports?id=eq."+encodeURIComponent(id)+"&select=data"),{headers:syH()});if(!g.ok)throw await syErr(g,"Không tải được báo cáo");const[x]=await g.json();return x&&x.data&&x.data.skus?x.data:null}
 /* chỉ xem trên mây có gì mới để báo ở thanh trên cùng — KHÔNG thay đổi dữ liệu */
 async function syCheck(){if(!syOn()||!navigator.onLine)return;try{const o=dq();for(const id of Object.keys(o))if(o[id][0]==="u"){const l=await idbGet("m","r:"+id),b=await bGet(id);if(l&&b&&body3(l)===body3(b))delete o[id]}dqS(o);const rows=await syRows();let n=0;for(const w of rows){const loc=await idbGet("m","r:"+w.id),base=await bGet(w.id);
-  if(w.deleted){if(loc&&base)n++;continue}if(!loc){if(!(dq()[w.id]||"").startsWith("d"))n++;continue}if(!base||+w.updated!==+base.updated)n++}SYC.n=n;netUI()}catch(e){}}
-const syInfo=r=>r?`${r.skus.length} item · ${phCount(r)} ảnh · sửa ${new Date(r.updated).toLocaleString("vi-VN")}`:"";
+  if(w.deleted){if(loc&&base)n++;continue}if(!loc){if(!(dq()[w.id]||"").startsWith("d"))n++;continue}if(!base||+w.updated!==+base.updated)n++}SYC.n=n;netUI();
+  /* máy khác vừa gửi bản mới → hỏi có nhận về không (không tự nhận) */
+  const sig=rows.filter(w=>!w.deleted).map(w=>w.id+":"+w.updated).sort().join(",");if(n&&!syManual.on&&!busyUI()&&!document.querySelector(".sym,.syq")&&sig!==SYC.seen){SYC.seen=sig;syAsk(n)}}catch(e){}}
+function syAsk(n){const m=document.createElement("div");m.className="syq";m.style.cssText="position:fixed;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:98;display:flex;justify-content:center";
+ m.innerHTML=`<div class=c style="max-width:520px;width:100%;box-shadow:0 6px 24px #0006;margin:0"><b>☁ Có ${n} báo cáo mới / đã sửa trên mây (từ máy khác)</b><p class=tip style="margin:6px 0 10px">Nhận về máy này? Bạn sẽ được xem trước và xác nhận.</p><div class=r><button class="b g" id=sqn>Để sau</button><button class="b y" id=sqy>Xem &amp; nhận</button></div></div>`;
+ document.body.append(m);m.querySelector("#sqn").onclick=()=>m.remove();m.querySelector("#sqy").onclick=()=>{m.remove();syManual()}}
+const syInfo=r=>r?`${r.skus.length} item · ${phCount(r)} ảnh · ${new Date(r.updated).toLocaleString("vi-VN")}${r.by?" · gửi từ "+r.by:""}`:"";
 async function syManual(only){if(!syOn())return alert("Chưa kết nối đồng bộ. Vào Cài đặt để kết nối.");if(!navigator.onLine)return alert("Đang offline. Có mạng rồi bấm đồng bộ lại.");if(syManual.on)return;syManual.on=1;
  const m=document.createElement("div");m.className="sym";m.style.cssText="position:fixed;inset:0;background:#000a;z-index:99;display:grid;place-items:center;padding:16px";
  m.innerHTML=`<div class=c style="max-width:560px;width:100%;max-height:88vh;overflow:auto"><h2>Đồng bộ</h2><p class=tip id=smw>Đang so sánh máy này với bản trên mây…</p></div>`;document.body.append(m);const box=m.firstChild,close=()=>{m.remove();syManual.on=0;netUI()};
@@ -1217,7 +1222,7 @@ async function syManual(only){if(!syOn())return alert("Chưa kết nối đồng
     else if(!lc&&cc)it={id,name:name(R),loc,R,opts:["down","skip"],def:"down"};
     else it={id,name:name(loc),loc,R,both:1,opts:["up","down","mg","skip"],def:base?"up":(+R.updated>+loc.updated?"down":"up")}}
    if(it)L.push(it)}
-  if(!L.length){box.innerHTML=`<h2>Đồng bộ</h2><p>✓ Máy này và bản trên mây đã giống nhau, không có gì cần đồng bộ.</p><p><button class="b g" id=smx style="width:100%">Đóng</button></p>`;box.querySelector("#smx").onclick=close;SYC.n=0;dqS({});syMsg("✓ Đã đồng bộ lúc "+new Date().toLocaleTimeString("vi-VN"),1);return}
+  if(!L.length){box.innerHTML=`<h2>Đồng bộ</h2><p>✓ Máy này và bản trên mây đã giống nhau, không có gì cần đồng bộ.</p><p class=tip>Mã nhóm: <b>${esc(SY.c.code)}</b> · trên mây có ${rows.filter(w=>!w.deleted).length} báo cáo${rows.length?" · lần gửi gần nhất "+new Date(Math.max(...rows.map(w=>+w.updated||0))).toLocaleString("vi-VN"):""}</p><p><button class="b g" id=smx style="width:100%">Đóng</button></p>`;box.querySelector("#smx").onclick=close;SYC.n=0;dqS({});syMsg("✓ Đã đồng bộ lúc "+new Date().toLocaleTimeString("vi-VN"),1);return}
   const T={up:"⬆ Dùng bản MÁY NÀY (gửi lên)",down:"⬇ Dùng bản TRÊN MÂY (tải về)",mg:"⇅ Gộp cả hai máy",delc:"🗑 Xóa luôn trên mây",dell:"🗑 Xóa khỏi máy này",skip:"Để sau"};
   box.innerHTML=`<h2>Đồng bộ — xác nhận</h2><p class=tip>Kiểm tra từng báo cáo rồi bấm <b>Xác nhận đồng bộ</b>. Bản bị thay thế vẫn được lưu lại (Bản lưu tự động).</p>
    ${L.map((x,i)=>`<div class=c style="margin:8px 0;padding:10px"><b>${esc(x.name)}</b>
@@ -1239,9 +1244,9 @@ async function syManual(only){if(!syOn())return alert("Chưa kết nối đồng
 async function syUp(r,msg){const ids=imgIds(r);let k=0;for(const i of ids){msg&&msg(`Đang tải ảnh lên… ${++k}/${ids.length}`);await syImgUp(i)}
  await syRow({id:r.id,data:r,updated:r.updated,deleted:false});await bPut(r.id,CP3(r))}
 async function syApply(x,a,msg){const id=x.id;
- if(a==="up"){const r=await idbGet("m","r:"+id);if(!r)return;r.updated=Date.now();await idbPut("m","r:"+id,r);if(S&&S.id===id)S=r;await syUp(r,msg)}
+ if(a==="up"){const r=await idbGet("m","r:"+id);if(!r)return;r.updated=Date.now();r.by=DEVN;await idbPut("m","r:"+id,r);if(S&&S.id===id)S=r;await syUp(r,msg)}
  else if(a==="mg"){const loc=await idbGet("m","r:"+id),base=await bGet(id),R=await syData(id);if(!R)return syApply(x,"up",msg);await snap(loc,"Trước khi gộp đồng bộ");
-  const mg=base?merge3(base,loc,R):mergeRep(R,loc).r;mg.updated=Date.now();await idbPut("m","r:"+id,mg);if(S&&S.id===id)S=mg;await syUp(mg,msg)}
+  const mg=base?merge3(base,loc,R):mergeRep(R,loc).r;mg.updated=Date.now();mg.by=DEVN;await idbPut("m","r:"+id,mg);if(S&&S.id===id)S=mg;await syUp(mg,msg)}
  else if(a==="down"){const R=await syData(id);if(!R)throw new Error("trên mây không còn báo cáo này");const loc=await idbGet("m","r:"+id);if(loc)await snap(loc,"Trước khi lấy bản trên mây");
   const ids=imgIds(R);let k=0;for(const i of ids){if(i==="logo")continue;msg&&msg(`Đang tải ảnh về… ${++k}/${ids.length}`);if(!asBlob(await idbGet("i",i)))await syImgDown(i)}
   await idbPut("m","r:"+id,R);await bPut(id,CP3(R));if(S&&S.id===id)S=R}
@@ -1343,15 +1348,15 @@ function syLink(){const c=SY.c;return location.origin+location.pathname+"#sync="
 function syCard(){const c=SY.c||{};if(!syOn())return`<div class=c><h2>Đồng bộ điện thoại ↔ máy tính</h2><p class=tip>Kết nối kho dữ liệu Supabase (miễn phí) để báo cáo làm trên điện thoại tự hiện trên máy tính. Nếu đã kết nối ở máy khác, chỉ cần mở <b>link kết nối</b> được gửi từ máy đó.</p>
  <label>Supabase Project URL</label><input id=su placeholder="https://xxxx.supabase.co" value="${esc(c.url||"")}"><label>Supabase anon / publishable key</label><input id=sk placeholder="eyJ… hoặc sb_publishable_…" value="${esc(c.key||"")}"><label>Mã nhóm (máy nào cùng mã sẽ thấy chung báo cáo)</label><input id=sc placeholder="vd: qc-team-2026" value="${esc(c.code||"")}">
  <p><button class="b y" id=sok>Kết nối</button></p><p class=tip id=sys></p></div>`;
- return`<div class=c><h2>Đồng bộ điện thoại ↔ máy tính</h2><p class=tip>Đang bật · mã nhóm <b>${esc(c.code)}</b>. Chỉ đồng bộ khi bạn bấm <b>🔄 Đồng bộ</b> (hoặc thanh ☁ trên cùng) và xác nhận.</p><p class=tip id=sys>${esc(syLast||"")}</p><div class=r><button class="b y" id=snw>🔄 Đồng bộ</button><button class="b g" id=slk>🔗 Gửi link kết nối cho máy khác</button></div><p><button class="b x" id=sof>Ngắt đồng bộ trên máy này</button></p></div>`}
+ return`<div class=c><h2>Đồng bộ điện thoại ↔ máy tính</h2><p class=tip>Đang bật · mã nhóm <b>${esc(c.code)}</b>. Sửa trên máy nào, máy kia tự cập nhật sau vài giây.</p><p class=tip id=sys>${esc(syLast||"")}</p><div class=r><button class="b y" id=snw>🔄 Đồng bộ ngay</button><button class="b g" id=slk>🔗 Gửi link kết nối cho máy khác</button></div><p><button class="b x" id=sof>Ngắt đồng bộ trên máy này</button></p></div>`}
 function syBind(a){const q=s=>a.querySelector(s);
  if(q("#sok"))q("#sok").onclick=async()=>{const v={url:q("#su").value.trim(),key:q("#sk").value.trim(),code:q("#sc").value.trim()};if(!/^https:\/\/.+/.test(v.url)||!v.key||!v.code)return alert("Điền đủ URL (bắt đầu bằng https://), key và mã nhóm.");SY.set(v);syMsg("Đang kiểm tra kết nối…");
-  try{const r=await fetch(syU("/rest/v1/reports?select=id&limit=1"),{headers:syH()});if(!r.ok)throw await syErr(r,"Supabase từ chối");render();syManual()}catch(e){SY.set(null);syMsg("⚠ Không kết nối được: "+(e&&e.message||e))}};
- if(q("#snw"))q("#snw").onclick=()=>syManual();
+  try{const r=await fetch(syU("/rest/v1/reports?select=id&limit=1"),{headers:syH()});if(!r.ok)throw await syErr(r,"Supabase từ chối");const o=dq();for(const x of await allReports())o[x.id]="u"+Date.now();dqS(o);await syNow();render()}catch(e){SY.set(null);syMsg("⚠ Không kết nối được: "+(e&&e.message||e))}};
+ if(q("#snw"))q("#snw").onclick=()=>{syMsg("Đang đồng bộ…");syNow()};
  if(q("#slk"))q("#slk").onclick=async()=>{const l=syLink();try{if(navigator.share){await navigator.share({title:"Link kết nối báo cáo kiểm hàng",url:l});return}}catch(e){if(e&&e.name==="AbortError")return}try{await navigator.clipboard.writeText(l);alert("Đã sao chép link. Dán và mở link này trên máy tính (hoặc máy khác).")}catch(e){prompt("Sao chép link này và mở trên máy khác:",l)}};
  if(q("#sof"))q("#sof").onclick=()=>{if(confirm("Ngắt đồng bộ trên máy này? Báo cáo trong máy vẫn giữ nguyên.")){SY.set(null);render()}}}
-function syInit(){const h=location.hash.match(/^#sync=(.+)$/);if(h){try{const v=JSON.parse(decodeURIComponent(escape(atob(h[1]))));if(v.url&&v.key&&v.code){SY.set(v);alert("Đã kết nối đồng bộ (mã nhóm: "+v.code+"). Bấm thanh ☁ ở trên cùng để lấy báo cáo từ máy khác.")}}catch(e){}history.replaceState(null,"",location.pathname)}
- if(!syOn())return;const tick=()=>{if(document.visibilityState==="visible")syCheck()};setTimeout(tick,1500);setInterval(tick,60000);addEventListener("online",tick);document.addEventListener("visibilitychange",tick)}
+function syInit(){const h=location.hash.match(/^#sync=(.+)$/);if(h){try{const v=JSON.parse(decodeURIComponent(escape(atob(h[1]))));if(v.url&&v.key&&v.code){SY.set(v);alert("Đã kết nối đồng bộ (mã nhóm: "+v.code+"). Báo cáo từ các máy khác sẽ tự tải về.")}}catch(e){}history.replaceState(null,"",location.pathname)}
+ if(!syOn())return;const tick=()=>{if(document.visibilityState==="visible")syNow()};setTimeout(tick,800);setInterval(tick,4000);addEventListener("online",tick);document.addEventListener("visibilitychange",tick)}
 
 (async()=>{try{db=await openDB();const old=await idbGet("m","s");if(old){old.id=old.id||uid();old.created=old.updated=Date.now();await idbPut("m","r:"+old.id,old);await idbDel("m","s")}
   await bFix();syInit();setTimeout(migrateImgs,4000)}catch(e){alert("Trình duyệt không cho lưu dữ liệu. Hãy mở file bằng Chrome/Safari và đừng dùng chế độ ẩn danh.")}
