@@ -195,7 +195,7 @@ const SEC=[["box","Box Selection","Chọn thùng"],["pack","Packaging Check","Ki
 const DSEC=[["dpk","Packaging Before Test","Đóng gói trước khi test"],["dwt","Weight Photos","Cân nặng thùng & sản phẩm"],["ddim","Packaging Dim","Kích thước thùng"],["dinb","Inner Box Dim","Kích thước thùng trong (inner box)"],["dcor","Drop Test – Corner","Thả rơi – Góc"],["dfac","Drop Test – Face","Thả rơi – Mặt"],["dedg","Drop Test – Edges","Thả rơi – Cạnh"],["dopen","Open Box After Tested","Khui thùng sau khi test"],["dmat","Packing Materials","Vật tư đóng gói"],["dcmp","Loose Components","Chi tiết rời"],["dman","Manual (AI)","Hướng dẫn lắp ráp (HDLR)"],["dpph","Product After Unbox","Sản phẩm sau khi khui thùng"]];
 const PSEC=[["pcov","Cover Photo","Ảnh trang bìa"],["pms","Master Samples at Factory","Mẫu kí lưu tại nhà máy"],["ppro","Product Photos","Hình sản phẩm"],["pww","WW Product Photos","Hình sản phẩm chưa sơn"],["podim","Overall Dim","Kích thước tổng thể"],["pdim","Details Dim Measure","Đo kích thước chi tiết"],["pmat","Materials","Vật liệu"],["pkd","KD Component – HW","Chi tiết tháo rời & ngũ kim"],["pdraw","Product Drawing","Bản vẽ sản phẩm"],["pwatch","Production Watch Out","Lưu ý cho sản xuất"]];
 const ASEC=[...SEC,...DSEC,...PSEC],isDrop=r=>(r||S||{}).type==="drop",isPPS=r=>(r||S||{}).type==="pps",isOne=r=>isDrop(r)||isPPS(r),isDK=k=>DSEC.some(z=>z[0]===k)||PSEC.some(z=>z[0]===k),SECS=()=>isDrop()?DSEC:isPPS()?PSEC:SEC;
-const APPV="v57";const $=s=>document.querySelector(s);
+const APPV="v58";const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 let db,S,V={p:"list"},mem={};
@@ -1423,7 +1423,11 @@ function netUI(){const e=document.getElementById("net");if(!e)return;const n=syO
 addEventListener("online",netUI);addEventListener("offline",netUI);
 const imgIds=r=>{const a=[];for(const k of r.skus||[])for(const x of Object.values(k.sec||{}))for(const p of x.ph||[])if(p.id)a.push(p.id);if(r.cfg&&r.cfg.logo)a.push("logo");return a};
 async function syErr(r,w){let t="";try{t=(await r.text()).slice(0,160)}catch(e){}return new Error(w+" (lỗi "+r.status+") "+t)}
-async function syImgUp(id){if(await idbGet("m","u:"+id))return;const d=asBlob(await idbGet("i",id));if(!d)return;
+/* ảnh gửi lên mây: thu về cạnh dài 1600px, JPEG 0.8 (~250–450 KB) — đủ nét cho PDF/PowerPoint; ảnh trên máy chụp vẫn giữ bản 2560px */
+const CLOUD_PX=1600,CLOUD_Q=.8;
+async function cloudJpg(b){if(!b||b.size<=420*1024)return b;const u=URL.createObjectURL(b);try{const i=await loadIm(u),w=i.naturalWidth,h=i.naturalHeight,k=Math.min(1,CLOUD_PX/Math.max(w,h)),c=document.createElement("canvas");c.width=Math.round(w*k);c.height=Math.round(h*k);
+  c.getContext("2d").drawImage(i,0,0,c.width,c.height);const o=await cvBlob(c,CLOUD_Q);c.width=c.height=0;return o&&o.size<b.size?o:b}catch(e){return b}finally{URL.revokeObjectURL(u)}}
+async function syImgUp(id){if(await idbGet("m","u:"+id))return;let d=asBlob(await idbGet("i",id));if(!d)return;if(id!=="logo")d=await cloudJpg(d);
  const r=await fetch(syU("/storage/v1/object/photos/"+syPath(id)),{method:"POST",headers:{...syH(),"Content-Type":"image/jpeg","x-upsert":"true"},body:d});
  if(!r.ok)throw await syErr(r,"Tải ảnh lên thất bại");await idbPut("m","u:"+id,1)}
 async function syImgDown(id){if(!id||!syOn()||!navigator.onLine)return;try{const r=await fetch(syU("/storage/v1/object/authenticated/photos/"+syPath(id)),{headers:syH()});if(!r.ok)return;const b=await r.blob();if(!b.size)return;
@@ -1627,17 +1631,23 @@ async function cloudClean(){if(!syOn()||!navigator.onLine)return alert("Cần c�
   for(const r of await allReports())if(!r.cloudOff)for(const i of imgIds(r))used.add(i);
   /* bản lưu tự động trong 7 ngày gần đây vẫn có thể cần ảnh → giữ */
   for(const k of await idbKeys("m"))if(String(k).startsWith("snap:")){const v=await idbGet("m",k);if(v&&v.r&&v.at>wk)for(const i of imgIds(v.r))used.add(i)}
-  const all=await cloudList();busyEnd();const tot=all.reduce((a,o)=>a+o.sz,0),orf=all.filter(o=>!used.has(o.id)&&!(o.t&&o.t>Date.now()-36e5)),old=orf.filter(o=>o.t&&o.t<wk),sz=a=>a.reduce((x,o)=>x+o.sz,0);
+  const all=await cloudList();busyEnd();const big=all.filter(o=>o.sz>600*1024),tot=all.reduce((a,o)=>a+o.sz,0),orf=all.filter(o=>!used.has(o.id)&&!(o.t&&o.t>Date.now()-36e5)),old=orf.filter(o=>o.t&&o.t<wk),sz=a=>a.reduce((x,o)=>x+o.sz,0);
   const m=document.createElement("div");m.style.cssText="position:fixed;inset:0;background:#000a;z-index:99;display:grid;place-items:center;padding:16px";
-  m.innerHTML=`<div class=c style="max-width:460px;width:100%"><h2>🧹 Dọn ảnh trên mây</h2><p>Kho ảnh nhóm <b>${esc(SY.c.code)}</b>: <b>${all.length}</b> ảnh · <b>${MB(tot)}</b> / 1 GB (gói miễn phí, ${Math.round(tot/1073741824*100)}%)</p>
+  m.innerHTML=`<div class=c style="max-width:460px;width:100%"><h2>🧹 Dọn ảnh trên mây</h2><p>Kho ảnh nhóm <b>${esc(SY.c.code)}</b>: <b>${all.length}</b> ảnh · <b>${MB(tot)}</b> / 1 GB · trung bình ${all.length?MB(tot/all.length):"0 MB"}/ảnh (gói miễn phí, ${Math.round(tot/1073741824*100)}%)</p>
    <div style="height:10px;background:#ddd;border-radius:5px;overflow:hidden;margin:6px 0 12px"><div style="height:100%;width:${Math.min(100,tot/1073741824*100)}%;background:${tot>.8*1073741824?"#c0392b":"#00b050"}"></div></div>
    <p>Ảnh không còn báo cáo nào dùng (đã xóa): <b>${orf.length}</b> ảnh · <b>${MB(sz(orf))}</b><br><small class=tip>Trong đó tải lên hơn 7 ngày: ${old.length} ảnh · ${MB(sz(old))}</small></p>
    <p class=tip>Ảnh đã dọn sẽ <b>không lấy lại được</b> bằng "Tìm ảnh bị thất lạc". Ảnh trong các báo cáo đang dùng, trong Thùng rác và ảnh vừa tải lên trong 1 giờ không bị đụng tới.</p>
    ${old.length?`<p><button class="b y" id=cco style="width:100%">Dọn ${old.length} ảnh bỏ đi hơn 7 ngày (${MB(sz(old))})</button></p>`:""}${orf.length>old.length?`<p><button class="b g" id=cca style="width:100%">Dọn tất cả ${orf.length} ảnh không dùng (${MB(sz(orf))})</button></p>`:""}${orf.length?"":`<p>✓ Không có ảnh thừa để dọn.</p>`}
+   ${big.length?`<p><button class="b y" id=ccz style="width:100%">🗜 Nén lại ${big.length} ảnh lớn trên mây (${MB(sz(big))} → khoảng ${MB(big.length*360*1024)})</button></p><p class=tip>Ảnh trên mây thu về 1600px — vẫn đủ nét cho PDF/PowerPoint. Ảnh gốc trên máy đã chụp không đổi. Mất vài phút, nên dùng Wi-Fi.</p>`:""}
    <p class=tip>Muốn giải phóng nhiều hơn: mở báo cáo đã xong (đã sao lưu .zip) → "📴 Xóa báo cáo này khỏi mây".</p><p><button class="b g" id=ccx style="width:100%">Đóng</button></p></div>`;document.body.append(m);
   const go=async L=>{if(!confirm(`Xóa vĩnh viễn ${L.length} ảnh (${MB(sz(L))}) khỏi mây?`))return;m.remove();try{await cloudDel(L.map(o=>o.id),"Đang dọn ảnh…");busyEnd();toast(`✓ Đã dọn ${L.length} ảnh · giải phóng ${MB(sz(L))}`)}catch(e){busyEnd();alert(e&&e.message||e)}};
-  m.querySelector("#ccx").onclick=()=>m.remove();if(m.querySelector("#cco"))m.querySelector("#cco").onclick=()=>go(old);if(m.querySelector("#cca"))m.querySelector("#cca").onclick=()=>go(orf)}
+  m.querySelector("#ccx").onclick=()=>m.remove();if(m.querySelector("#ccz"))m.querySelector("#ccz").onclick=async()=>{if(!confirm(`Nén lại ${big.length} ảnh trên mây xuống 1600px?`))return;m.remove();const sv=await cloudShrink(big);toast(`✓ Đã nén · giải phóng ${MB(sv)}`)};if(m.querySelector("#cco"))m.querySelector("#cco").onclick=()=>go(old);if(m.querySelector("#cca"))m.querySelector("#cca").onclick=()=>go(orf)}
  catch(e){busyEnd();alert("Không dọn được: "+(e&&e.message||e))}}
+async function cloudShrink(L){let n=0,saved=0;for(const o of L){busyMsg(`Đang nén lại ảnh trên mây… ${++n}/${L.length}`);
+  try{let b=asBlob(await idbGet("i",o.id));if(!b){const r=await fetch(syU("/storage/v1/object/authenticated/photos/"+syPath(o.id)),{headers:syH()});if(!r.ok)continue;b=await r.blob()}
+   const nb=await cloudJpg(new Blob([b],{type:"image/jpeg"}));if(!nb||nb.size>=o.sz*.9)continue;
+   const r=await fetch(syU("/storage/v1/object/photos/"+syPath(o.id)),{method:"POST",headers:{...syH(),"Content-Type":"image/jpeg","x-upsert":"true"},body:nb});if(r.ok)saved+=o.sz-nb.size}catch(e){}}
+ busyEnd();return saved}
 /* Xóa 1 báo cáo khỏi mây nhưng giữ trên máy (báo cáo đã xong, đã sao lưu) */
 async function cloudOff(){if(!syOn()||!navigator.onLine)return alert("Cần có mạng và đang bật đồng bộ.");const r=S,nm=r.cover.po||"này";
  if(!(r.bk&&r.bk>=r.updated)&&!confirm(`Báo cáo "${nm}" CHƯA sao lưu bản mới nhất (.zip).\nNên bấm "Sao lưu báo cáo" trước. Vẫn tiếp tục?`))return;
