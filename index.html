@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="theme-color" content="#3b3b3b">
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="apple-touch-icon.png?v=55"><link rel="icon" href="icon-192.png?v=55"><meta name="theme-color" content="#3b3b3b">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Kiểm hàng"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Báo cáo kiểm hàng</title>
 <style>
@@ -37,7 +37,10 @@ button.b.y{background:var(--acc);color:#222}button.b.g{background:var(--bg);colo
 #print{display:none}
 .ed{position:fixed;inset:0;background:#1c1c1e;z-index:110;display:flex;flex-direction:column;color:#fff;user-select:none;-webkit-user-select:none}
 .edt{display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 10px 8px}.edt span{flex:1;text-align:center;font-weight:700}.edt button{border:0;border-radius:8px;padding:10px 14px;font-size:15px;font-weight:700;background:#3a3a3c;color:#fff}.edt .ok{background:#ffd60a;color:#000}
-.edw{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;padding:18px;touch-action:none}.edw canvas{max-width:100%;max-height:100%;display:block}
+.edw{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;padding:18px;touch-action:none}.edw canvas{max-width:100%;max-height:100%;display:block}.edw .eov{position:absolute;max-width:none;max-height:none;pointer-events:none;touch-action:none;z-index:2}
+.edm{display:flex;gap:6px;padding:6px 10px 0}.edm button{flex:1;border:0;border-radius:10px;padding:10px;background:#3a3a3c;color:#fff;font-size:14px;font-weight:700}.edm button.on{background:#ffd60a;color:#000}
+.edp{padding:6px 10px calc(10px + env(safe-area-inset-bottom))}.edr{display:flex;gap:6px;margin-bottom:6px;align-items:center}.edr button{flex:1;border:0;border-radius:10px;padding:10px 6px;background:#3a3a3c;color:#fff;font-size:15px;font-weight:700;white-space:nowrap;min-width:0}
+.edr button.on{outline:3px solid #ffd60a;outline-offset:-3px}.edr .sw{flex:.7;height:40px;border:2px solid #fff6}.edr .sw.on{outline:3px solid #fff;outline-offset:2px}.edr .sep{width:6px}
 .ecb{position:absolute;border:2px solid #fff;box-shadow:0 0 0 9999px #000a;touch-action:none;cursor:move}.ecb::before,.ecb::after{content:"";position:absolute;pointer-events:none;border:0 solid #fff6}.ecb::before{left:33.3%;right:33.3%;top:0;bottom:0;border-width:0 1px}.ecb::after{top:33.3%;bottom:33.3%;left:0;right:0;border-width:1px 0}
 .ecb i{position:absolute;width:26px;height:26px;border:0 solid #fff}.ecb i[data-h=nw]{left:-5px;top:-5px;border-width:5px 0 0 5px}.ecb i[data-h=ne]{right:-5px;top:-5px;border-width:5px 5px 0 0}.ecb i[data-h=sw]{left:-5px;bottom:-5px;border-width:0 0 5px 5px}.ecb i[data-h=se]{right:-5px;bottom:-5px;border-width:0 5px 5px 0}
 .ecb i[data-h=n],.ecb i[data-h=s]{left:50%;margin-left:-13px;height:6px}.ecb i[data-h=n]{top:-5px;border-top-width:5px}.ecb i[data-h=s]{bottom:-5px;border-bottom-width:5px}.ecb i[data-h=e],.ecb i[data-h=w]{top:50%;margin-top:-13px;width:6px}.ecb i[data-h=e]{right:-5px;border-right-width:5px}.ecb i[data-h=w]{left:-5px;border-left-width:5px}
@@ -88,6 +91,19 @@ table{border-collapse:collapse;width:100%}td,th{border:1px solid #999;padding:5p
 .lg{position:absolute;left:4px;bottom:10px;height:36px}
 }
 @media print{.bl{margin:0;padding-left:26px;list-style:disc}.bl li{margin:3px 0}}
+@media print{.dh{position:absolute;left:0;top:0;width:1316px;height:95px;background:#ffe699;border-bottom:2px solid #000;display:flex;align-items:center;padding:0 12px;font-size:31px;color:#000;white-space:nowrap;overflow:hidden}
+.P figure.dq{width:415px}.P figure.dq img,.P figure.dq .eb{height:312px}.P figure.dq figcaption{border:0;height:36px;margin-top:10px;padding:2px 4px;font-size:20px}
+.dna{position:absolute;font-size:42px}.dlb{position:absolute;border:1px solid #000;font-size:22px}
+.P .dcv td{font-size:17px;border:1px solid #000;padding:2px 8px}.P .dcv .gh{background:#a6a6a6;font-weight:700;font-size:21px}.P .dcv .v{color:#0070c0;font-weight:700;font-size:18px}
+.dpb{position:absolute;height:31px;border:1px solid #000;font-size:15px;display:flex;align-items:center;justify-content:center;background:#fff;color:#000}.dpb.l{background:#4472c4;color:#fff}.dpb.x{background:#00b050}}
+@media print{.pph{position:absolute;left:0;top:0;width:1316px;height:108px;background:#595959;color:#fff;border-bottom:2px solid #1f2a44;display:flex;align-items:center;padding:0 14px;font:700 32px Arial;white-space:nowrap;overflow:hidden}
+.pl{position:absolute;font-size:19px}.pv{position:absolute;font-size:19px;font-weight:700}
+.P figure.pq{width:428px;display:flex;flex-direction:column-reverse}.P figure.pq img,.P figure.pq .eb{height:324px}.P figure.pq figcaption{border:0;height:36px;margin:0 0 12px;padding:2px 4px;font-size:20px}
+.P figure.pm{display:flex;width:1290px}.P figure.pm img,.P figure.pm .eb{width:428px;height:353px;flex:none}.P figure.pm figcaption{border:0;height:auto;max-height:353px;width:760px;margin:16px 0 0 70px;padding:0;font-size:18px;white-space:pre-line;line-height:1.35}
+.P figure.pw{width:600px}.P figure.pw img,.P figure.pw .eb{height:450px}.P figure.pw figcaption{border:0;height:150px;margin-top:52px;padding:0 0 0 20px;font-size:18px;white-space:pre-line;line-height:1.35}
+.pbx{position:absolute;border:1px solid #000;font-size:22px;display:flex;align-items:center;justify-content:center;height:45px;background:#fff}
+.P .pht th{background:#595959;color:#fff;font-size:19px;border:0;border-right:2px solid #fff;height:36px}.P .pht td{font-size:18px;border:0;height:36px}}
+.dpg{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.dpg button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:6px;padding:7px 9px;font-size:13px;margin:0}.dpg button b{margin-left:6px}.dpg button.on{background:#00b050;color:#fff;border-color:#00b050}.dpg button.na{opacity:.55}
 @media print{.ix{right:22px;top:0;width:130px;height:84px;background:none;clip-path:none;display:block;padding:0}.ix svg{position:absolute;left:0;top:0}.ix i{position:absolute;left:0;right:0;bottom:6px;text-align:center;font-size:17px}
 .it td+td,.it th+th{border-left:2px solid #fff}.vl{text-align:left!important;padding-left:28px!important;white-space:normal;overflow-wrap:anywhere;line-height:1.2}
 .fb{white-space:normal;padding:8px 12px;line-height:1.15}.eb{width:100%;height:245px;border:1px solid #999;background:#fafafa}}
@@ -175,7 +191,11 @@ label.b input,.pk input{position:absolute;left:0;top:0;width:100%;height:100%;op
 <div id="net" hidden></div><main id="app"></main><div id="print"></div>
 <script>
 const SEC=[["box","Box Selection","Chọn thùng"],["pack","Packaging Check","Kiểm tra thùng / chất lượng in"],["wt","Weight Check","Kiểm tra cân nặng"],["psz","Package Measurements","Kích thước thùng"],["lbl","Package Labels","Tem thùng"],["bar","Barcode Check","Kiểm tra mã vạch"],["mat","Package Materials","Vật liệu đóng gói"],["cmp","Components Check","Kiểm tra chi tiết rời"],["man","Manual Check","Hướng dẫn lắp ráp"],["moi","Moisture Check","Kiểm tra độ ẩm"],["col","Color Check","Kiểm tra màu"],["fit","Materials / Fittings","Kiểm vật tư"],["asm","Assembly on Site","Kiểm tra lắp ráp"],["psize","Product Measurement","Kích thước sản phẩm"],["pph","Product Photos","Hình sản phẩm"],["def","Defects Found","Lỗi tìm thấy"]];
-const APPV="v45";const $=s=>document.querySelector(s);
+/* ===== Loại báo cáo: Final / Drop test (PPS: chờ file mẫu) ===== */
+const DSEC=[["dpk","Packaging Before Test","Đóng gói trước khi test"],["dwt","Weight Photos","Cân nặng thùng & sản phẩm"],["ddim","Packaging Dim","Kích thước thùng"],["dinb","Inner Box Dim","Kích thước thùng trong (inner box)"],["dcor","Drop Test – Corner","Thả rơi – Góc"],["dfac","Drop Test – Face","Thả rơi – Mặt"],["dedg","Drop Test – Edges","Thả rơi – Cạnh"],["dopen","Open Box After Tested","Khui thùng sau khi test"],["dmat","Packing Materials","Vật tư đóng gói"],["dcmp","Loose Components","Chi tiết rời"],["dman","Manual (AI)","Hướng dẫn lắp ráp (HDLR)"],["dpph","Product After Unbox","Sản phẩm sau khi khui thùng"]];
+const PSEC=[["pcov","Cover Photo","Ảnh trang bìa"],["pms","Master Samples at Factory","Mẫu kí lưu tại nhà máy"],["ppro","Product Photos","Hình sản phẩm"],["pww","WW Product Photos","Hình sản phẩm chưa sơn"],["podim","Overall Dim","Kích thước tổng thể"],["pdim","Details Dim Measure","Đo kích thước chi tiết"],["pmat","Materials","Vật liệu"],["pkd","KD Component – HW","Chi tiết tháo rời & ngũ kim"],["pdraw","Product Drawing","Bản vẽ sản phẩm"],["pwatch","Production Watch Out","Lưu ý cho sản xuất"]];
+const ASEC=[...SEC,...DSEC,...PSEC],isDrop=r=>(r||S||{}).type==="drop",isPPS=r=>(r||S||{}).type==="pps",isOne=r=>isDrop(r)||isPPS(r),isDK=k=>DSEC.some(z=>z[0]===k)||PSEC.some(z=>z[0]===k),SECS=()=>isDrop()?DSEC:isPPS()?PSEC:SEC;
+const APPV="v57";const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 let db,S,V={p:"list"},mem={};
@@ -211,15 +231,37 @@ const DAYS=()=>{try{return +localStorage.getItem("fir_days")||10}catch(e){return
 const bGet=async id=>{const v=await idbGet("m","b:"+id);return v&&v.base?v.base:v},bPut=(id,r)=>idbPut("m","b:"+id,{base:r});
 async function bFix(){try{for(const k of await idbKeys("m"))if(String(k).startsWith("b:")){const v=await idbGet("m",k);if(v&&!v.base&&v.skus)await idbPut("m",k,{base:v})}}catch(e){}}
 const allReports=()=>idbRun("m","readonly",s=>s.getAll()).then(r=>(r||[]).filter(x=>x&&x.id&&x.skus),()=>[]);
-async function delReport(r,local){for(const k of r.skus)for(const x of Object.values(k.sec))for(const p of x.ph)if(p.id)await delImg(p.id);await idbDel("m","r:"+r.id);await idbDel("m","b:"+r.id);for(const k of await idbKeys("m"))if(String(k).startsWith("snap:"+r.id+":"))await idbDel("m",k);if(!local)syMark(r.id,1)}
+/* ===== Thùng rác: báo cáo bị xóa (ở máy này hoặc máy khác) giữ lại 30 ngày, kèm toàn bộ ảnh ===== */
+const TRASH_DAYS=30;
+async function trashList(){const o=[];for(const k of await idbKeys("m"))if(String(k).startsWith("x:")){const v=await idbGet("m",k);if(v&&v.r&&v.r.id)o.push(v)}return o.sort((a,b)=>b.at-a.at)}
+async function trashIds(){const u=new Set();for(const t of await trashList())for(const i of imgIds(t.r))u.add(i);return u}
+async function trashReport(r,fromSync){await idbPut("m","x:"+r.id,{at:Date.now(),sync:fromSync?1:0,r:JSON.parse(JSON.stringify(r))});await idbDel("m","r:"+r.id);await idbDel("m","b:"+r.id);if(!fromSync&&!r.cloudOff)syMark(r.id,1)}
+async function trashRestore(id){const v=await idbGet("m","x:"+id);if(!v)return;const r=v.r;if(await poTaken(r.cover.po,r.id))r.cover.po=(r.cover.po||"")+" (khôi phục)";r.updated=Date.now();
+ await idbPut("m","r:"+r.id,r);await idbDel("m","x:"+id);for(const i of imgIds(r))await idbDel("m","u:"+i);/* tải ảnh lên lại phòng khi bản trên mây đã bị dọn */
+ if(syOn()&&!r.cloudOff){const o=dq();o[r.id]="u"+Date.now();dqS(o);netUI();setTimeout(syPush,500)}}
+async function trashPurge(id){const v=await idbGet("m","x:"+id);if(!v)return;const keep=new Set();for(const r of await allReports())for(const i of imgIds(r))keep.add(i);for(const t of await trashList())if(t.r.id!==id)for(const i of imgIds(t.r))keep.add(i);
+ for(const i of imgIds(v.r))if(i!=="logo"&&!keep.has(i)){await idbDel("i",i);await idbDel("i","h:"+i);await idbDel("i","t:"+i);await idbDel("m","u:"+i);memDrop(i);delete memT[i]}
+ for(const k of await idbKeys("m"))if(String(k).startsWith("snap:"+id+":"))await idbDel("m",k);await idbDel("m","x:"+id)}
+/* báo cáo trong thùng rác mà máy này giữ ĐỦ ảnh → xóa bản ảnh trên mây cho đỡ tốn dung lượng (khôi phục sẽ tải lên lại) */
+async function trashCloudFree(id){try{if(!syOn()||!navigator.onLine)return;const v=await idbGet("m","x:"+id);if(!v||v.cg)return;const ids=imgIds(v.r).filter(i=>i!=="logo");for(const i of ids)if(!asBlob(await idbGet("i",i)))return;
+ const used=await cloudUsed(id);for(const r of await allReports())for(const i of imgIds(r))used.add(i);await cloudDel(ids.filter(i=>!used.has(i)));v.cg=1;await idbPut("m","x:"+id,v)}catch(e){}}
+async function trashAuto(){try{const lim=Date.now()-TRASH_DAYS*864e5;for(const t of await trashList())if(t.at<lim)await trashPurge(t.r.id)}catch(e){}}
+async function trashUI(){const L=await trashList();for(const t of L){t.miss=0;for(const i of imgIds(t.r))if(i!=="logo"&&!asBlob(await idbGet("i",i)))t.miss++}const m=document.createElement("div");m.style.cssText="position:fixed;inset:0;background:#000a;z-index:99;display:grid;place-items:center;padding:16px";
+ m.innerHTML=`<div class=c style="max-width:520px;width:100%;max-height:88vh;overflow:auto"><h2>🗑 Thùng rác</h2><p class=tip>Báo cáo đã xóa được giữ ${TRASH_DAYS} ngày kèm ảnh có trên máy này, sau đó mới xóa hẳn. Ảnh trên mây của báo cáo đã xóa được dọn ngay nếu máy xóa có đủ ảnh — muốn khôi phục đủ ảnh hãy khôi phục trên máy đó (thường là máy đã chụp).</p>
+  ${L.map((t,i)=>`<div class=row style="gap:8px"><div class=t><b>${esc(t.r.cover?.po||"(chưa có tên)")}</b><small>${t.r.skus.length} item · ${phCount(t.r)} ảnh · xóa ${new Date(t.at).toLocaleString("vi-VN")}${t.sync?" (từ máy khác)":""}${t.miss?` · <b style="color:#c0392b">máy này thiếu ${t.miss} ảnh</b>`:""} · còn ${Math.max(0,Math.ceil((t.at+TRASH_DAYS*864e5-Date.now())/864e5))} ngày</small></div><button class="b y" data-tr="${i}" style="margin:0;padding:8px 10px">Khôi phục</button><button class="b x" data-tp="${i}" style="margin:0;padding:8px 10px">Xóa hẳn</button></div>`).join("")||"<p>Thùng rác trống.</p>"}
+  <p><button class="b g" id=trx style="width:100%;margin-top:8px">Đóng</button></p></div>`;document.body.append(m);
+ m.querySelector("#trx").onclick=()=>{m.remove();render()};
+ m.querySelectorAll("[data-tr]").forEach(b=>b.onclick=async()=>{const t=L[+b.dataset.tr];if(t.miss&&!confirm(`Máy này không có ${t.miss}/${phCount(t.r)} ảnh của báo cáo (ảnh nằm ở máy đã chụp; bản trên mây có thể đã xóa).\nNên khôi phục trên máy đã chụp ảnh. Vẫn khôi phục ở đây?`))return;await trashRestore(t.r.id);m.remove();toast("✓ Đã khôi phục báo cáo "+(t.r.cover?.po||""));render()});
+ m.querySelectorAll("[data-tp]").forEach(b=>b.onclick=async()=>{const t=L[+b.dataset.tp];if(!confirm(`Xóa HẲN báo cáo "${t.r.cover?.po||""}" và ${phCount(t.r)} ảnh khỏi máy này? Không thể hoàn tác.`))return;await trashPurge(t.r.id);m.remove();trashUI()})}
+async function delReport(r,local){for(const k of r.skus)for(const x of Object.values(k.sec))for(const p of x.ph)if(p.id)await delImg(p.id);await idbDel("m","r:"+r.id);await idbDel("m","b:"+r.id);for(const k of await idbKeys("m"))if(String(k).startsWith("snap:"+r.id+":"))await idbDel("m",k);if(!local&&!r.cloudOff)syMark(r.id,1)}
 async function openReport(id){S=await idbGet("m","r:"+id);if(S){const ks=(await idbKeys("m")).filter(x=>String(x).startsWith("snap:"+id+":")).sort(),last=ks.length?+String(ks[ks.length-1]).split(":")[2]:0;if(Date.now()-last>18e5)await snap(S,"Khi mở báo cáo")}if(!S){if(syOn())try{await syPull(id);S=await idbGet("m","r:"+id)}catch(e){}if(!S)return render()}V={p:"home"};render();scrollTo(0,0);
  if(syOn()&&navigator.onLine)syPull(id).then(async ch=>{if(!ch||!S||S.id!==id||Object.keys(dq()).includes(id))return;const n=await idbGet("m","r:"+id);if(n&&n.updated>S.updated){S=n;if(V.p!=="sec")render();toast("Đã cập nhật bản mới từ máy khác")}}).catch(()=>{})}
-async function renderList(a){$("#ttl").textContent="Báo cáo của tôi";const rs=(await allReports()).sort((x,y)=>y.updated-x.updated),D=DAYS();
- a.innerHTML=`<div class=c><button class="b y" id=nr style="width:100%">＋ Tạo báo cáo mới</button><p class=tip>Báo cáo và ảnh <b>không bao giờ tự xóa</b>. Báo cáo quá ${D} ngày chưa sửa sẽ được đánh dấu đỏ để bạn sao lưu rồi tự xóa khi máy đầy.</p></div>`+(rs.map(r=>{const age=Math.floor((Date.now()-r.updated)/864e5),old=age>=D,bk=r.bk&&r.bk>=r.updated,st=[old?`Đã ${age} ngày chưa sửa`:"",syOn()?"":bk?"✓ đã sao lưu":"chưa sao lưu bản mới nhất"].filter(Boolean).join(" · ");const dupN=rs.filter(z=>nk(z.cover.po)&&nk(z.cover.po)===nk(r.cover.po)).length;return`<div class="c rp" data-o="${r.id}"><div class=t><b>${esc(r.cover.po||"(chưa có PO)")}</b>${dupN>1?` <span class=n style="background:#c0392b;color:#fff">⚠ trùng tên</span> <button class="b y" data-mg="${esc(r.cover.po)}" style="padding:4px 8px;font-size:12px">Gộp ${dupN} báo cáo</button>`:""}${r.cover.cust?" · "+esc(r.cover.cust):""}<small>${r.skus.length} SKU · sửa ${new Date(r.updated).toLocaleString("vi-VN")}</small><small style="color:${old?"var(--bad)":"var(--mut)"}">${st}</small></div><button class="b x" data-d="${r.id}">Xóa</button></div>`}).join("")||'<p class=tip>Chưa có báo cáo nào.</p>')+`<div class=c><h2>Cài đặt <small style="font-weight:400;color:var(--mut)">· phiên bản ${APPV}</small></h2><p class=tip id=stg>Đang đo dung lượng…</p><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type=checkbox id=hqo style="width:auto" ${hiOn()?"checked":""}> Lưu thêm ảnh gốc 4032×3024 (tốn gấp ~3 lần bộ nhớ)</label><button class="b g" id=orf style="width:100%;margin:8px 0">🔎 Tìm ảnh bị thất lạc</button><label>Đánh dấu báo cáo cũ sau (ngày)</label><input type=number min=1 id=dy value=${D}><label class="b g" style="margin-top:10px">Khôi phục báo cáo từ file sao lưu (.zip / .json)<input type=file accept=".zip,.json,application/zip,application/json" id=rsf></label></div>${syCard()}`;syBind(a);
- $("#nr").onclick=async()=>{if(syOn()&&navigator.onLine){busyMsg("Đang kiểm tra báo cáo trên các máy khác…");try{await syPull()}catch(e){}busyEnd()}const po=await askPO();if(!po)return;S=blank();S.cover.po=po;if(rs[0])S.cfg={...rs[0].cfg};await save();V={p:"home"};render()};
+async function renderList(a){$("#ttl").textContent="Báo cáo của tôi";const TRN=(await trashList()).length;const rs=(await allReports()).sort((x,y)=>y.updated-x.updated),D=DAYS();
+ a.innerHTML=`<div class=c><button class="b y" id=nr style="width:100%">＋ Tạo báo cáo mới</button><p class=tip>Báo cáo và ảnh <b>không bao giờ tự xóa</b>. Báo cáo quá ${D} ngày chưa sửa sẽ được đánh dấu đỏ để nhắc bạn sao lưu; app không tự xóa — bạn tự xóa bớt khi máy đầy.</p>${TRN?`<button class="b g" id=trb style="width:100%;margin-top:6px">🗑 Thùng rác (${TRN} báo cáo)</button>`:""}</div>`+(rs.map(r=>{const age=Math.floor((Date.now()-r.updated)/864e5),old=age>=D,bk=r.bk&&r.bk>=r.updated,st=[old?`Đã ${age} ngày chưa sửa`:"",syOn()?"":bk?"✓ đã sao lưu":"chưa sao lưu bản mới nhất"].filter(Boolean).join(" · ");const dupN=rs.filter(z=>nk(z.cover.po)&&nk(z.cover.po)===nk(r.cover.po)).length;return`<div class="c rp" data-o="${r.id}"><div class=t><b>${esc(r.cover.po||"(chưa có PO)")}</b>${r.type==="drop"?' <span class=n style="background:#ffe699;color:#000;font-weight:700">DROP TEST</span>':r.type==="pps"?' <span class=n style="background:#595959;color:#fff;font-weight:700">PPS</span>':""}${dupN>1?` <span class=n style="background:#c0392b;color:#fff">⚠ trùng tên</span> <button class="b y" data-mg="${esc(r.cover.po)}" style="padding:4px 8px;font-size:12px">Gộp ${dupN} báo cáo</button>`:""}${r.cover.cust?" · "+esc(r.cover.cust):""}${r.cloudOff&&syOn()?' <span class=n style="background:#ddd;color:#333">📴 chỉ trên máy</span>':""}<small>${isOne(r)?"SKU "+esc(r.skus[0]?.code||"—"):r.skus.length+" SKU"} · sửa ${new Date(r.updated).toLocaleString("vi-VN")}</small><small style="color:${old?"var(--bad)":"var(--mut)"}">${st}</small></div><button class="b x" data-d="${r.id}">Xóa</button></div>`}).join("")||'<p class=tip>Chưa có báo cáo nào.</p>')+`<div class=c><h2>Cài đặt <small style="font-weight:400;color:var(--mut)">· phiên bản ${APPV}</small></h2><p class=tip id=stg>Đang đo dung lượng…</p><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type=checkbox id=hqo style="width:auto" ${hiOn()?"checked":""}> Lưu thêm ảnh gốc 4032×3024 (tốn gấp ~3 lần bộ nhớ)</label><button class="b g" id=orf style="width:100%;margin:8px 0">🔎 Tìm ảnh bị thất lạc</button><label>Đánh dấu báo cáo cũ sau (ngày)</label><input type=number min=1 id=dy value=${D}><label class="b g" style="margin-top:10px">Khôi phục báo cáo từ file sao lưu (.zip / .json)<input type=file accept=".zip,.json,application/zip,application/json" id=rsf></label></div>${syCard()}`;syBind(a);
+ $("#nr").onclick=async()=>{if(syOn()&&navigator.onLine){busyMsg("Đang kiểm tra báo cáo trên các máy khác…");try{await syPull()}catch(e){}busyEnd()}const ty=await pickType();if(!ty)return;const po=await askPO("",ty==="drop"?"Nhập tên báo cáo Drop test (VD: mã SKU hoặc PO#) — không được trùng với báo cáo khác:":ty==="pps"?"Nhập tên báo cáo PPS (VD: mã SKU) — không được trùng với báo cáo khác:":"");if(!po)return;S=ty==="drop"?blankDrop(rs):ty==="pps"?blankPPS(rs):blank();S.cover.po=po;if(rs[0])S.cfg={...rs[0].cfg};await save();V={p:"home"};render()};
  a.querySelectorAll("[data-o]").forEach(e=>e.onclick=()=>openReport(e.dataset.o));a.querySelectorAll("[data-mg]").forEach(e=>e.onclick=ev=>{ev.stopPropagation();mergeReports(e.dataset.mg)});
- storageUI();$("#orf").onclick=findLost;$("#hqo").onchange=async e=>{const v=e.target.checked?"1":"0";for(const r of await allReports()){r.cfg={...(r.cfg||{}),hq:v};await idbPut("m","r:"+r.id,r)}if(S){S.cfg={...(S.cfg||{}),hq:v}}toast(v==="1"?"Đã bật lưu ảnh gốc":"Đã tắt lưu ảnh gốc — tiết kiệm bộ nhớ")};
- a.querySelectorAll("[data-d]").forEach(e=>e.onclick=async ev=>{ev.stopPropagation();const r=rs.find(z=>z.id===e.dataset.d);if(confirm("Xóa báo cáo "+(r.cover.po||"này")+" và toàn bộ ảnh?")){await delReport(r);render()}});
+ storageUI();$("#orf").onclick=findLost;if($("#trb"))$("#trb").onclick=trashUI;$("#hqo").onchange=async e=>{const v=e.target.checked?"1":"0";for(const r of await allReports()){r.cfg={...(r.cfg||{}),hq:v};await idbPut("m","r:"+r.id,r)}if(S){S.cfg={...(S.cfg||{}),hq:v}}toast(v==="1"?"Đã bật lưu ảnh gốc":"Đã tắt lưu ảnh gốc — tiết kiệm bộ nhớ")};
+ a.querySelectorAll("[data-d]").forEach(e=>e.onclick=async ev=>{ev.stopPropagation();const r=rs.find(z=>z.id===e.dataset.d);if(confirm("Xóa báo cáo "+(r.cover.po||"này")+"?\nBáo cáo và ảnh được chuyển vào Thùng rác, khôi phục được trong "+TRASH_DAYS+" ngày.")){await trashReport(r);render();toast("Đã chuyển vào Thùng rác")}});
  $("#dy").onchange=e=>{try{localStorage.setItem("fir_days",Math.max(1,+e.target.value||10))}catch(x){}render()};
  $("#rsf").onchange=e=>{const f=e.target.files[0];e.target.value="";restore(f)}}
 /* ghi nhớ item / ảnh đã xóa để đồng bộ không "hồi sinh" chúng từ máy khác */
@@ -239,7 +281,7 @@ async function dlImg(bl){const q=DLQ();if(q==="orig"||!bl)return bl;const kb=+q,
   for(let t=0;t<3;t++){const k=Math.min(1,side/Math.max(i.naturalWidth,i.naturalHeight)),c=document.createElement("canvas");c.width=Math.round(i.naturalWidth*k);c.height=Math.round(i.naturalHeight*k);c.getContext("2d").drawImage(i,0,0,c.width,c.height);
    for(const qq of[.82,.72,.62,.52]){const b=await cvBlob(c,qq);if(!b)break;best=b;if(b.size<=lim)break}c.width=c.height=0;if(best&&best.size<=lim)break;side=Math.round(side*.8)}
   return best&&best.size<bl.size?best:bl}catch(e){return bl}finally{URL.revokeObjectURL(u)}}
-async function prepPhotos(){const fs=[];let n=0;for(const k of S.skus){const code=(k.code||"sku").replace(/[^\w.\-]/g,"_");for(const d of SEC){const x=k.sec[d[0]];if(!x)continue;let j=0;for(const p of x.ph){if(!p.id)continue;const h=await idbGet("i","h:"+p.id),nm=`${code}_${d[0]}_${String(++j).padStart(2,"0")}.jpg`;busyMsg(`Đang chuẩn bị ảnh ${++n}…`);const u=await dlImg(h&&h.size?h:await imgBlob(p.id));if(u)fs.push(new File([u],nm,{type:"image/jpeg"}))}}}PHF=fs}
+async function prepPhotos(){const fs=[];let n=0;for(const k of S.skus){const code=(k.code||"sku").replace(/[^\w.\-]/g,"_");for(const d of ASEC){const x=k.sec[d[0]];if(!x)continue;let j=0;for(const p of x.ph){if(!p.id)continue;const h=await idbGet("i","h:"+p.id),nm=`${code}_${d[0]}_${String(++j).padStart(2,"0")}.jpg`;busyMsg(`Đang chuẩn bị ảnh ${++n}…`);const u=await dlImg(h&&h.size?h:await imgBlob(p.id));if(u)fs.push(new File([u],nm,{type:"image/jpeg"}))}}}PHF=fs}
 function confirmSaveAll(){const n=PHF.length;if(!n)return alert("Chưa có ảnh nào trong báo cáo.");const mb=(PHF.reduce((a,f)=>a+f.size,0)/1048576).toFixed(1),m=document.createElement("div");m.style.cssText="position:fixed;inset:0;background:#000a;z-index:99;display:grid;place-items:center;padding:20px";
  m.innerHTML=`<div class=c style="max-width:420px;width:100%"><h2>Lưu tất cả ảnh?</h2><p>${n} ảnh · ${mb} MB sẽ được lưu / chia sẻ.</p><div class=r><button class="b y" id=sy>Lưu tất cả</button><button class="b g" id=sn>Hủy</button></div></div>`;document.body.append(m);
  m.querySelector("#sn").onclick=()=>m.remove();m.querySelector("#sy").onclick=()=>{m.remove();saveAllPhotos()}}
@@ -248,8 +290,8 @@ async function saveAllPhotos(){const fs=PHF;if(!fs.length)return alert("Chưa c�
  await zipPhotos(true)}
 async function zipPhotos(direct,only){const ks=only?[only]:S.skus,fs=[],clean=t=>String(t||"").replace(/[\\/:*?"<>|\n\r\t]+/g," ").replace(/\s+/g," ").trim().slice(0,60);
  const root=clean(S.cover.po?"PO "+S.cover.po:"Bao cao")||"Bao cao";busyMsg("Đang gom ảnh…");
- try{for(const k of ks){const kf=clean(k.code)||"item";let si=0;for(const d of SEC){const x=k.sec[d[0]];const ph=(x?.ph||[]).filter(p=>p.id);if(!ph.length)continue;si++;
-   const sf=String(SEC.indexOf(d)+1).padStart(2,"0")+" "+clean(d[1]);let j=0;
+ try{for(const k of ks){const kf=clean(k.code)||"item";let si=0;for(const d of SECS()){const x=k.sec[d[0]];const ph=(x?.ph||[]).filter(p=>p.id);if(!ph.length)continue;si++;
+   const sf=String(SECS().indexOf(d)+1).padStart(2,"0")+" "+clean(d[1]);let j=0;
    for(const p of ph){let bl=await idbGet("i","h:"+p.id);if(!(bl&&bl.size)){bl=await imgBlob(p.id);if(!bl)continue}busyMsg(`Đang gom ảnh ${fs.length+1}…`);bl=await dlImg(bl);
     const nn=String(++j).padStart(2,"0");fs.push({n:`${root}/${kf}/${sf}/${nn}${p.cap?" "+clean(p.cap):""}.jpg`,blob:bl})}}}
   if(!fs.length){busyEnd();return alert(only?"Item này chưa có ảnh.":"Chưa có ảnh nào trong báo cáo.")}
@@ -277,7 +319,7 @@ async function camOpen(onShot,onDel){
    Promise.all(ps).then(r=>{if(r.includes("granted"))sensOn();else toast("⚠ iPhone chưa cho phép cảm biến xoay — ảnh sẽ theo nút ⟳ trên khung chụp. Vào Cài đặt iPhone → Safari → Nâng cao → Dữ liệu trang web để cấp lại quyền (KHÔNG xóa app khỏi màn hình chính — sẽ mất dữ liệu).")})}else sensOn()}catch(e){}
  setTimeout(()=>{if(!sens&&document.querySelector(".cam"))toast("⚠ Không đọc được cảm biến xoay — bấm nút ⟳ trên khung chụp để chọn NGANG / DỌC")},2500);
  const m=document.createElement("div");m.className="cam";
- m.innerHTML='<div class=cvw><video playsinline webkit-playsinline autoplay muted disablepictureinpicture disableremoteplayback x-webkit-airplay="deny"></video><div class=cfl></div><div class=cgr><i></i><i></i><i></i><i></i></div><div class=clv><i></i><b></b><i></i></div><div class=cfx><span class=cf0></span><span class=cf1></span></div><div class=cor>↻ Ảnh sẽ lưu theo chiều ngang</div><div class=ctp><span class=crs hidden></span><button class=omb>⟳ Tự động</button><button class=clb>━ Cân bằng</button><button class=cgb>▦ Lưới</button></div><div class=czm></div><div class=cst><p>Ảnh chụp tự lưu — chạm ảnh nhỏ để xem, xoay, xóa</p></div></div><div class=camb><label class=cnb>📱 Camera<br>iPhone<input type=file accept="image/*" capture=environment hidden></label><div class=csc><div class=cmd>ẢNH</div><button id=sh aria-label="Chụp"></button></div><button id=cx>Xong</button></div>';document.body.append(m);
+ m.innerHTML='<div class=cvw><video playsinline webkit-playsinline autoplay muted disablepictureinpicture disableremoteplayback x-webkit-airplay="deny"></video><div class=cfl></div><div class=cgr><i></i><i></i><i></i><i></i></div><div class=clv><i></i><b></b><i></i></div><div class=cfx><span class=cf0></span><span class=cf1></span></div><div class=cor>↻ Ảnh sẽ lưu theo chiều ngang</div><div class=ctp><span class=crs hidden></span><button class=omb>⟳ Tự động</button><button class=clb>━ Cân bằng</button><button class=cgb>▦ Lưới</button></div><div class=czm></div><div class=cst><p>Chạm nút là chụp ngay · thấy nháy là đã chụp xong · ảnh tự lưu — chạm ảnh nhỏ để xem, xoay, xóa</p></div></div><div class=camb><label class=cnb>📱 Camera<br>iPhone<input type=file accept="image/*" capture=environment hidden></label><div class=csc><div class=cmd>ẢNH</div><button id=sh aria-label="Chụp"></button></div><button id=cx>Xong</button></div>';document.body.append(m);
  const v=m.querySelector("video"),vw=m.querySelector(".cvw"),strip=m.querySelector(".cst"),fl=m.querySelector(".cfl"),cx=m.querySelector("#cx"),zb=m.querySelector(".czm"),ot=m.querySelector(".cor"),omb=m.querySelector(".omb"),gr=m.querySelector(".cgr"),gb=m.querySelector(".cgb"),rs=m.querySelector(".crs");
  let stm=null,ic=null,busy=0,n=0,away=0,hw=null,z=1;
  const noGest=e=>e.preventDefault();document.addEventListener("gesturestart",noGest);document.addEventListener("gesturechange",noGest);
@@ -297,7 +339,7 @@ async function camOpen(onShot,onDel){
  const start=async()=>{clearTimeout(CAMS.t);const live=CAMS.s&&CAMS.s.getVideoTracks().some(t=>t.readyState==="live"&&t.enabled&&!t.muted);if(CAMS.s&&!live){CAMS.s.getTracks().forEach(t=>t.stop());CAMS.s=null}
   if(live)stm=CAMS.s;else{stm=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:4032},height:{ideal:3024},aspectRatio:{ideal:4/3}},audio:false});CAMS.s=stm}
   v.muted=true;v.playsInline=true;v.setAttribute("playsinline","");v.setAttribute("webkit-playsinline","");v.controls=false;v.srcObject=stm;await Promise.race([v.play().catch(()=>{}),new Promise(r=>setTimeout(r,1500))]);ic=null;hw=null;
-  const tr=stm.getVideoTracks()[0];try{const cp=tr.getCapabilities&&tr.getCapabilities();if(cp&&cp.zoom&&cp.zoom.max>cp.zoom.min)hw={min:cp.zoom.min,max:cp.zoom.max}}catch(e){}
+  const tr=stm.getVideoTracks()[0];try{const cp=tr.getCapabilities&&tr.getCapabilities();if(cp&&cp.focusMode&&cp.focusMode.includes("continuous"))tr.applyConstraints({advanced:[{focusMode:"continuous"}]}).catch(()=>{});if(cp&&cp.zoom&&cp.zoom.max>cp.zoom.min)hw={min:cp.zoom.min,max:cp.zoom.max}}catch(e){}
   try{if(window.ImageCapture)ic=new ImageCapture(tr)}catch(e){}zUI();setTimeout(place,50)};
  /* đóng camera: giữ luồng 3 phút để lần mở sau không hỏi quyền lại */
  const stop=hard=>{if(stm){if(hard){stm.getTracks().forEach(t=>t.stop());CAMS.s=null}else{const q=stm;CAMS.t=setTimeout(()=>{q.getTracks().forEach(t=>t.stop());if(CAMS.s===q)CAMS.s=null},180000)}}stm=null};
@@ -329,17 +371,27 @@ async function camOpen(onShot,onDel){
   const rt=async dir=>{await rotImg(id,dir);r.querySelector(".ci img").src=mem[id];t.src=memT[id]||mem[id]};r.querySelector(".rl").onclick=()=>rt(-1);r.querySelector(".rr").onclick=()=>rt(1);
   r.querySelector(".rd").onclick=async()=>{await onDel(id);t.remove();n--;cnt();if(!n)strip.innerHTML='<p>Ảnh chụp tự lưu — chạm ảnh nhỏ để xem, xoay, xóa</p>';r.remove()};
   r.querySelector(".ru").onclick=()=>{t.classList.add("ok");r.remove()}};
- /* chụp: cắt theo zoom số + xoay theo cách cầm máy */
- const grab=async()=>{const rot=rotNeed(),dz=hw?1:z;
-  if(ic&&!rot&&dz<=1){try{const b=await ic.takePhoto();if(b&&b.size){let ok=false;try{const bm=await createImageBitmap(b);ok=(bm.width>bm.height)===(v.videoWidth>v.videoHeight);bm.close&&bm.close()}catch(e){}if(ok)return b}}catch(e){}}
-  const W=v.videoWidth,H=v.videoHeight,cw=W/dz,ch=H/dz,c=document.createElement("canvas"),sw=rot%180===90;c.width=Math.round(sw?ch:cw);c.height=Math.round(sw?cw:ch);
-  const g=c.getContext("2d");g.translate(c.width/2,c.height/2);g.rotate(rot*Math.PI/180);g.drawImage(v,(W-cw)/2,(H-ch)/2,cw,ch,-cw/2,-ch/2,cw,ch);
-  let b=await new Promise(r=>{try{c.toBlob(r,"image/jpeg",.92)}catch(e){r(null)}});
-  if(!b){try{const u=c.toDataURL("image/jpeg",.92);b=new Blob([b64(u)],{type:"image/jpeg"})}catch(e){}}
-  c.width=c.height=0;return b};
- const sb=m.querySelector("#sh");
- sb.onclick=async()=>{if(busy)return;if(!v.videoWidth){try{await v.play()}catch(e){}if(!v.videoWidth)return toast("Camera chưa sẵn sàng — thử lại sau 1 giây hoặc dùng nút 📱 Camera iPhone")}busy=1;shutterSnd();sb.style.opacity=.4;fl.style.transition="none";fl.style.opacity=.9;setTimeout(()=>{fl.style.transition="opacity .35s";fl.style.opacity=0},40);
-  try{const hb=await grab();const d=hb&&await comp(hb);if(d)await add(d,hb);else toast("Không chụp được — hãy dùng nút 📱 Camera iPhone")}catch(e){toast("Lỗi chụp: "+(e&&e.message||e))}finally{setTimeout(()=>{if(v.paused)v.play().catch(()=>{});busy=0;sb.style.opacity=1},250)}};
+ /* chụp NHANH & NÉT: lấy ngay khung hình lúc ngón tay chạm nút, xét thêm 2 khung kế tiếp (~70ms) và giữ khung NÉT NHẤT
+    (đo độ nét vùng giữa ảnh); tiếng chụp + nháy chỉ phát SAU khi đã bắt xong hình → thấy nháy là có thể di chuyển máy */
+ const shot=()=>new Promise(res=>{const W=v.videoWidth,H=v.videoHeight,dz=hw?1:z,cw=W/dz,ch=H/dz,sx=(W-cw)/2,sy=(H-ch)/2,SW=240,SH=Math.max(2,Math.round(SW*ch/cw));
+  const sm=document.createElement("canvas");sm.width=SW;sm.height=SH;const sg=sm.getContext("2d",{willReadFrequently:true});let best=null,bs=-1,k=0,done=0;
+  const score=()=>{sg.drawImage(v,sx+cw*.2,sy+ch*.2,cw*.6,ch*.6,0,0,SW,SH);const d=sg.getImageData(0,0,SW,SH).data,R=SW*4;let s=0;
+   for(let y=1;y<SH-1;y+=2)for(let x=1;x<SW-1;x+=2){const i=(y*SW+x)*4,gx=d[i+4]+d[i+5]+d[i+6]-d[i-4]-d[i-3]-d[i-2],gy=d[i+R]+d[i+R+1]+d[i+R+2]-d[i-R]-d[i-R+1]-d[i-R+2];s+=gx*gx+gy*gy}return s};
+  const fin=()=>{if(done)return;done=1;sm.width=sm.height=0;res(best)};
+  const take=()=>{if(done)return;try{const s=score();if(s>bs){bs=s;if(!best){best=document.createElement("canvas");best.width=Math.round(cw);best.height=Math.round(ch)}best.getContext("2d").drawImage(v,sx,sy,cw,ch,0,0,best.width,best.height)}}catch(e){}
+   if(++k>=3)return fin();if(v.requestVideoFrameCallback)v.requestVideoFrameCallback(take);else setTimeout(take,34)};
+  take();setTimeout(fin,250)});
+ const toJpg=async(c,rot)=>{let o=c;if(rot){o=document.createElement("canvas");const sw=rot%180===90;o.width=sw?c.height:c.width;o.height=sw?c.width:c.height;const g=o.getContext("2d");g.translate(o.width/2,o.height/2);g.rotate(rot*Math.PI/180);g.drawImage(c,-c.width/2,-c.height/2);c.width=c.height=0}
+  let b=await new Promise(r=>{try{o.toBlob(r,"image/jpeg",.92)}catch(e){r(null)}});if(!b){try{b=new Blob([b64(o.toDataURL("image/jpeg",.92))],{type:"image/jpeg"})}catch(e){}}o.width=o.height=0;return b};
+ const sb=m.querySelector("#sh");let pend=0,queue=Promise.resolve(),capt=0,again=0;
+ const fire=async()=>{if(capt){again=1;return}/* bấm lúc đang bắt hình → chụp tiếp ngay sau */if(busy){if(pend>=5)toast("Đang lưu ảnh… chờ chút rồi chụp tiếp");return}if(!v.videoWidth){try{await v.play()}catch(e){}if(!v.videoWidth)return toast("Camera chưa sẵn sàng — thử lại sau 1 giây hoặc dùng nút 📱 Camera iPhone")}
+  busy=1;capt=1;sb.style.opacity=.4;const rot=rotNeed();let c=null;try{c=await shot()}catch(e){}capt=0;
+  /* đã bắt xong hình → báo cho người chụp */
+  shutterSnd();fl.style.transition="none";fl.style.opacity=.9;setTimeout(()=>{fl.style.transition="opacity .35s";fl.style.opacity=0},40);if(v.paused)v.play().catch(()=>{});
+  if(!c){busy=0;sb.style.opacity=1;return toast("Không chụp được — hãy dùng nút 📱 Camera iPhone")}
+  const jp=toJpg(c,rot);/* nén ngay để giải phóng bộ nhớ khung hình */pend++;if(pend<5){busy=0;sb.style.opacity=1}/* chụp tiếp được ngay trong lúc ảnh trước đang lưu */if(again){again=0;setTimeout(fire,0)}
+  queue=queue.then(async()=>{try{const hb=await jp;const d=hb&&await comp(hb);if(d)await add(d,hb);else toast("Không lưu được ảnh — thử lại")}catch(e){toast("Lỗi chụp: "+(e&&e.message||e))}finally{pend--;if(pend<5&&!capt){busy=0;sb.style.opacity=1}}})};
+ sb.onpointerdown=e=>{e.preventDefault();fire()};sb.onclick=e=>{if(e.detail===0)fire()};
  /* iPhone đôi khi mở video ra trình phát toàn màn hình (chữ LIVE) che mất nút chụp: thoát ra ngay và chạy lại khung ngắm */
  let fsWarn=0;v.addEventListener("webkitbeginfullscreen",()=>{try{v.webkitExitFullscreen()}catch(e){}if(!fsWarn++)toast("Đã tắt chế độ phát toàn màn hình — bấm nút tròn để chụp")});
  v.addEventListener("webkitendfullscreen",()=>{setTimeout(()=>v.play().catch(()=>{}),100)});
@@ -394,15 +446,14 @@ const verdict=()=>{const t=tot(),c=S.cover;return t[0]<=+c.aC&&t[1]<=+c.aMa&&t[2
 
 let _lastSec="";async function render(){if(V.p!=="sec"||_lastSec!==(V.s+"/"+V.k)){if(V.p==="sec")_lastSec=V.s+"/"+V.k;else _lastSec="";SEL=null}
   const a=$("#app"),b=$("#back");b.hidden=V.p==="list";$("#exp").hidden=V.p==="list";
-  if(V.p==="list"){await renderList(a)}else if(V.p==="home"){$("#ttl").textContent="Báo cáo kiểm hàng";const c=S.cover,t=tot(),ok=verdict();
+  if(V.p==="list"){await renderList(a)}else if(V.p==="home"&&isDrop()){dropHome(a)}else if(V.p==="home"&&isPPS()){ppsHome(a)}else if(V.p==="home"){$("#ttl").textContent="Báo cáo kiểm hàng";const c=S.cover,t=tot(),ok=verdict();
     const f=(k,l,ty="text")=>`<label>${l}</label><input type="${ty}" value="${esc(c[k])}" data-c="${k}">`;
     a.innerHTML=`${/iPhone|iPad/.test(navigator.userAgent)&&!navigator.standalone?'<div class=c style="border-color:#f0a800"><h2>⚠ Hãy cài app lên màn hình chính</h2><p class=tip>Nếu chỉ mở trong Safari, iPhone có thể <b>tự xóa toàn bộ báo cáo và ảnh</b> sau 7 ngày không mở trang. Mở bằng Safari → nút Chia sẻ → "Thêm vào MH chính", rồi luôn mở app từ biểu tượng đó. Mở 1 lần khi có mạng, sau đó dùng offline.</p></div>':""}<div class=c><h2>Thông tin chung</h2>${f("no","Số báo cáo")}${f("cust","Khách hàng")}${f("po","PO#")}${`<label>Mô tả sản phẩm <small>(để trống = tự lấy tên đầu của từng item)</small></label><input type="text" value="${esc(c.desc||autoDesc())}" data-c="desc"${c.desc?"":' style="color:#889"'}>`}<div class=r><div>${`<label>SL kiểm / tổng đơn (vd 50/488)</label><input type="text" value="${esc(c.qty)}" data-c="qty" placeholder="${esc(coverQty())}">${totPO()?`<small class=tip>Tổng đơn các item: <b>${totPO()}</b> · in ra: <b>${esc(coverQty())}</b></small>`:""}`}</div><div>${f("date","Ngày kiểm","date")}</div></div>${f("fac","Nhà máy")}${f("insp","Inspector")}</div>
     <div class=c><h2>Kết quả AQL</h2><div class=r><div>${f("aC","Critical tối đa","number")}</div><div>${f("aMa","Major tối đa","number")}</div><div>${f("aMi","Minor tối đa","number")}</div></div>
     <p>Lỗi: Critical <b>${t[0]}</b> · Major <b>${t[1]}</b> · Minor <b>${t[2]}</b></p><div class="res ${ok?"pass":"fail"}">${ok?"PASS":"FAIL"}</div></div>
-    <div class=c><h2>Sản phẩm (SKU)</h2>${dupItems(S).length?`<div class=mvb style="background:#fde2e0;border-color:#c0392b">⚠ Item trùng mã: <b>${dupItems(S).map(g=>esc(g[0].code)+" ("+g.length+" lần)").join(", ")}</b><button class="b y" id=fdi style="margin:0">Gộp lại (giữ đủ ảnh)</button></div>`:""}${S.skus.map(k=>{const n=SEC.reduce((s,x)=>s+cnt(k,x[0]),0);return`<div class=row data-s="${k.id}"><div class=t><b>${esc(k.code||"(chưa có mã)")}</b><small>${esc(k.name)}</small></div><span class="n ${n?"on":""}">${n} ảnh</span></div>`}).join("")||'<p class=tip>Chưa có SKU. Thêm SKU đầu tiên bên dưới.</p>'}
+    <div class=c><h2>Sản phẩm (SKU)</h2>${dupItems(S).length?`<div class=mvb style="background:#fde2e0;border-color:#c0392b">⚠ Item trùng mã: <b>${dupItems(S).map(g=>esc(g[0].code)+" ("+g.length+" lần)").join(", ")}</b><button class="b y" id=fdi style="margin:0">Gộp lại (giữ đủ ảnh)</button></div>`:""}${S.skus.map(k=>{const n=SECS().reduce((s,x)=>s+cnt(k,x[0]),0);return`<div class=row data-s="${k.id}"><div class=t><b>${esc(k.code||"(chưa có mã)")}</b><small>${esc(k.name)}</small></div><span class="n ${n?"on":""}">${n} ảnh</span></div>`}).join("")||'<p class=tip>Chưa có SKU. Thêm SKU đầu tiên bên dưới.</p>'}
     ${S.skus.length>=MAXI?`<p class=tip>Đã đủ ${MAXI} item — tối đa cho một báo cáo.</p>`:`<label>Mã item</label><input id=nc placeholder="vd: 17004985.11"><label>Tên sản phẩm</label><input id=nn>`}${S.skus.length>=MAXI?"":`<p><button class="b y" id=add>Thêm item (${S.skus.length}/${MAXI})</button></p>`}<label class="b g" style="margin-top:4px">📥 Nhập PO &amp; item từ file Excel<input type=file accept=".xlsx,.xls,.xlsm,.csv" id=xl hidden></label></div>
-    ${cfgCard()}<div class=c><h2>Xuất báo cáo</h2><p><button class="b y" id=pp style="width:100%">📊 Xuất PowerPoint (.pptx)</button></p><p><button class="b g" id=px style="width:100%">🖨 Xuất PDF có link (qua hộp thoại in)</button></p><p class=tip>Nút "Xuất PDF" trên cùng tạo thẳng 1 file PDF.</p>
-    <h2 style="margin-top:16px">Sao lưu &amp; ảnh</h2><p class=tip>${syOn()?"Báo cáo đang được đồng bộ lên mây. ":"Báo cáo chỉ nằm trong máy này. "}Nên sao lưu sau mỗi lần kiểm: 1 file .zip gồm báo cáo + toàn bộ ảnh (cả ảnh gốc), khôi phục lại được trên máy bất kỳ.${S.bk&&S.bk>=S.updated?" <b style=\"color:var(--ok)\">✓ Đã sao lưu bản mới nhất.</b>":""}</p><p><button class="b y" id=bk style="width:100%">🛟 Sao lưu báo cáo (.zip, kèm ảnh)</button></p><label>Độ nét khi tải ảnh về máy</label><select id=dlq style="margin-bottom:8px">${[["orig","Gốc — nét nhất, nặng (2–4 MB/ảnh)"],["600","Vừa — khoảng 500–600 KB/ảnh"],["300","Nhẹ — khoảng 300 KB/ảnh"]].map(([v,t])=>`<option value="${v}" ${DLQ()===v?"selected":""}>${t}</option>`).join("")}</select><p><button class="b g" id=sa style="width:100%">💾 Lưu tất cả ảnh vào máy</button></p><p><button class="b g" id=zi style="width:100%">📦 Tải toàn bộ ảnh (.zip, mỗi item 1 thư mục)</button></p><p><button class="b g" id=snp style="width:100%">🕘 Bản lưu tự động (quay lại bản trước)</button></p><p><button class="b g" id=lst style="width:100%">🔎 Tìm ảnh bị thất lạc &amp; đưa vào báo cáo này</button></p><p><button class="b x" id=rm>Xóa báo cáo này</button></p></div>`;
+    ${cfgCard()}${EXPC()}`;
     a.querySelectorAll("[data-c]").forEach(i=>i.oninput=()=>{S.cover[i.dataset.c]=i.value;i.style.color="";save()});
     a.querySelectorAll("[data-c]").forEach(i=>{i.onfocus=()=>{i.dataset.old=S.cover[i.dataset.c]||""};i.onchange=async()=>{
      if(i.dataset.c==="po"){const v=i.value.trim().replace(/\s+/g," "),old=i.dataset.old||"";const t=v?await poTaken(v,S.id):null;if(!v||t){alert(v?`PO# "${v}" đã là tên của báo cáo khác (${t.skus.length} item). Tên báo cáo không được trùng.`:"PO# (tên báo cáo) không được để trống.");i.value=S.cover.po=old;save();return}if(v!==i.value){i.value=S.cover.po=v;save()}}
@@ -410,15 +461,14 @@ let _lastSec="";async function render(){if(V.p!=="sec"||_lastSec!==(V.s+"/"+V.k)
     a.querySelectorAll("[data-s]").forEach(e=>e.onclick=()=>{V={p:"sku",s:e.dataset.s};render()});
     if($("#add"))$("#add").onclick=()=>{const code=$("#nc").value.trim();if(!code)return $("#nc").focus();if(S.skus.some(z=>String(z.code).trim().toLowerCase()===code.toLowerCase()))return alert("Mã "+code+" đã có trong báo cáo.");if(S.skus.length>=MAXI)return alert("Một báo cáo tối đa "+MAXI+" item.");S.skus.push({id:uid(),code,name:$("#nn").value.trim(),d:[0,0,0],sec:{}});save();render()};
     $("#xl").onchange=e=>{const f=e.target.files[0];e.target.value="";if(f)xlImport(f)};
-    $("#pp").onclick=()=>doExp(2);$("#px").onclick=()=>doExp(1);
+    bindExp();
     a.querySelectorAll("[data-g]").forEach(i=>i.oninput=()=>{(S.cfg||(S.cfg={}))[i.dataset.g]=i.value;save()});
     $("#lg").onchange=async e=>{const d=await comp(e.target.files[0]);if(d){memSet("logo",d);await idbPut("i","logo",d);await idbDel("m","u:logo");(S.cfg||(S.cfg={})).logo=1;save();render()}};
     if($("#lgx"))$("#lgx").onclick=async()=>{delete S.cfg.logo;await idbDel("i","logo");memDrop("logo");save();render()};
-    $("#bk").onclick=backup;$("#zi").onclick=()=>zipPhotos();$("#sa").onclick=async()=>{busyMsg("Đang chuẩn bị ảnh…");try{await prepPhotos()}finally{busyEnd()}confirmSaveAll()};$("#dlq").onchange=e=>{try{localStorage.setItem("fir_dlq",e.target.value)}catch(_){}toast("Đã chọn độ nét ảnh tải về")};
-    $("#snp").onclick=snapUI;if($("#fdi"))$("#fdi").onclick=fixDupItems;$("#lst").onclick=findLost;$("#rm").onclick=async()=>{if(!confirm("Xóa báo cáo này và toàn bộ ảnh? Không thể hoàn tác."))return;await delReport(S);V={p:"list"};render()};
+    
   }else if(V.p==="sku"){const k=sku();$("#ttl").textContent=k.code;
     a.innerHTML=`<div class=c><h2>Mã &amp; tên item</h2><div class=r><div><label>Mã item</label><input id=kc value="${esc(k.code)}"></div><div><label>Tên sản phẩm</label><input id=kn value="${esc(k.name)}"></div></div></div><div class=c><p class=tip>Số lỗi tìm thấy (tính vào kết quả AQL). Major / Minor <b>tự đếm</b> theo ảnh ở mục Lỗi tìm thấy (mỗi ảnh = 1 lỗi, xóa ảnh là bớt lỗi). Critical nhập tay.</p><div class=r>${["Critical","Major","Minor"].map((l,i)=>{const D=dd(k),au=i>0;return`<div><label>${l}${au?" · tự đếm":""}</label><input type=number min=0 value="${D[i]}" data-d="${i}"${au?' readonly style="opacity:.75"':""}></div>`}).join("")}</div></div>
-    <div class=c><h2>Số lượng (bảng kết quả)</h2><div class=r>${[["po","PO Q'ty"],["ct","Carton Q'ty"],["sm","Sample Size"]].map(([f,l])=>`<div><label>${l}</label><input type=number min=0 data-q="${f}" value="${esc(k.q?.[f]??"")}"></div>`).join("")}</div><p class=tip>Carton để trống = lấy bằng PO Q'ty.</p></div><div class=c><h2>Hạng mục kiểm</h2>${SEC.map(x=>{const n=cnt(k,x[0]);return`<div class=row data-k="${x[0]}"><div class=t>${x[1]}<small>${x[2]}</small></div><span class="n ${n?"on":""}">${n}</span></div>`}).join("")}</div><div class=c><details><summary style="font-weight:700;cursor:pointer">Thông tin sản phẩm (bấm để mở)</summary>${PF.map(([f,e,v])=>`<label>${e} · ${v}</label><input data-f="${f}" value="${esc(pfv(k,f))}"${k.f?.[f]&&pfv(k,f)===k.f[f]?"":` style="color:#667"`}>`).join("")}<p class=tip>Chữ xám = tự điền (Màu SP lấy sau dấu phẩy của tên; kích thước, cân nặng lấy từ trang Weight / Package / Product Measurement). Sửa tay thì giữ theo giá trị bạn nhập.</p></details></div>
+    <div class=c><h2>Số lượng (bảng kết quả)</h2><div class=r>${[["po","PO Q'ty"],["ct","Carton Q'ty"],["sm","Sample Size"]].map(([f,l])=>`<div><label>${l}</label><input type=number min=0 data-q="${f}" value="${esc(k.q?.[f]??"")}"></div>`).join("")}</div><p class=tip>Carton để trống = lấy bằng PO Q'ty.</p></div><div class=c><h2>Hạng mục kiểm</h2>${SECS().map(x=>{const n=cnt(k,x[0]);return`<div class=row data-k="${x[0]}"><div class=t>${x[1]}<small>${x[2]}</small></div><span class="n ${n?"on":""}">${n}</span></div>`}).join("")}</div><div class=c><details><summary style="font-weight:700;cursor:pointer">Thông tin sản phẩm (bấm để mở)</summary>${PF.map(([f,e,v])=>`<label>${e} · ${v}</label><input data-f="${f}" value="${esc(pfv(k,f))}"${k.f?.[f]&&pfv(k,f)===k.f[f]?"":` style="color:#667"`}>`).join("")}<p class=tip>Chữ xám = tự điền (Màu SP lấy sau dấu phẩy của tên; kích thước, cân nặng lấy từ trang Weight / Package / Product Measurement). Sửa tay thì giữ theo giá trị bạn nhập.</p></details></div>
     <div class=c><button class="b g" id=kz style="width:100%">📦 Tải ảnh của item này (.zip)</button><button class="b g" id=kcp style="width:100%;margin-top:8px">📋 Sao chép item này sang báo cáo khác</button></div>
     <p><button class="b x" id=ds>Xóa SKU này</button></p>`;
     $("#kc").onchange=()=>{const v=$("#kc").value.trim();if(!v){$("#kc").value=k.code;return}if(S.skus.some(z=>z!==k&&z.code.trim().toLowerCase()===v.toLowerCase())){alert("Mã "+v+" đã có trong báo cáo.");$("#kc").value=k.code;return}k.code=v;$("#ttl").textContent=v;save()};
@@ -429,20 +479,21 @@ let _lastSec="";async function render(){if(V.p!=="sec"||_lastSec!==(V.s+"/"+V.k)
     a.querySelectorAll("[data-d]").forEach(i=>i.oninput=()=>{k.d[i.dataset.d]=Math.max(0,+i.value||0);save()});
     a.querySelectorAll("[data-k]").forEach(e=>e.onclick=()=>{V={p:"sec",s:k.id,k:e.dataset.k};render()});
     $("#ds").onclick=async()=>{if(!confirm("Xóa SKU "+k.code+"?\n(Ảnh vẫn giữ trong máy, tìm lại được ở Cài đặt → Tìm ảnh bị thất lạc hoặc Bản lưu tự động.)"))return;await snap(S,"Trước khi xóa item "+k.code);gone("k",k.id);S.skus=S.skus.filter(z=>z!==k);await save();V={p:"home"};render()};
-  }else{const k=sku(),x=sec(),def=SEC.find(z=>z[0]===V.k);$("#ttl").textContent=def[1];if(["lbl","bar"].includes(V.k)&&!x.ph[0]?.ref)x.ph.unshift({ref:1,id:null,cap:"Approved Carton Layout"});if(!x.dn){x.dn=1;if(!x.note&&DN[V.k])x.note=DN[V.k].join("\n");save()}
+  }else{const k=sku(),x=sec(),def=ASEC.find(z=>z[0]===V.k);$("#ttl").textContent=def[1];if(["lbl","bar"].includes(V.k)&&!x.ph[0]?.ref)x.ph.unshift({ref:1,id:null,cap:"Approved Carton Layout"});if(!x.dn){x.dn=1;if(!x.note&&DN[V.k])x.note=DN[V.k].join("\n");save()}
     {const keep=new Set(x.ph.map(p=>p.id));for(const k in mem)if(k!=="logo"&&!keep.has(k))memDrop(k)}
     const grp=GR[V.k],sameG=(i,j)=>j>=0&&j<x.ph.length&&!x.ph[j].ref&&!!x.ph[j].up===!!x.ph[i].up,nbI=(i,d)=>{if(x.ph[i].ref)return -1;for(let j=i+d;j>=0&&j<x.ph.length;j+=d)if(sameG(i,j))return j;return -1};
     const capOf=up=>V.k==="man"?(up?"Approved AI. Page":"Actual AI. Page"):V.k==="def"?"":dc(V.k,x.ph.filter(p=>!p.up).length);
-    if(V.k==="man")manCaps(x);const DL=V.k==="def"?defL(k):[];const FIG=(p,i)=>`<figure class="${SEL&&SEL.has(i)?"sel":""}">${SEL&&p.id&&!p.ref?`<span class=pchk data-sl="${i}">${SEL.has(i)?"✓":""}</span>`:""}${p.id?`<img src="${memT[p.id]||""}" alt="" data-v="${i}" data-tid="${p.id}" onload="oriFix(this)">`:'<div class=emp>Ảnh mẫu — chưa có<br>(chọn từ máy)</div>'}${DL.includes(p)?`<div class=sev><button data-sv="${i}:mi" class="mi ${p.sev!=="ma"?"on":""}">Minor</button><button data-sv="${i}:ma" class="ma ${p.sev==="ma"?"on":""}">Major</button></div>`:""}<input placeholder="${PAIR[V.k]&&!p.ref&&!p.up&&x.ph.filter(q=>!q.up).indexOf(p)%2===1?"Nhập số đo, VD 160cm":"Chú thích"}" value="${esc(p.cap)}" data-i="${i}"><div class=a>${p.ref?`<label class=pk>🖼 Ảnh<input type=file accept="image/*" data-rf="1"></label><label class=pk>📄 PDF<input type=file accept="application/pdf,.pdf" data-rp="1"></label><button data-e="${i}" ${p.id?"":"disabled"} title="Sửa ảnh">✏️</button><button data-x="${i}" ${p.id?"":"disabled"}>🗑</button>`:`<button data-m="${i}:-1" ${nbI(i,-1)>=0?"":"disabled"}>◀</button><button data-m="${i}:1" ${nbI(i,1)>=0?"":"disabled"}>▶</button><button data-e="${i}" ${p.id?"":"disabled"} title="Sửa ảnh">✏️</button><button data-r="${i}:-1" ${p.id?"":"disabled"} title="Xoay trái">↺</button><button data-r="${i}:1" ${p.id?"":"disabled"} title="Xoay phải">↻</button><button data-x="${i}">🗑</button>`}</div></figure>`;
-    a.innerHTML=`<div class=c><p class=tip>${def[2]} · ${esc(k.code)}</p>${V.k==="man"?`<label>Cách đánh số trang (chú thích Actual &amp; Approved tự đặt giống nhau theo cột)</label><select id=mno style="margin-bottom:10px">${MANO.map(([v,t])=>`<option value="${v}" ${(x.mo||"1")===v?"selected":""}>First Page → ${t} → Last Page</option>`).join("")}</select>`:""}${x.ph.some(p=>p.id&&!p.ref)?`<button class="b g" id=sel style="width:100%;margin-bottom:8px;font-size:13px">${SEL?"✕ Thôi chọn ảnh":"☑ Chọn ảnh (xoay hàng loạt / chuyển sang mục khác)"}</button>`:""}${SEL?`<div class=mvb><b id=sct>Đã chọn 0 ảnh</b><button class="b g" id=sla style="margin:0;padding:8px 10px;font-size:13px">Chọn tất cả</button><select id=mvt>${SEC.filter(z=>z[0]!==V.k).map(z=>`<option value="${z[0]}">${z[1]} · ${z[2]}</option>`).join("")}</select><button class="b y" id=mvg>Di chuyển</button><div class=r style="width:100%;gap:8px"><button class="b g" id=rtl style="margin:0">↺ Xoay trái ảnh đã chọn</button><button class="b g" id=rtr style="margin:0">↻ Xoay phải ảnh đã chọn</button></div></div>`:""}<div class=r><button class="b y" id=cam>📷 Chụp ảnh</button><label class="b g">Chọn từ máy<input type=file accept="image/*" multiple id=fl></label></div><label class="b g" style="margin-top:8px;font-size:13px">📱 Camera iPhone (iOS hỏi "Dùng ảnh" mỗi tấm)<input type=file accept="image/*" capture=environment class=camn hidden></label></div>
+    if(V.k==="man")manCaps(x);if(recap(V.k,x))save();const DL=V.k==="def"?defL(k):[];const FIG=(p,i)=>`<figure class="${SEL&&SEL.has(i)?"sel":""}">${SEL&&p.id&&!p.ref?`<span class=pchk data-sl="${i}">${SEL.has(i)?"✓":""}</span>`:""}${p.id?`<img src="${memT[p.id]||""}" alt="" data-v="${i}" data-tid="${p.id}" onload="oriFix(this)">`:'<div class=emp>Ảnh mẫu — chưa có<br>(chọn từ máy)</div>'}${DL.includes(p)?`<div class=sev><button data-sv="${i}:mi" class="mi ${p.sev!=="ma"?"on":""}">Minor</button><button data-sv="${i}:ma" class="ma ${p.sev==="ma"?"on":""}">Major</button></div>`:""}<input placeholder="${["pmat","pwatch"].includes(V.k)?"Ghi chú — nhiều ý cách nhau bằng dấu ;":V.k==="dwt"&&!p.up&&x.ph.filter(q=>!q.up).indexOf(p)%2===1?"Nhập số cân, VD 12.5":PAIR[V.k]&&!p.ref&&!p.up&&x.ph.filter(q=>!q.up).indexOf(p)%2===1?"Nhập số đo, VD 160cm":"Chú thích"}" value="${esc(p.cap)}" data-i="${i}"><div class=a>${p.ref?`<label class=pk>🖼 Ảnh<input type=file accept="image/*" data-rf="1"></label><label class=pk>📄 PDF<input type=file accept="application/pdf,.pdf" data-rp="1"></label><button data-e="${i}" ${p.id?"":"disabled"} title="Sửa ảnh">✏️</button><button data-x="${i}" ${p.id?"":"disabled"}>🗑</button>`:`<button data-m="${i}:-1" ${nbI(i,-1)>=0?"":"disabled"}>◀</button><button data-m="${i}:1" ${nbI(i,1)>=0?"":"disabled"}>▶</button><button data-e="${i}" ${p.id?"":"disabled"} title="Sửa ảnh">✏️</button><button data-r="${i}:-1" ${p.id?"":"disabled"} title="Xoay trái">↺</button><button data-r="${i}:1" ${p.id?"":"disabled"} title="Xoay phải">↻</button><button data-x="${i}">🗑</button>`}</div></figure>`;
+    a.innerHTML=`<div class=c><p class=tip>${def[2]} · ${esc(k.code)}</p>${V.k==="man"?`<label>Cách đánh số trang (chú thích Actual &amp; Approved tự đặt giống nhau theo cột)</label><select id=mno style="margin-bottom:10px">${MANO.map(([v,t])=>`<option value="${v}" ${(x.mo||"1")===v?"selected":""}>First Page → ${t} → Last Page</option>`).join("")}</select>`:""}${x.ph.some(p=>p.id&&!p.ref)?`<button class="b g" id=sel style="width:100%;margin-bottom:8px;font-size:13px">${SEL?"✕ Thôi chọn ảnh":"☑ Chọn ảnh (xoay hàng loạt / chuyển sang mục khác)"}</button>`:""}${SEL?`<div class=mvb><b id=sct>Đã chọn 0 ảnh</b><button class="b g" id=sla style="margin:0;padding:8px 10px;font-size:13px">Chọn tất cả</button><select id=mvt>${SECS().filter(z=>z[0]!==V.k).map(z=>`<option value="${z[0]}">${z[1]} · ${z[2]}</option>`).join("")}</select><button class="b y" id=mvg>Di chuyển</button><div class=r style="width:100%;gap:8px"><button class="b g" id=rtl style="margin:0">↺ Xoay trái ảnh đã chọn</button><button class="b g" id=rtr style="margin:0">↻ Xoay phải ảnh đã chọn</button></div></div>`:""}<div class=r><button class="b y" id=cam>📷 Chụp ảnh</button><label class="b g">Chọn từ máy<input type=file accept="image/*" multiple id=fl></label></div><label class="b g" style="margin-top:8px;font-size:13px">📱 Camera iPhone (iOS hỏi "Dùng ảnh" mỗi tấm)<input type=file accept="image/*" capture=environment class=camn hidden></label></div>
     <button class=fab id=camf title="Chụp ảnh">📷</button>
     ${grp?`<div class=c style="margin-top:12px"><h2>${GRL[V.k][0]}</h2></div>`:""}<div class=ph>${x.ph.map((p,i)=>grp&&p.up?"":FIG(p,i)).join("")}</div>
     ${x.ph.some(p=>!p.up)?"":'<p class=tip>Chưa có ảnh chụp. Bấm Chụp ảnh để bắt đầu.</p>'}
     ${grp?`<div class=c style="margin-top:12px"><h2>${GRL[V.k][1]}</h2><label class="b g">📁 Chọn ảnh từ máy<input type=file accept="image/*" multiple id=fu></label>${V.k==="man"?'<label class="b y" style="margin-top:8px">📄 Nhập file PDF HDLR — tự chuyển từng trang thành ảnh<input type=file accept="application/pdf,.pdf" id=fpdf hidden></label>':""}</div><div class=ph>${x.ph.map((p,i)=>p.up?FIG(p,i):"").join("")}</div>${x.ph.some(p=>p.up)?"":'<p class=tip>Chưa có ảnh tải từ máy.</p>'}`:""}
-    ${secForm(V.k,x)}<div class=c style="margin-top:12px"><button class="b g" id=cps style="width:100%">📋 Sao chép mục này sang item khác</button></div><div class=c style="margin-top:12px"><label>Inspector comments</label><textarea id=nt placeholder="${V.k==="bar"&&poLine()?"Để trống = tự ghi: "+esc(poLine()):"Mỗi dòng là một ý, báo cáo tự thêm dấu •"}">${esc(x.note)}</textarea></div>`;
+    ${V.k==="pdraw"?'<div class=c style="margin-top:12px"><label class="b y">📄 Nhập bản vẽ từ file PDF (mỗi trang 1 ảnh)<input type=file accept="application/pdf,.pdf" id=fpd hidden></label></div>':""}${secForm(V.k,x)}${isDK(V.k)?"":`<div class=c style="margin-top:12px"><button class="b g" id=cps style="width:100%">📋 Sao chép mục này sang item khác</button></div>`}${isDK(V.k)&&!["dwt","pkd"].includes(V.k)?"":`<div class=c style="margin-top:12px"><label>${V.k==="pkd"?"Note 1 — bên trái (mỗi dòng 1 ý, VD: Top Table x1)":"Inspector comments"}</label><textarea id=nt placeholder="${V.k==="bar"&&poLine()?"Để trống = tự ghi: "+esc(poLine()):"Mỗi dòng là một ý, báo cáo tự thêm dấu •"}">${esc(x.note)}</textarea>${V.k==="pkd"?`<label style="margin-top:10px">Note 2 — bên phải (VD: Tem bảo hành in giấy cứng 300Grs…)</label><textarea id=nt2 placeholder="Mỗi dòng là một ý">${esc(x.note2||"")}</textarea>`:""}</div>`}`;
     const addF=async(fs,up)=>{for(const f of fs){const d=await comp(f);if(!d)continue;const id=uid();if(!(await idbPut("i",id,d)))break;memSet(id,d);await saveThumb(id);if(hiOn())await idbPut("i","h:"+id,f);x.ph.push(up?{id,cap:capOf(1),up:1}:{id,cap:capOf(0)})}await save();render()};
     if($("#fu"))$("#fu").onchange=e=>addF([...e.target.files],1);
     if($("#fpdf"))$("#fpdf").onchange=e=>{const f=e.target.files[0];e.target.value="";if(f)pdfImport(x,f)};
+    if($("#fpd"))$("#fpd").onchange=e=>{const f=e.target.files[0];e.target.value="";if(f)pdfDraw(x,f)};
     $("#fl").onchange=e=>addF([...e.target.files]);
     a.querySelectorAll(".camn").forEach(inp=>inp.onchange=async()=>{const fs=[...inp.files];inp.value="";if(!fs.length)return;const y=scrollY;busyMsg("Đang lưu ảnh…");let n=0;
      try{for(const f of fs){const d=await comp(f);if(!d)continue;const id=uid();if(!(await idbPut("i",id,d)))break;memSet(id,d);await saveThumb(id);if(hiOn())await idbPut("i","h:"+id,f);x.ph.push({id,cap:capOf(0)});n++}await save()}finally{busyEnd()}
@@ -457,7 +508,7 @@ let _lastSec="";async function render(){if(V.p!=="sec"||_lastSec!==(V.s+"/"+V.k)
     if($("#sct")){$("#sct").textContent=`Đã chọn ${SEL.size} ảnh →`;const all=x.ph.map((p,i)=>p.id&&!p.ref?i:-1).filter(i=>i>=0);$("#sla").textContent=SEL.size>=all.length?"Bỏ chọn hết":"Chọn tất cả";$("#sla").onclick=()=>{if(SEL.size>=all.length)SEL.clear();else all.forEach(i=>SEL.add(i));render()};if(SEL.lastTo)$("#mvt").value=SEL.lastTo;$("#mvt").onchange=()=>SEL.lastTo=$("#mvt").value;
      const rsel=async d=>{if(!SEL.size)return alert("Chạm vào ảnh để chọn trước.");const ids=[...SEL].map(i=>x.ph[i]).filter(p=>p&&p.id).map(p=>p.id);for(let q=0;q<ids.length;q++){await rotImg(ids[q],d)}render();toast(`✓ Đã xoay ${ids.length} ảnh`)};
      $("#rtl").onclick=()=>rsel(-1);$("#rtr").onclick=()=>rsel(1);
-     $("#mvg").onclick=async()=>{if(!SEL.size)return alert("Chạm vào ảnh để chọn trước.");const to=$("#mvt").value,nm=SEC.find(z=>z[0]===to)[1];const n=await movePhotos(k,V.k,[...SEL],to);SEL=null;render();toast(`✓ Đã chuyển ${n} ảnh sang ${nm}`)}}
+     $("#mvg").onclick=async()=>{if(!SEL.size)return alert("Chạm vào ảnh để chọn trước.");const to=$("#mvt").value,nm=ASEC.find(z=>z[0]===to)[1];const n=await movePhotos(k,V.k,[...SEL],to);SEL=null;render();toast(`✓ Đã chuyển ${n} ảnh sang ${nm}`)}}
     a.querySelectorAll("[data-sv]").forEach(b=>b.onclick=()=>{const[i,v]=b.dataset.sv.split(":");if(x.ph[+i]){x.ph[+i].sev=v;save();render()}});
     a.querySelectorAll("[data-e]").forEach(e=>e.onclick=async()=>{const p=x.ph[+e.dataset.e];if(p&&p.id&&await editImg(p.id))render()});
     a.querySelectorAll("[data-r]").forEach(e=>e.onclick=async()=>{const[i,d]=e.dataset.r.split(":").map(Number),p=x.ph[i];if(!p||!p.id)return;e.disabled=true;await rotImg(p.id,d);render()});
@@ -465,9 +516,10 @@ let _lastSec="";async function render(){if(V.p!=="sec"||_lastSec!==(V.s+"/"+V.k)
     if($("#mno"))$("#mno").onchange=e=>{x.mo=e.target.value;manCaps(x);save();render()};
     a.querySelectorAll("[data-i]").forEach(i=>{if(V.k==="man"&&!x.ph[i.dataset.i]?.ref){i.readOnly=true;i.style.opacity=.75}i.oninput=()=>{x.ph[i.dataset.i].cap=i.value;autoMeas(V.k,x);autoWt(V.k,x);save()};
      /* gõ số xong tự thêm đơn vị: kích thước → cm, cân nặng → KGS */
-     i.onchange=()=>{const u=V.k==="wt"?" KGS":PAIR[V.k]?"cm":"";if(u&&/^\s*\d+(?:[.,]\d+)?\s*$/.test(i.value)){i.value=i.value.trim()+u;x.ph[i.dataset.i].cap=i.value;autoMeas(V.k,x);autoWt(V.k,x);save()}}});
-    $("#cps").onclick=()=>copySec(k,V.k);
-    $("#nt").oninput=e=>{x.note=e.target.value;if(x.note!==x.am)x.am=null;save()};
+     i.onchange=()=>{const u=V.k==="wt"?" KGS":V.k==="dwt"?"KGS":PAIR[V.k]?"cm":"";if(u&&/^\s*\d+(?:[.,]\d+)?\s*$/.test(i.value)){i.value=i.value.trim()+u;x.ph[i.dataset.i].cap=i.value;autoMeas(V.k,x);autoWt(V.k,x);save()}}});
+    if($("#cps"))$("#cps").onclick=()=>copySec(k,V.k);
+    if($("#nt2"))$("#nt2").oninput=e=>{x.note2=e.target.value;save()};
+    if($("#nt"))$("#nt").oninput=e=>{x.note=e.target.value;if(x.note!==x.am)x.am=null;save()};
     a.querySelectorAll("[data-t]").forEach(i=>{i.oninput=()=>{(x.t||(x.t={}))[i.dataset.t]=i.value;save()};
      /* gõ số xong tự thêm đơn vị: cân nặng → KGS, kích thước thùng → cm */
      i.onchange=()=>{const v=i.value.trim(),u=V.k==="wt"?(/^\d+(?:[.,]\d+)?$/.test(v)?" KGS":""):V.k==="psz"?(/\d$/.test(v)?" cm":""):"";if(u){i.value=v+u;(x.t||(x.t={}))[i.dataset.t]=i.value;save()}}});
@@ -477,7 +529,7 @@ let _lastSec="";async function render(){if(V.p!=="sec"||_lastSec!==(V.s+"/"+V.k)
     a.querySelectorAll("[data-x]").forEach(e=>e.onclick=async()=>{if(!confirm("Xóa ảnh này?"))return;const q=x.ph[+e.dataset.x];if(q.ref){await delImg(q.id);q.id=null;save();render();return}const[p]=x.ph.splice(+e.dataset.x,1);await delImg(p.id);save();render()});
   }
 }
-$("#back").onclick=()=>{V=V.p==="sec"?{p:"sku",s:V.s}:V.p==="home"?{p:"list"}:{p:"home"};render();scrollTo(0,0)};
+$("#back").onclick=()=>{V=V.p==="sec"?(isOne()?{p:"home"}:{p:"sku",s:V.s}):V.p==="home"?{p:"list"}:{p:"home"};render();scrollTo(0,0)};
 
 /* ===== Sao lưu: 1 file .zip gồm report.json + ảnh báo cáo + ảnh gốc (đọc từng ảnh, không dồn RAM) ===== */
 async function backup(){busyMsg("Đang tính dung lượng…");let wo=true;
@@ -554,7 +606,7 @@ async function savePdf(){
    for(const v of o.sv){const m=await load("data:image/svg+xml;charset=utf-8,"+encodeURIComponent(v.xml));if(m)cx.drawImage(m,v.x*sc,v.y*sc,v.w*sc,v.h*sc)}
    const bb=await new Promise(r=>cv.toBlob(r,"image/jpeg",.86));out.push({b:bb||b64(cv.toDataURL("image/jpeg",.86)),w:cv.width,h:cv.height,l:o.l});
   }
-  offerFile(mkPdf(out,Math.round(W*.75),Math.round(Hh*.75)),"bao-cao-"+(S.cover.po||"kiem-hang")+".pdf");
+  offerFile(mkPdf(out,Math.round(W*.75),Math.round(Hh*.75)),(isDrop()?"drop-test-":isPPS()?"pps-":"bao-cao-")+(S.cover.po||"kiem-hang")+".pdf");
  }catch(e){alert("Máy này không tạo được PDF trực tiếp ("+e.message+"). Hãy dùng nút 'Xuất PDF có link' ở trang chính, rồi chọn Hướng: Ngang (Landscape).")}
  b.textContent=old;
 }
@@ -591,7 +643,7 @@ const printRules=()=>"*{box-sizing:border-box}"+[...document.styleSheets].flatMa
 function fitAll(){const tmp=document.createElement("style");tmp.textContent=printRules();document.head.append(tmp);
  try{const sh=(el,f)=>{for(const n of [el,...el.querySelectorAll("*")]){if(!n.dataset.f0)n.dataset.f0=parseFloat(getComputedStyle(n).fontSize);n.style.fontSize=(n.dataset.f0*f)+"px"}};
   const over=b=>{if(b.classList.contains("cb")){const u=b.querySelector("ul");return !!u&&u.offsetHeight+14>b.clientHeight*.88}return b.scrollHeight>b.clientHeight+1||b.scrollWidth>b.clientWidth+1},fit=(b,inner)=>{let f=1;while(over(b)&&f>.4){f*=.93;sh(inner,f)}};
-  document.querySelectorAll("#print .ix2 .fr td,#print .it .vl,#print .ctr td,#print .ct td").forEach(c=>{const cs=getComputedStyle(c),w=c.clientWidth-(parseFloat(cs.paddingLeft)||0)-(parseFloat(cs.paddingRight)||0),h=(c.rowSpan>1?c.clientHeight:(parseFloat(c.parentElement.style.height)||c.clientHeight))-(parseFloat(cs.paddingTop)||0)-(parseFloat(cs.paddingBottom)||0)-1;
+  document.querySelectorAll("#print .ix2 .fr td,#print .it .vl,#print .ctr td,#print .ct td,#print .dcv td").forEach(c=>{const cs=getComputedStyle(c),w=c.clientWidth-(parseFloat(cs.paddingLeft)||0)-(parseFloat(cs.paddingRight)||0),h=(c.rowSpan>1?c.clientHeight:(parseFloat(c.parentElement.style.height)||c.clientHeight))-(parseFloat(cs.paddingTop)||0)-(parseFloat(cs.paddingBottom)||0)-1;
    if(w<=2||h<=2||!c.textContent.trim()||c.parentElement.classList.contains("gap"))return;const ta=cs.textAlign.includes("center")?"center":cs.textAlign.includes("right")?"right":"left";
    c.innerHTML=`<div class=fx style="width:${w}px;height:${h}px;overflow:hidden;display:flex;align-items:center;justify-content:${ta==="center"?"center":ta==="right"?"flex-end":"flex-start"}"><div class=fi style="max-width:100%;text-align:${ta};overflow-wrap:anywhere">${c.innerHTML}</div></div>`;fit(c.firstChild,c.firstChild)});
   document.querySelectorAll("#print .fb,#print .cb,#print figcaption").forEach(e=>fit(e,e))}finally{tmp.remove()}}
@@ -602,7 +654,7 @@ const GRP='<p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvG
 const FL='<a:solidFill><a:schemeClr val="phClr"/></a:solidFill>',x3=s=>s+s+s;
 const THEME=XH+`<a:theme xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" name="T"><a:themeElements><a:clrScheme name="C"><a:dk1><a:sysClr val="windowText" lastClr="000000"/></a:dk1><a:lt1><a:sysClr val="window" lastClr="FFFFFF"/></a:lt1><a:dk2><a:srgbClr val="44546A"/></a:dk2><a:lt2><a:srgbClr val="E7E6E6"/></a:lt2>${["4472C4","ED7D31","A5A5A5","FFC000","5B9BD5","70AD47"].map((c,i)=>`<a:accent${i+1}><a:srgbClr val="${c}"/></a:accent${i+1}>`).join("")}<a:hlink><a:srgbClr val="0563C1"/></a:hlink><a:folHlink><a:srgbClr val="954F72"/></a:folHlink></a:clrScheme><a:fontScheme name="F"><a:majorFont><a:latin typeface="Arial"/><a:ea typeface=""/><a:cs typeface=""/></a:majorFont><a:minorFont><a:latin typeface="Arial"/><a:ea typeface=""/><a:cs typeface=""/></a:minorFont></a:fontScheme><a:fmtScheme name="M"><a:fillStyleLst>${x3(FL)}</a:fillStyleLst><a:lnStyleLst>${x3(`<a:ln w="9525">${FL}</a:ln>`)}</a:lnStyleLst><a:effectStyleLst>${x3("<a:effectStyle><a:effectLst/></a:effectStyle>")}</a:effectStyleLst><a:bgFillStyleLst>${x3(FL)}</a:bgFillStyleLst></a:fmtScheme></a:themeElements></a:theme>`;
 const MASTER=XH+`<p:sldMaster ${NS}><p:cSld><p:bg><p:bgRef idx="1001"><a:schemeClr val="bg1"/></p:bgRef></p:bg><p:spTree>${GRP}</p:spTree></p:cSld><p:clrMap bg1="lt1" tx1="dk1" bg2="lt2" tx2="dk2" accent1="accent1" accent2="accent2" accent3="accent3" accent4="accent4" accent5="accent5" accent6="accent6" hlink="hlink" folHlink="folHlink"/><p:sldLayoutIdLst><p:sldLayoutId id="2147483649" r:id="rId1"/></p:sldLayoutIdLst><p:txStyles><p:titleStyle><a:lvl1pPr><a:defRPr sz="1800"/></a:lvl1pPr></p:titleStyle><p:bodyStyle><a:lvl1pPr><a:defRPr sz="1800"/></a:lvl1pPr></p:bodyStyle><p:otherStyle><a:lvl1pPr><a:defRPr sz="1800"/></a:lvl1pPr></p:otherStyle></p:txStyles></p:sldMaster>`;
-const PHL=(idx,type,x,y,w,h,prompt,sz,an,bu,dash)=>`<p:sp><p:nvSpPr><p:cNvPr id="${idx}" name="Placeholder ${idx}"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr><p:ph ${type?`type="${type}" `:""}sz="quarter" idx="${idx}"/></p:nvPr></p:nvSpPr><p:spPr><a:xfrm><a:off x="${Math.round(x*7527.36)}" y="${Math.round(y*7527.36)}"/><a:ext cx="${Math.round(w*7527.36)}" cy="${Math.round(h*7527.36)}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln w="9525"><a:solidFill><a:srgbClr val="000000"/></a:solidFill>${dash?'<a:prstDash val="sysDot"/>':""}</a:ln></p:spPr><p:txBody><a:bodyPr lIns="72000" tIns="36000" rIns="72000" bIns="36000" anchor="${an}"><a:normAutofit/></a:bodyPr><a:lstStyle><a:lvl1pPr ${bu?'marL="285750" indent="-285750"':'marL="0" indent="0"'}>${bu?'<a:buFont typeface="Arial"/><a:buChar char="•"/>':"<a:buNone/>"}<a:defRPr sz="${sz}"><a:solidFill><a:srgbClr val="000000"/></a:solidFill><a:latin typeface="Arial"/></a:defRPr></a:lvl1pPr></a:lstStyle><a:p><a:r><a:rPr lang="en-US"/><a:t>${prompt}</a:t></a:r></a:p></p:txBody></p:sp>`;
+const PHL=(idx,type,x,y,w,h,prompt,sz,an,bu,dash,nol)=>`<p:sp><p:nvSpPr><p:cNvPr id="${idx}" name="Placeholder ${idx}"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr><p:ph ${type?`type="${type}" `:""}sz="quarter" idx="${idx}"/></p:nvPr></p:nvSpPr><p:spPr><a:xfrm><a:off x="${Math.round(x*7527.36)}" y="${Math.round(y*7527.36)}"/><a:ext cx="${Math.round(w*7527.36)}" cy="${Math.round(h*7527.36)}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/>${nol?"<a:ln><a:noFill/></a:ln>":`<a:ln w="9525"><a:solidFill><a:srgbClr val="000000"/></a:solidFill>${dash?'<a:prstDash val="sysDot"/>':""}</a:ln>`}</p:spPr><p:txBody><a:bodyPr lIns="72000" tIns="36000" rIns="72000" bIns="36000" anchor="${an}"><a:normAutofit/></a:bodyPr><a:lstStyle><a:lvl1pPr ${bu?'marL="285750" indent="-285750"':'marL="0" indent="0"'}>${bu?'<a:buFont typeface="Arial"/><a:buChar char="•"/>':"<a:buNone/>"}<a:defRPr sz="${sz}"><a:solidFill><a:srgbClr val="000000"/></a:solidFill><a:latin typeface="Arial"/></a:defRPr></a:lvl1pPr></a:lstStyle><a:p><a:r><a:rPr lang="en-US"/><a:t>${prompt}</a:t></a:r></a:p></p:txBody></p:sp>`;
 const LAYOUT=XH+`<p:sldLayout ${NS}><p:cSld name="Report"><p:spTree>${GRP}${[0,1,2,3,4,5].map(i=>PHL(10+i,"",88+(i%3)*391,88+Math.floor(i/3)*312,358,245,"Add Photo/ Thả hình",1423,"t",0,1)).join("")}${[0,1,2,3,4,5].map(i=>PHL(20+i,"body",88+(i%3)*391,335+Math.floor(i/3)*312,358,32,"Add text/ ghi chú",1405,"ctr",0,0)).join("")}${PHL(30,"body",445,752,820,100,"Thêm ghi chú nếu có",1197,"t",1,0)}</p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sldLayout>`;
 const SVGC=new Map(),SHR=new Map();
 /* ảnh trong PowerPoint: thu về cạnh dài 1280px (đủ nét khi chiếu/in), mỗi ảnh xử lý 1 lần */
@@ -650,7 +702,7 @@ async function savePptx(){SVGC.clear();SHR.clear();
    const rc=n=>{const q=n.getBoundingClientRect();return{x:q.left-r0.left,y:q.top-r0.top,w:q.width,h:q.height}},R=rc(el);
    if(tg==="table"){out.push(tableItem(el,r0));return}
    if(el.classList.contains("cb")){out.push({k:"cb",...R,nb:el.classList.contains("nb"),px:parseFloat(c.fontSize),li:[...el.querySelectorAll("li")].map(l=>l.textContent)});return}
-   if(tg==="figure"){const im=el.querySelector("img"),cp=el.querySelector("figcaption");out.push({k:"photo",...rc(im||el.querySelector(".eb")),src:im&&im.src,fit:im&&getComputedStyle(im).objectFit,cap:{...rc(cp),t:cp.textContent,px:parseFloat(getComputedStyle(cp).fontSize)}});return}
+   if(tg==="figure"){const im=el.querySelector("img"),cp=el.querySelector("figcaption");out.push({k:"photo",...rc(im||el.querySelector(".eb")),src:im&&im.src,fit:im&&getComputedStyle(im).objectFit,cap:{...rc(cp),t:cp.textContent,px:parseFloat(getComputedStyle(cp).fontSize),nb:parseFloat(getComputedStyle(cp).borderTopWidth)===0}});return}
    if(tg==="img"){out.push(el.classList.contains("lg")||el.classList.contains("fp")?{k:"img",...R,src:el.src,fit:c.objectFit}:{k:"photo",...R,src:el.src,fit:c.objectFit});return}
    if(el.classList.contains("eb")){out.push({k:"photo",...R});return}
    if(tg==="svg"){out.push({k:"svg",...R,xml:new XMLSerializer().serializeToString(el),l:link});return}
@@ -670,7 +722,7 @@ async function savePptx(){SVGC.clear();SHR.clear();
    if(it.k==="svg")J(async()=>{if(!SVGC.has(it.xml))SVGC.set(it.xml,(async()=>{const i=new Image();i.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(it.xml);try{await i.decode();const c=document.createElement("canvas");c.width=Math.round(it.w*2);c.height=Math.round(it.h*2);c.getContext("2d").drawImage(i,0,0,c.width,c.height);const o=b64(c.toDataURL("image/png"));c.width=c.height=0;return o}catch(e){return null}})());it.png=await SVGC.get(it.xml)})}
   for(let q=0;q<jobs.length;q+=4){busyMsg(`Đang chuẩn bị ảnh ${Math.min(q+4,jobs.length)}/${jobs.length}`);await Promise.all(jobs.slice(q,q+4).map(f=>f()))}
   const media=[],slides=[],MC=new Map();
-  data.forEach((o,i)=>{let id=1,sh="",kp=0;const lay=[],rl=[["rId1","slideLayout",`../slideLayouts/slideLayout${i+1}.xml`]],hs={};
+  data.forEach((o,i)=>{let id=1,sh="",kp=0,kc=0;const lay=[],rl=[["rId1","slideLayout",`../slideLayouts/slideLayout${i+1}.xml`]],hs={};
    if(bt)bt.textContent="PPT "+(i+1)+"/"+data.length;busyMsg("Đang tạo PowerPoint "+(i+1)+"/"+data.length);
    const med=(b,ext,key)=>{let n=key!=null&&MC.get(key);if(!n){media.push({b:typeof b==="function"?b():b,ext});n=media.length;if(key!=null)MC.set(key,n)}rl.push(["rId"+(rl.length+1),"image","../media/image"+n+"."+ext]);return"rId"+rl.length};
    const hl=t=>t>=0?(hs[t]||(rl.push(["rId"+(rl.length+1),"slide","slide"+(t+1)+".xml"]),hs[t]="rId"+rl.length)):"";
@@ -682,12 +734,12 @@ async function savePptx(){SVGC.clear();SHR.clear();
     else if(it.k==="img"&&it.src){let X=it.x,Y=it.y,W=it.w,Hh=it.h;if(it.fit==="contain"&&it.nw&&it.nh){const q=Math.min(W/it.nw,Hh/it.nh);X+=(W-it.nw*q)/2;Y+=(Hh-it.nh*q)/2;W=it.nw*q;Hh=it.nh*q}
      sh+=pic(++id,/^data:image\/png/.test(it.src)?med(()=>b64(it.src),"png",it.src):med(it.bin,"jpeg",it.src),X,Y,W,Hh)}
     else if(it.k==="svg"){if(it.png)sh+=pic(++id,med(it.png,"png",it.xml),it.x,it.y,it.w,it.h,"","",hl(it.l))}
-    else if(it.k==="cb"&&lay.push({cb:1,nb:it.nb,x:it.x,y:it.y,w:it.w,h:it.h,px:it.px}))sh+=phsp(++id,it.x,it.y,it.w,it.h,'<p:ph type="body" sz="quarter" idx="30"/>',it.li.map(t=>it.nb?P2(t,it.px).replace("<a:p>",'<a:p><a:pPr marL="0" indent="0"><a:buNone/></a:pPr>'):P2(t,it.px)).join(""));
-    else if(it.k==="photo"){const ix=10+kp++,ph=`<p:ph type="pic" sz="quarter" idx="${ix}"/>`;lay.push({pic:1,idx:ix,x:it.x,y:it.y,w:it.w,h:it.h});if(it.cap)lay.push({idx:ix+100,x:it.cap.x,y:it.cap.y,w:it.cap.w,h:it.cap.h,px:it.cap.px});
+    else if(it.k==="cb"&&lay.push({cb:1,idx:30+kc,nb:it.nb,x:it.x,y:it.y,w:it.w,h:it.h,px:it.px}))sh+=phsp(++id,it.x,it.y,it.w,it.h,`<p:ph type="body" sz="quarter" idx="${30+kc++}"/>`,it.li.map(t=>it.nb?P2(t,it.px).replace("<a:p>",'<a:p><a:pPr marL="0" indent="0"><a:buNone/></a:pPr>'):P2(t,it.px)).join(""));
+    else if(it.k==="photo"){const ix=10+kp++,ph=`<p:ph type="pic" sz="quarter" idx="${ix}"/>`;lay.push({pic:1,idx:ix,x:it.x,y:it.y,w:it.w,h:it.h});if(it.cap)lay.push({idx:ix+100,x:it.cap.x,y:it.cap.y,w:it.cap.w,h:it.cap.h,px:it.cap.px,nb:it.cap.nb});
      if(it.src&&(it.fit==="contain"||(it.nw&&it.nh>it.nw*1.05))){const k=Math.min(it.w/(it.nw||4),it.h/(it.nh||3)),w=(it.nw||4)*k,h=(it.nh||3)*k;sh+=pic(++id,med(it.bin,"jpeg",it.src),it.x+(it.w-w)/2,it.y+(it.h-h)/2,w,h,"",ph)}
      else if(it.src){const bx=it.w/it.h,iy=(it.nw||4)/(it.nh||3);let c="";if(iy>bx){const v=Math.round((1-bx/iy)/2*1e5);c=`<a:srcRect l="${v}" r="${v}"/>`}else if(iy<bx){const v=Math.round((1-iy/bx)/2*1e5);c=`<a:srcRect t="${v}" b="${v}"/>`}sh+=pic(++id,med(it.bin,"jpeg",it.src),it.x,it.y,it.w,it.h,c,ph)}
      else sh+=phsp(++id,it.x,it.y,it.w,it.h,ph,"");
-     if(it.cap)sh+=phsp(++id,it.cap.x,it.cap.y,it.cap.w,it.cap.h,`<p:ph type="body" sz="quarter" idx="${ix+100}"/>`,it.cap.t?P2(it.cap.t,it.cap.px):"")}}
+     if(it.cap)sh+=phsp(++id,it.cap.x,it.cap.y,it.cap.w,it.cap.h,`<p:ph type="body" sz="quarter" idx="${ix+100}"/>`,it.cap.t?it.cap.t.split("\n").map(l=>P2(l,it.cap.px)).join(""):"")}}
    slides.push({xml:XH+`<p:sld ${NS}><p:cSld><p:spTree>${GRP}${sh}</p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sld>`,rl,lay})});
   const f=(n,s)=>s&&s.blob?{n,blob:s.blob,crc:s.crc}:{n,b:typeof s==="string"?enc.encode(s):s},ov=(p,t)=>`<Override PartName="${p}" ContentType="application/vnd.openxmlformats-officedocument.${t}+xml"/>`;
   const files=[f("[Content_Types].xml",XH+`<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpeg" ContentType="image/jpeg"/><Default Extension="png" ContentType="image/png"/>${ov("/ppt/presentation.xml","presentationml.presentation.main")}${ov("/ppt/slideMasters/slideMaster1.xml","presentationml.slideMaster")}${slides.map((_,i)=>ov(`/ppt/slideLayouts/slideLayout${i+1}.xml`,"presentationml.slideLayout")).join("")}${ov("/ppt/theme/theme1.xml","theme")}${ov("/ppt/viewProps.xml","presentationml.viewProps")}${slides.map((_,i)=>ov(`/ppt/slides/slide${i+1}.xml`,"presentationml.slide")).join("")}</Types>`),
@@ -696,9 +748,9 @@ async function savePptx(){SVGC.clear();SHR.clear();
    f("ppt/_rels/presentation.xml.rels",relX([["rId1","slideMaster","slideMasters/slideMaster1.xml"],["rId2","theme","theme/theme1.xml"],...slides.map((_,i)=>["rId"+(i+3),"slide",`slides/slide${i+1}.xml`]),["rId"+(slides.length+3),"viewProps","viewProps.xml"]])),
    f("ppt/viewProps.xml",VIEW(XH)),
    f("ppt/slideMasters/slideMaster1.xml",MASTER.replace('<p:sldLayoutIdLst><p:sldLayoutId id="2147483649" r:id="rId1"/></p:sldLayoutIdLst>',`<p:sldLayoutIdLst>${slides.map((_,i)=>`<p:sldLayoutId id="${2147483649+i}" r:id="rId${i+1}"/>`).join("")}</p:sldLayoutIdLst>`)),f("ppt/slideMasters/_rels/slideMaster1.xml.rels",relX([...slides.map((_,i)=>["rId"+(i+1),"slideLayout",`../slideLayouts/slideLayout${i+1}.xml`]),["rId"+(slides.length+1),"theme","../theme/theme1.xml"]])),
-   ...slides.flatMap((sl,i)=>[f(`ppt/slideLayouts/slideLayout${i+1}.xml`,XH+`<p:sldLayout ${NS}><p:cSld name="Trang ${i+1}"><p:spTree>${GRP}${sl.lay.map(q=>q.pic?PHL(q.idx,"pic",q.x,q.y,q.w,q.h,"Thả hình / Add photo",1423,"ctr",0,1):q.cb?PHL(30,"body",q.x,q.y,q.w,q.h,"Thêm ghi chú nếu có",Math.round((q.px||20)*59.27*.94),"t",q.nb?0:1,0):PHL(q.idx,"body",q.x,q.y,q.w,q.h,"Add text/ ghi chú",Math.round((q.px||19)*59.27*.94),"ctr",0,0)).join("")}</p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sldLayout>`),f(`ppt/slideLayouts/_rels/slideLayout${i+1}.xml.rels`,relX([["rId1","slideMaster","../slideMasters/slideMaster1.xml"]]))]),f("ppt/theme/theme1.xml",THEME),
+   ...slides.flatMap((sl,i)=>[f(`ppt/slideLayouts/slideLayout${i+1}.xml`,XH+`<p:sldLayout ${NS}><p:cSld name="Trang ${i+1}"><p:spTree>${GRP}${sl.lay.map(q=>q.pic?PHL(q.idx,"pic",q.x,q.y,q.w,q.h,"Thả hình / Add photo",1423,"ctr",0,1):q.cb?PHL(q.idx||30,"body",q.x,q.y,q.w,q.h,"Thêm ghi chú nếu có",Math.round((q.px||20)*59.27*.94),"t",q.nb?0:1,0):PHL(q.idx,"body",q.x,q.y,q.w,q.h,"Add text/ ghi chú",Math.round((q.px||19)*59.27*.94),q.nb?"t":"ctr",0,0,q.nb)).join("")}</p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sldLayout>`),f(`ppt/slideLayouts/_rels/slideLayout${i+1}.xml.rels`,relX([["rId1","slideMaster","../slideMasters/slideMaster1.xml"]]))]),f("ppt/theme/theme1.xml",THEME),
    ...slides.flatMap((s,i)=>[f(`ppt/slides/slide${i+1}.xml`,s.xml),f(`ppt/slides/_rels/slide${i+1}.xml.rels`,relX(s.rl))]),...media.map((m,i)=>f(`ppt/media/image${i+1}.${m.ext}`,m.b))];
-  const out=zipB(files);files.length=0;media.length=0;SHR.clear();SVGC.clear();offerFile(out,"bao-cao-"+(S.cover.po||"kiem-hang")+".pptx");
+  const out=zipB(files);files.length=0;media.length=0;SHR.clear();SVGC.clear();offerFile(out,(isDrop()?"drop-test-":isPPS()?"pps-":"bao-cao-")+(S.cover.po||"kiem-hang")+".pptx");
  }catch(e){alert("Không tạo được file PowerPoint ("+e.message+").")}
  if(bt)bt.textContent=old;
 }
@@ -718,8 +770,19 @@ const dcc=(k,j)=>{const a=DCC[k];return a?a[j%a.length]:""};
 /* Kích thước thùng / sản phẩm: chụp theo cặp (ảnh toàn cảnh + ảnh cận số đo) cho Dài → Rộng → Cao.
    Thứ tự chụp 1,2,3,4,5,6 → khi xuất: hàng trên 1,3,5 (toàn cảnh), hàng dưới 2,4,6 (số đo) */
 const PAIR={psize:["Measure Product Length","Measure Product Width/Depth","Measure Product Height"],psz:["Measure Carton Length","Measure Carton Width","Measure Carton Height"]};
-const dc=(k,i)=>PAIR[k]?(i%2?"":PAIR[k][Math.floor(i/2)%3]):k==="fit"&&i===0?"PO#"+(S.cover.po||""):((DC[k]||[])[i]||dcc(k,i));
+PAIR.ddim=["Measure Carton Length","Measure Carton Width","Measure Carton Height"];
+Object.assign(DC,{dpk:["Carton View"],dwt:["Weight Carton","","Weight Product",""],dopen:["Inside Carton"],dmat:["Packing Materials"],dcmp:["KD Components","Fitting – Desiccant","Fitting Hardware Bag"],dpph:["Product Photo"]});
+Object.assign(DCC,{dpk:["Carton View"],dwt:["Weight Carton","","Weight Product",""],dopen:["Inside Carton"],dmat:["Packing Materials"],dcmp:["Fitting Hardware Bag"],dpph:["Product Photo"]});
+/* Drop test: chụp theo cặp — ảnh lúc thả (Corner 1…) rồi ảnh rơi xuống sàn (Landed on floor) */
+const DROPP={dcor:"Corner",dfac:"Face",dedg:"Edge"},dmanCap=i=>i===0?"Actual AI. First Page":i===1?"Actual AI. Page 1":`Actual AI. Page ${2*i-2} - ${2*i-1}`;
+PAIR.pdim=["","",""];PAIR.dinb=["","",""];
+const dc=(k,i)=>k==="pdim"?"":k==="dinb"?(i%2?"":`Inner Box ${Math.floor(i/6)+1} – ${["Length","Width","Height"][Math.floor(i%6/2)]}`):DROPP[k]?(i%2?"Landed on floor":DROPP[k]+" "+(Math.floor(i/2)+1)):k==="dman"?dmanCap(i):PAIR[k]?(i%2?"":PAIR[k][Math.floor(i/2)%3]):k==="fit"&&i===0?"PO#"+(S.cover.po||""):((DC[k]||[])[i]||dcc(k,i));
 /* số đo ghi ở chú thích ảnh (VD 160cm) → tự điền: SP = ô Inspector comments "160 x 90 x 76 cm"; Thùng = ô Thực tế (cm) */
+/* chú thích mặc định (Corner 1, Landed on floor, Edge 2…) đánh lại theo VỊ TRÍ ảnh — xóa / đổi chỗ ảnh không làm lệch chú thích; chú thích tự gõ thì giữ */
+const AUTOK=["dcor","dfac","dedg","ddim","dinb","dpk","dwt","dopen","dmat","dman","dpph","pdim"];
+function capDefs(key,n){const o=new Set();for(let j=0;j<n+12;j++){const v=dc(key,j);if(v)o.add(v)}return o}
+function recap(key,x){if(!AUTOK.includes(key)||!x)return false;const L=(x.ph||[]).filter(p=>p.id&&!p.up&&!p.ref),D=capDefs(key,L.length);let ch=false;
+ L.forEach((p,i)=>{const c=String(p.cap||"").trim(),want=dc(key,i);if((!c||D.has(c))&&c!==want){p.cap=want;ch=true}});return ch}
 const MEAS=/^\s*(\d+(?:[.,]\d+)?)\s*(cm|mm|m|in|inch|")?\s*$/i,KGR=/^\s*(\d+(?:[.,]\d+)?)\s*(kgs?|kg\.?)?\s*$/i;
 function autoMeas(key,x){if(!PAIR[key])return;const vs=x.ph.filter(p=>p.id&&!p.up).map(p=>String(p.cap||"").match(MEAS)).filter(Boolean).slice(0,3);if(!vs.length)return;
  const n=vs.map(m=>m[1].replace(",",".")).join(" x "),u=((vs.find(m=>m[2])||[])[2]||"cm").toLowerCase();
@@ -737,6 +800,173 @@ function spec(k,x,first){const t=x.t||{},u=(v,s)=>v&&/^[\d.]+$/.test(v)?v+" "+s:
  if(k==="bar"){const r=t.rd!=="0",w="background:#fff;color:#000;border:1px solid #000;width:100px";return`<div class=cl style="left:35px;top:122px">Inspector Comments:</div><div class=bx style="left:32px;top:157px;background:#00b050">Readable</div><div class=bx style="left:265px;top:157px;${w}">${r?"X":""}</div><div class=bx style="left:32px;top:212px;background:#f00">Unreadable</div><div class=bx style="left:265px;top:212px;${w}">${r?"":"X"}</div><div class=cb style="left:35px;top:272px;width:385px;height:130px">${bl(x.note)}</div>`}
  return""}
 
+
+/* ===================== DROP TEST REPORT ===================== */
+const EXPC=()=>`<div class=c><h2>Xuất báo cáo</h2><p><button class="b y" id=pp style="width:100%">📊 Xuất PowerPoint (.pptx)</button></p><p><button class="b g" id=px style="width:100%">🖨 Xuất PDF có link (qua hộp thoại in)</button></p><p class=tip>Nút "Xuất PDF" trên cùng tạo thẳng 1 file PDF.</p>
+    <h2 style="margin-top:16px">Sao lưu &amp; ảnh</h2><p class=tip>${syOn()&&!S.cloudOff?"Báo cáo đang được đồng bộ lên mây. ":"Báo cáo chỉ nằm trong máy này. "}Nên sao lưu sau mỗi lần kiểm: 1 file .zip gồm báo cáo + toàn bộ ảnh (cả ảnh gốc), khôi phục lại được trên máy bất kỳ.${S.bk&&S.bk>=S.updated?" <b style=\"color:var(--ok)\">✓ Đã sao lưu bản mới nhất.</b>":""}</p><p><button class="b y" id=bk style="width:100%">🛟 Sao lưu báo cáo (.zip, kèm ảnh)</button></p><label>Độ nét khi tải ảnh về máy</label><select id=dlq style="margin-bottom:8px">${[["orig","Gốc — nét nhất, nặng (2–4 MB/ảnh)"],["600","Vừa — khoảng 500–600 KB/ảnh"],["300","Nhẹ — khoảng 300 KB/ảnh"]].map(([v,t])=>`<option value="${v}" ${DLQ()===v?"selected":""}>${t}</option>`).join("")}</select><p><button class="b g" id=sa style="width:100%">💾 Lưu tất cả ảnh vào máy</button></p><p><button class="b g" id=zi style="width:100%">📦 Tải toàn bộ ảnh (.zip, mỗi item 1 thư mục)</button></p><p><button class="b g" id=snp style="width:100%">🕘 Bản lưu tự động (quay lại bản trước)</button></p><p><button class="b g" id=lst style="width:100%">🔎 Tìm ảnh bị thất lạc &amp; đưa vào báo cáo này</button></p>${syOn()?(S.cloudOff?'<p><button class="b g" id=con style="width:100%">☁ Đưa báo cáo này lên mây lại</button></p>':'<p><button class="b g" id=coff style="width:100%">📴 Xóa báo cáo này khỏi mây (vẫn giữ trên máy)</button></p>'):""}<p><button class="b x" id=rm>Xóa báo cáo này</button></p></div>`;
+function bindExp(){if($("#coff"))$("#coff").onclick=cloudOff;if($("#con"))$("#con").onclick=cloudOn;$("#pp").onclick=()=>doExp(2);$("#px").onclick=()=>doExp(1);$("#bk").onclick=backup;$("#zi").onclick=()=>zipPhotos();$("#sa").onclick=async()=>{busyMsg("Đang chuẩn bị ảnh…");try{await prepPhotos()}finally{busyEnd()}confirmSaveAll()};$("#dlq").onchange=e=>{try{localStorage.setItem("fir_dlq",e.target.value)}catch(_){}toast("Đã chọn độ nét ảnh tải về")};
+    $("#snp").onclick=snapUI;if($("#fdi"))$("#fdi").onclick=fixDupItems;$("#lst").onclick=findLost;$("#rm").onclick=async()=>{if(!confirm("Xóa báo cáo này?\nBáo cáo và ảnh được chuyển vào Thùng rác, khôi phục được trong "+TRASH_DAYS+" ngày."))return;await trashReport(S);V={p:"list"};render();toast("Đã chuyển vào Thùng rác")};}
+function pickType(){return new Promise(res=>{const m=document.createElement("div");m.style.cssText="position:fixed;inset:0;background:#000a;z-index:99;display:grid;place-items:center;padding:16px";
+ m.innerHTML=`<div class=c style="max-width:420px;width:100%"><h2>Chọn loại báo cáo</h2><p><button class="b y" data-t="final" style="width:100%">Final Inspection Report</button></p><p><button class="b y" data-t="drop" style="width:100%">Drop Test Report</button></p><p><button class="b y" data-t="pps" style="width:100%">PPS Report (Pre-Production Sample)</button></p><p><button class="b g" data-t="" style="width:100%">Hủy</button></p></div>`;
+ document.body.append(m);m.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{m.remove();res(b.dataset.t||null)})})}
+const blankDrop=prev=>{const b=blank(),p=(prev||[]).find(r=>r.type==="drop");b.type="drop";
+ b.cover={po:"",cust:"AGTC",fac:p?.cover?.fac||"",date:b.cover.date,res:"PASS",fin:"",dim:"",cdim:"",cwt:"",upb:"1 pc",ib1:"",ib2:"",ib3:"",mc:"5 Ply / 175lbs",ibx:"N/A",rf:"EPS/ EPE foam, Hard Paper",dh:"",wc:"",ref:1};
+ b.skus=[{id:uid(),code:"",name:"",d:[0,0,0],sec:{}}];return b};
+const dropPh=(k,key)=>(k.sec[key]?.ph||[]).filter(p=>p.id);
+/* cân nặng: ảnh 1 = thùng, 2 = số cân thùng (GW); ảnh 3 = sản phẩm, 4 = số cân SP (NW) */
+const numOf=t=>{const m=String(t||"").match(/(\d+(?:[.,]\d+)?)/);return m?m[1].replace(",","."):""},pureN=t=>/^\s*\d+(?:[.,]\d+)?\s*(cm|mm|kgs?|kg\.?)?\s*$/i.test(String(t||""));
+/* số đo / số cân lấy từ chú thích ảnh cận (ảnh thứ 2 của mỗi cặp); ảnh toàn cảnh chỉ lấy khi chú thích là số */
+const valOf=(a,i)=>numOf(a[i]?.cap)||(pureN(a[i-1]?.cap)?numOf(a[i-1].cap):"");
+const dims3=a=>{for(const p of a){const m=String(p.cap||"").match(/(\d+(?:[.,]\d+)?)\s*[x×X*]\s*(\d+(?:[.,]\d+)?)\s*[x×X*]\s*(\d+(?:[.,]\d+)?)/);if(m)return`${m[1]} x ${m[2]} x ${m[3]}`.replace(/,/g,".")+" cm"}
+ const v=[1,3,5].map(i=>valOf(a,i)).filter(Boolean);return v.length?v.join(" x ")+" cm":""};
+function dropW(k){const P=dropPh(k,"dwt"),gw=valOf(P,1),nw=valOf(P,3);return{gw,nw,txt:nw||gw?`NW: ${nw?nw+"kg":"-"} GW: ${gw?gw+"kg":"-"}`:""}}
+function dropDim(k){return dims3(dropPh(k,"ddim"))}
+/* thùng trong: mỗi 6 ảnh = 1 thùng (Dài, Rộng, Cao theo cặp) */
+function dropInner(k){const a=dropPh(k,"dinb"),o=[];for(let b=0;b<3;b++){const sl=a.slice(b*6,b*6+6);o.push(sl.length?dims3(sl):"")}return o}
+const dropIB=(c,k,n)=>{const au=dropInner(k)[n-1],v=String(c["ib"+n]||"").trim();return v&&!(/^n\/?a$/i.test(v)&&au)?v:(au||"N/A")};
+/* Testing protocol: tự đếm theo số cặp ảnh thả rơi (X = đã test, NA = không test); bấm để sửa tay */
+function dropProto(){const c=S.cover,k=S.skus[0]||{sec:{}},n=key=>Math.ceil(dropPh(k,key).length/2),tp=c.tp||{},W=dropW(k),
+ st=(g,i,m)=>tp[g]&&tp[g][i]!=null?tp[g][i]:(i<m?"X":"NA");
+ return{wc:c.wc||(+W.gw>=50?"gt":"lt"),e:Array.from({length:8},(_,i)=>st("e",i,n("dedg"))),f:Array.from({length:6},(_,i)=>st("f",i,n("dfac"))),c:Array.from({length:4},(_,i)=>st("c",i,n("dcor"))),man:!!c.tp}}
+function dropHome(a){const c=S.cover;if(!S.skus.length){S.skus.push({id:uid(),code:"",name:"",d:[0,0,0],sec:{}});save()}const k=S.skus[0],W=dropW(k),pr=dropProto(),dd0=dropDim(k);
+ $("#ttl").textContent="Drop Test Report";
+ const f=(key,l,ph="")=>`<label>${l}</label><input value="${esc(c[key]??"")}" data-dc="${key}" placeholder="${esc(ph)}">`;
+ const grid=(g,lbl)=>`<div class=dpg>${pr[g].map((v,i)=>`<button data-tp="${g}:${i}" class="${v==="X"?"on":v==="NA"?"na":""}">${lbl} ${i+1}<b>${v||"–"}</b></button>`).join("")}</div>`;
+ a.innerHTML=`<div class=c><h2>Drop Test Report</h2>${f("po","Tên báo cáo (không trùng)")}<label>Kết quả (Result)</label><select data-dc="res"><option ${c.res!=="FAIL"?"selected":""}>PASS</option><option ${c.res==="FAIL"?"selected":""}>FAIL</option></select>${f("cust","Customer")}${f("fac","Factory")}<label>Date</label><input type=date value="${esc(c.date||"")}" data-dc="date"></div>
+ <div class=c><h2>Product Information</h2><label>SKU#</label><input id=dsk value="${esc(k.code)}" placeholder="vd: 1700922.11"><label>Description</label><input id=dsn value="${esc(k.name)}" placeholder="vd: Amelia Oval Dining Table Legs, Black Oak">${f("fin","Finish/ Color")}${f("dim","Dimension","vd: W97 x D82.4 x H65 cm")}</div>
+ <div class=c><h2>Packaging Information</h2>${f("cdim","Master Carton Dim",dd0?"tự lấy: "+dd0:"để trống = tự lấy từ ảnh Kích thước thùng")}${f("cwt","Master Carton Weight",W.txt?"tự lấy: "+W.txt:"để trống = tự lấy từ ảnh Cân nặng")}${f("upb","Unit Per Box (Pcs)")}${[1,2,3].map(n=>{const au=dropInner(k)[n-1];return f("ib"+n,"Inner Box "+n+" Dim",au?"tự lấy: "+au:"để trống = N/A (hoặc chụp ở mục Inner Box Dim)")}).join("")}</div>
+ <div class=c><h2>Packaging Materials</h2>${f("mc","Master Carton")}${f("ibx","Inner Box")}${f("rf","Re-enforce")}</div>
+ <div class=c><h2>Testing Protocol</h2><label>Nhóm cân nặng</label><select data-dc="wc"><option value="">Tự động theo GW${W.gw?" ("+W.gw+" kg → "+(+W.gw>=50?"&gt;":"&lt;")+"50Kg)":""}</option><option value="lt" ${c.wc==="lt"?"selected":""}>Weight &lt;50Kg</option><option value="gt" ${c.wc==="gt"?"selected":""}>Weight &gt;50Kg</option></select>${f("dh","Drop At Height","vd: 76 cm")}
+  <p class=tip>X = đã test (ô xanh) · NA = không test. ${pr.man?"<b>Đang chỉnh tay.</b>":"Đang tự đếm theo số ảnh ở mục Thả rơi (mỗi cặp ảnh = 1 lần thả)."} Bấm vào ô để đánh dấu: X (đã test, ô xanh) ↔ NA (không test).</p>${grid("e","Edge")}${grid("f","Face")}${grid("c","Corner")}${pr.man?`<button class="b g" id=tpa style="width:100%;margin-top:8px">↺ Tự động theo ảnh</button>`:""}</div>
+ <div class=c><h2>Hình chụp</h2><p class=tip>Inner Box Dim: mỗi thùng trong chụp 6 ảnh (toàn cảnh → số đo cho Dài, Rộng, Cao) — thùng 1 rồi thùng 2…, không có thì báo cáo ghi N/A. Góc / Mặt / Cạnh: chụp theo cặp — ảnh lúc thả rồi ảnh thùng rơi xuống sàn. Cân nặng: thùng → số cân thùng → sản phẩm → số cân SP. Kích thước: toàn cảnh → số đo (Dài, Rộng, Cao).</p>${DSEC.map(x=>{const n=cnt(k,x[0]);return`<div class=row data-k="${x[0]}"><div class=t>${x[1]}<small>${x[2]}</small></div><span class="n ${n?"on":""}">${n}</span></div>`}).join("")}
+  <label style="display:flex;gap:8px;align-items:center;font-weight:400;margin-top:10px"><input type=checkbox id=dref style="width:auto" ${c.refOn===1?"checked":""}> Thêm 2 trang hình tham khảo (dán tem Part#, Tracker label, Warranty card…)</label></div>
+ ${EXPC()}`;
+ a.querySelectorAll("[data-dc]").forEach(i=>{i.oninput=()=>{c[i.dataset.dc]=i.value;save()};i.onfocus=()=>{i.dataset.old=c[i.dataset.dc]||""};
+  i.onchange=async()=>{const key=i.dataset.dc;if(key==="po"){const v=i.value.trim().replace(/\s+/g," "),old=i.dataset.old||"";const t=v?await poTaken(v,S.id):null;if(!v||t){alert(v?`"${v}" đã là tên của báo cáo khác. Tên báo cáo không được trùng.`:"Tên báo cáo không được để trống.");i.value=c.po=old;save();return}c.po=v;i.value=v;save();return}
+   c[key]=i.value;await save();if(key==="wc"||key==="res")render()}});
+ $("#dsk").oninput=()=>{k.code=$("#dsk").value.trim();save()};$("#dsn").oninput=()=>{k.name=$("#dsn").value;save()};
+ const cyc={X:"NA",NA:"X","":"X"};
+ a.querySelectorAll("[data-tp]").forEach(b=>b.onclick=()=>{const[g,i]=b.dataset.tp.split(":"),tp=c.tp||(c.tp={});(tp[g]||(tp[g]={}))[i]=cyc[pr[g][+i]]??"X";save();render()});
+ if($("#tpa"))$("#tpa").onclick=()=>{delete c.tp;save();render()};
+ $("#dref").onchange=e=>{c.refOn=e.target.checked?1:0;save()};
+ a.querySelectorAll("[data-k]").forEach(e=>e.onclick=()=>{V={p:"sec",s:k.id,k:e.dataset.k};render();scrollTo(0,0)});
+ bindExp()}
+const DT={dpk:["Packaging Photos Before Test","Hình đóng gói trước khi test"],dwt:["Weight Photos","Hình Cân Nặng Thùng và Sản Phẩm"],ddim:["Packaging Dim Photos","Hình kích thước thùng"],dinb:["Inner Box Dim Photos","Hình kích thước thùng trong"],dcor:["Drop Test Photo - Corner","Hình Test Thả Rơi - Góc"],dfac:["Drop Test Photo - Face","Hình Test Thả Rơi - Mặt"],dedg:["Drop Test Photo - Edges","Hình Test Thả Rơi - Cạnh"],dopen:["Open Box After Tested","Hình khui thùng sau khi test"],dmat:["Packing Materials Photos","Hình Vật Tư Đóng Gói"],dcmp:["Loose Component Photos","Hình chi tiết rời"],dman:["Loose Component Photos","Hình chi tiết rời"],dpph:["Product Photos after unbox","Hình sản phẩm sau khi khui thùng"]};
+async function dropPages(H,P,I2,mode){const c=S.cover,k=S.skus[0]||{sec:{},code:"",name:""},W=dropW(k),pr=dropProto(),dt=c.date?c.date.split("-").reverse().join("/"):"";
+ const vv=t=>`<span class=v>• ${esc(t??"")}</span>`,cg=w=>`<colgroup>${w.map(x=>`<col style="width:${x}px">`).join("")}</colgroup>`,R=(cells,h=42)=>`<tr style="height:${h}px">${cells}</tr>`,
+  td=(t,cl="",cs=1)=>`<td${cl?` class="${cl}"`:""}${cs>1?` colspan=${cs}`:""}>${t}</td>`,tb=(top,w,rows)=>`<table class=dcv style="position:absolute;left:0;top:${top}px;width:1316px">${cg(w)}${rows}</table>`;
+ /* Trang 1 */
+ const bx=(lbl,i,x,y,v)=>`<div class="dpb l" style="left:${x}px;top:${y}px;width:92px">${lbl} ${i+1}</div><div class="dpb${v==="X"?" x":""}" style="left:${x+92}px;top:${y}px;width:46px">${esc(v)}</div>`;
+ const blk=(y,act,lbl)=>{const E=act?pr.e:Array(8).fill(""),F=act?pr.f:Array(6).fill(""),C=act?pr.c:Array(4).fill(""),x0=190;
+  return`<div class=dlb style="left:0;top:${y}px;width:1316px;height:120px"></div><div class=dlb style="left:0;top:${y}px;width:180px;height:120px;padding:6px 8px;font-size:17px">${lbl}<br>Drop At Height:${act&&c.dh?"<br><b>"+esc(c.dh)+"</b>":""}</div>`+
+   E.map((v,i)=>bx("Edge",i,x0+i*140,y+6,v)).join("")+F.map((v,i)=>bx("Face",i,x0+i*140,y+45,v)).join("")+C.map((v,i)=>bx("Corner",i,x0+i*210,y+84,v)).join("")};
+ P("cover",`<div style="position:absolute;left:0;top:0;width:1316px;height:78px;background:#ffe699;border-bottom:2px solid #000"></div><div style="position:absolute;left:12px;top:5px;font:700 58px Arial;white-space:nowrap">DROP TEST REPORT</div><div class=dlb style="left:804px;top:3px;width:207px;height:72px;font-size:44px;display:flex;align-items:center;justify-content:center">RESULT</div><div style="position:absolute;left:1030px;top:17px;font:700 36px Arial;color:${c.res==="FAIL"?"#c00000":"#0070c0"}">• ${esc(c.res||"PASS")}</div>`+
+  tb(82,[154,473,153,536],R(td("Customer")+td(vv(c.cust))+td("Factory")+td(vv(c.fac)))+R(td("Product Information","gh",2)+td("Date","gh")+td(vv(dt)))+R(td("SKU#")+td(vv(k.code))+td("Finish/ Color")+td(vv(c.fin)))+R(td("Description")+td(vv(k.name))+td("Dimension")+td(vv(c.dim))))+
+  tb(250,[280,347,188,501],R(td("Packaging Information","gh",4))+R(td("Master Carton Dim")+td(vv(c.cdim||dropDim(k)))+td("Inner Box 1 Dim")+td(vv(dropIB(c,k,1))))+R(td("Master Carton Weight (Kg)")+td(vv(c.cwt||W.txt))+td("Inner Box 2 Dim")+td(vv(dropIB(c,k,2))))+R(td("Unit Per Box (Pcs)")+td(vv(c.upb))+td("Inner Box 3 Dim")+td(vv(dropIB(c,k,3)))))+
+  tb(418,[154,473,188,501],R(td("Packaging Materials","gh",4))+R(td("Master Carton")+td(vv(c.mc))+td("Inner Box")+td(vv(c.ibx)))+R(td("")+td("")+td("Re-enforce")+td(vv(c.rf)))+R(`<td class=gh colspan=4 style="text-align:center">Testing Protocol</td>`,40))+
+  blk(586,pr.wc==="lt","Weight &lt;50Kg")+blk(706,pr.wc==="gt","Weight &gt;50Kg"));
+ /* Các trang ảnh */
+ const L=[10,440,875],TP=[102,481],hdr=(key,i)=>{const t=DT[key];return`<div class=dh>${esc(i?`${t[0]} (Continued)/ ${t[1]} (tiếp theo)`:`${t[0]}/ ${t[1]}`)}</div>`};
+ const fig=(p,l,t,cap)=>!p?(mode===2?`<figure class=dq style="left:${l}px;top:${t}px"><div class=eb></div><figcaption></figcaption></figure>`:""):`<figure class=dq style="left:${l}px;top:${t}px">${p.id?`<img src="${I2(p.id)}">`:`<div class=eb></div>`}<figcaption>${cap?"• "+esc(cap):""}</figcaption></figure>`;
+ const refs=async()=>{if(c.refOn!==1)return;for(const f of["dref1.jpg","dref2.jpg"]){try{const r=await fetch(f);if(!r.ok)continue;const b=await r.blob();H.push(`<section class=P><img class=fp src="${URL.createObjectURL(b)}" style="position:absolute;left:0;top:0;width:1316px;height:911px;object-fit:fill"></section>`)}catch(e){}}};
+ let refDone=0;
+ for(const[key]of DSEC){if(key==="dpph"){await refs();refDone=1}
+  const x=k.sec[key];if(!secUsed(x,key))continue;const ph=dropPh(k,key),D0=capDefs(key,ph.length),cap=(p,q)=>{const c=String(p.cap||"").trim();return c&&!D0.has(c)?c:dc(key,q)};
+  if(key==="dwt"){const N=Math.max(1,Math.ceil(ph.length/4)),pos=[[440,106],[440,482],[875,106],[875,482]];
+   for(let i=0;i<N;i++){const sl=ph.slice(i*4,i*4+4);P("",hdr(key,i)+`<div class=dlb style="left:6px;top:104px;width:421px;height:50px;padding:8px 10px;font-weight:700"><u>Inspector Comments</u>:</div><div class=cb style="left:6px;top:153px;width:421px;height:705px">${i?"":bl(x.note)}</div>`+pos.map(([l,t],j)=>fig(sl[j]||null,l,t,sl[j]?cap(sl[j],i*4+j):"")).join(""))}continue}
+  if(PAIR[key]||DROPP[key]){const N=Math.max(1,Math.ceil(ph.length/6));
+   for(let i=0;i<N;i++){let b="";for(let m=0;m<3;m++){const q=i*6+m*2,a1=ph[q],a2=ph[q+1];
+     if(!a1&&!a2&&DROPP[key]){b+=`<div class=dna style="left:${L[m]}px;top:${TP[0]}px">• N/A</div><div class=dna style="left:${L[m]}px;top:${TP[1]}px">• N/A</div>`;continue}
+     b+=fig(a1||null,L[m],TP[0],a1?cap(a1,q):"")+fig(a2||null,L[m],TP[1],a2?cap(a2,q+1):"")}
+    P("",hdr(key,i)+b)}continue}
+  const N=Math.max(1,Math.ceil(ph.length/6));
+  for(let i=0;i<N;i++){const sl=ph.slice(i*6,i*6+6);let b="";for(let j=0;j<6;j++){const p=sl[j]||null;if(!p&&!(mode===2&&i===N-1))continue;b+=fig(p,L[j%3],TP[Math.floor(j/3)],p?cap(p,i*6+j):"")}P("",hdr(key,i)+b)}}
+ if(!refDone)await refs()}
+
+/* ===================== PPS REPORT (Pre-Production Sample) ===================== */
+const GN_DEF=`Nhà máy cần lưu ý/ factory need to attention
+Sản Phẩm KD đảm bảo tháo ráp dể dàng
+Product need to KD easily and follow given tech docs
+Hardware sử dụng loai 7 màu cho sản phẩm màu sáng, và ngũ kim màu đen cho sản phẩm màu đen
+Fitting hardware need to use gold color for light product colors like Pale/ Classic/ Whitewash. And black fitting for black/ dark products
+Độ ẩm quy định từ 8-12 %
+Moisture content accepted from 8 to 12%
+Tính chất màu sản phẩm nhạt tự nhiên. Không sử dụng gỗ mắt trên bề mặt - và gỗ quá đen
+Product spec’ed in natural look, so not use knotty timber on surface where visible & solid not too dark which effect overall look
+Kích thước & kết cấu sản phẩm theo bản vẽ RS Duyệt
+Dimension & construction follow drawing which signed by RS
+Màu sắc sản phẩm theo thẻ màu RS Duyệt
+Color to follow signed panel
+Mẫu PPS lưu tại nhà máy dùng để tham khảo kết cấu và mức độ chất lượng gỗ trong sản xuất
+PPS at site is for reference on construction & quality rate on timber/ solid in production
+Bất cứ 1 sự thay đổi nào trong sản xuất, cần phải được duyệt và gửi email thông báo chính thức từ RS
+Any change during production, need to raise for approval & send email officially from RS
+Nhà máy cần đọc qua PPS và phản hồi lại cho RS những thông tin không được đồng ý bởi nhà máy bên trong 3 ngày làm việc
+Factoty need to read through PPS & feedback to RS disagree points by factory within 3 working days`;
+const fmtD=v=>{const m=String(v||"").match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`${m[3]}-${"Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ")[+m[2]-1]}-${m[1].slice(2)}`:String(v||"")};
+const blankPPS=prev=>{const b=blank(),p=(prev||[]).find(r=>r.type==="pps");b.type="pps";
+ b.cover={po:"",cust:"AGTC",fac:p?.cover?.fac||"",date:b.cover.date,ver:"V1",fin:"",dim:"",insp:p?.cover?.insp||"",hist:[{v:"01",d:"",n:"Report Created",by:""}],gn:GN_DEF,wo:1};
+ b.skus=[{id:uid(),code:"",name:"",d:[0,0,0],sec:{}}];return b};
+async function pdfDraw(x,file){let pdf;busyMsg("Đang mở file PDF…");try{const L=await loadPDF();pdf=await L.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;const N=pdf.numPages;busyEnd();
+  const r=N>1?prompt(`File có ${N} trang. Lấy những trang nào?\n(VD: 1-${N} hoặc 1,3)`,`1-${N}`):"1";if(r==null)return;const pages=pgRange(r,N);if(!pages.length)return alert("Không có trang hợp lệ.");let n=0;
+  for(const pn of pages){busyMsg(`Đang chuyển trang ${pn} thành ảnh…`);const bl=await pdfPage(pdf,pn,true);if(!bl)continue;const id=uid();if(!(await idbPut("i",id,bl)))break;memSet(id,bl);await saveThumb(id);x.ph.push({id,cap:""});n++}
+  await save();busyEnd();render();toast(`✓ Đã nhập ${n} trang bản vẽ`)}catch(e){busyEnd();alert("Không đọc được file PDF: "+(e&&e.message||e))}finally{try{pdf&&pdf.destroy()}catch(e){}}}
+function ppsHome(a){const c=S.cover;if(!S.skus.length){S.skus.push({id:uid(),code:"",name:"",d:[0,0,0],sec:{}});save()}const k=S.skus[0];if(!Array.isArray(c.hist))c.hist=[{v:"01",d:"",n:"Report Created",by:""}];
+ $("#ttl").textContent="PPS Report";
+ const f=(key,l,ph="")=>`<label>${l}</label><input value="${esc(c[key]??"")}" data-dc="${key}" placeholder="${esc(ph)}">`;
+ a.innerHTML=`<div class=c><h2>Pre-Production Sample Report</h2>${f("po","Tên báo cáo (không trùng)")}${f("cust","Customer")}${f("fac","Factory")}<div class=r><div><label>Date</label><input type=date value="${esc(c.date||"")}" data-dc="date"></div><div>${f("ver","Version")}</div></div>${f("insp","Người làm báo cáo (By)")}</div>
+ <div class=c><h2>Sản phẩm</h2><label>SKU#</label><input id=dsk value="${esc(k.code)}" placeholder="vd: 1700939.11"><label>Description</label><input id=dsn value="${esc(k.name)}" placeholder="vd: Charlotte 120cm Round Dining Table, Black Oak">${f("dim","Overall Dim","vd: Ø120 x H75 cm")}${f("fin","Color","vd: Black Oak")}</div>
+ <div class=c><h2>History Tracking</h2>${c.hist.map((h,i)=>`<div class=r style="align-items:end"><div style="flex:.6"><label>Version</label><input data-h="${i}:v" value="${esc(h.v)}"></div><div><label>Revision Date</label><input data-h="${i}:d" value="${esc(h.d)}" placeholder="${esc(fmtD(c.date))}"></div></div><div class=r style="align-items:end"><div style="flex:2"><label>Notes</label><input data-h="${i}:n" value="${esc(h.n)}"></div><div><label>By</label><input data-h="${i}:by" value="${esc(h.by)}" placeholder="${esc(c.insp||"")}"></div>${i?`<button class="b x" data-hx="${i}" style="flex:none;margin:0">✕</button>`:""}</div>`).join("<hr style='border:0;border-top:1px solid var(--line)'>")}<p><button class="b g" id=hadd style="width:100%">＋ Thêm dòng (lần sửa mới)</button></p></div>
+ <div class=c><h2>General Notes / Ghi chú chung</h2><p class=tip>Mỗi dòng 1 ý. Dòng tiếng Anh (dòng chẵn sau dòng đầu) in nghiêng.</p><textarea id=gn style="min-height:220px">${esc(c.gn??GN_DEF)}</textarea><p><button class="b g" id=gnr style="width:100%">↺ Dùng lại nội dung mặc định</button></p></div>
+ <div class=c><h2>Hình chụp</h2><p class=tip>Cover Photo trống = lấy ảnh đầu của Product Photos. Master Samples: ảnh 1-2 = Bảng màu kí, ảnh 3-4 = Mẫu PPS kí. Đo kích thước chi tiết: chụp theo cặp (toàn cảnh → cận số đo, gõ số đo ở ảnh cận). Materials / Watch Out: ghi chú ở chú thích ảnh, nhiều ý cách nhau bằng dấu ;</p>${PSEC.map(x=>{const n=cnt(k,x[0]);return`<div class=row data-k="${x[0]}"><div class=t>${x[1]}<small>${x[2]}</small></div><span class="n ${n?"on":""}">${n}</span></div>`}).join("")}
+  <label style="display:flex;gap:8px;align-items:center;font-weight:400;margin-top:10px"><input type=checkbox id=pwo style="width:auto" ${c.wo!==0?"checked":""}> Thêm trang bìa "Production Quality Watch Out" trước phần Lưu ý cho sản xuất</label></div>
+ ${EXPC()}`;
+ a.querySelectorAll("[data-dc]").forEach(i=>{i.oninput=()=>{c[i.dataset.dc]=i.value;save()};i.onfocus=()=>{i.dataset.old=c[i.dataset.dc]||""};
+  i.onchange=async()=>{const key=i.dataset.dc;if(key==="po"){const v=i.value.trim().replace(/\s+/g," "),old=i.dataset.old||"";const t=v?await poTaken(v,S.id):null;if(!v||t){alert(v?`"${v}" đã là tên của báo cáo khác. Tên báo cáo không được trùng.`:"Tên báo cáo không được để trống.");i.value=c.po=old;save();return}c.po=v;i.value=v;save();return}c[key]=i.value;await save()}});
+ $("#dsk").oninput=()=>{k.code=$("#dsk").value.trim();save()};$("#dsn").oninput=()=>{k.name=$("#dsn").value;save()};
+ a.querySelectorAll("[data-h]").forEach(i=>i.oninput=()=>{const[n,fk]=i.dataset.h.split(":");c.hist[+n][fk]=i.value;save()});
+ a.querySelectorAll("[data-hx]").forEach(b=>b.onclick=()=>{c.hist.splice(+b.dataset.hx,1);save();render()});
+ $("#hadd").onclick=()=>{const l=c.hist[c.hist.length-1]||{},nv=String((parseInt(l.v)||c.hist.length)+1).padStart(2,"0");c.hist.push({v:nv,d:"",n:"",by:""});save();render()};
+ $("#gn").oninput=e=>{c.gn=e.target.value;save()};$("#gnr").onclick=()=>{if(!confirm("Thay ghi chú chung bằng nội dung mặc định?"))return;c.gn=GN_DEF;save();render()};
+ $("#pwo").onchange=e=>{c.wo=e.target.checked?1:0;save()};
+ a.querySelectorAll("[data-k]").forEach(e=>e.onclick=()=>{V={p:"sec",s:k.id,k:e.dataset.k};render();scrollTo(0,0)});
+ bindExp()}
+async function ppsPages(H,P,I2,mode){const c=S.cover,k=S.skus[0]||{sec:{},code:"",name:""},ph=key=>dropPh(k,key),hdr=(t,st="")=>`<div class=pph style="${st}">${esc(t)}</div>`;
+ const im=(p,l,t,w,h)=>p&&p.id?`<img class=ri src="${I2(p.id)}" style="left:${l}px;top:${t}px;width:${w}px;height:${h}px;object-fit:contain;background:#fff">`:(mode===2?`<div class="eb sa" style="position:absolute;left:${l}px;top:${t}px;width:${w}px;height:${h}px"></div>`:"");
+ const lines=t=>String(t||"").split(/\s*;\s*|\n/).map(z=>z.trim()).filter(Boolean),bul=t=>lines(t).map(z=>"• "+z).join("\n");
+ /* 1. Trang bìa */
+ const cv=ph("pcov")[0]||ph("ppro")[0];let y=150;const F=(l,v)=>{const o=`<div class=pl style="left:996px;top:${y}px">${esc(l)}</div><div class=pv style="left:1010px;top:${y+32}px;width:300px">• ${esc(v||"")}</div>`;y+=String(v||"").length>24?104:88;return o};
+ P("pps-cover",hdr("PRE-PRODUCTION SAMPLE REPORT","justify-content:center;font-size:52px")+im(cv,61,140,835,708)+F("Customer:",c.cust)+F("SKU#:",k.code)+F("Description:",k.name)+F("Overall Dim:",c.dim)+F("Color:",c.fin)+F("Date:",fmtD(c.date))+F("Version:",c.ver)+F("Factory:",c.fac));
+ /* 2. History Tracking */
+ const hs=(c.hist&&c.hist.length?c.hist:[{v:"01",n:"Report Created"}]);
+ P("",hdr("History Tracking","font:400 62px Arial")+`<table class=pht style="position:absolute;left:11px;top:142px;width:1293px"><colgroup><col style="width:165px"><col style="width:227px"><col style="width:578px"><col style="width:323px"></colgroup><tr><th>Version</th><th>Revision Date</th><th>Notes</th><th>By</th></tr>${hs.map(h=>`<tr>${[h.v,h.d||fmtD(c.date),h.n,h.by||c.insp].map(v=>`<td>• ${esc(v||"")}</td>`).join("")}</tr>`).join("")}</table>`);
+ /* 3. General notes */
+ const gl=String(c.gn??GN_DEF).split("\n").filter(z=>z.trim());
+ if(gl.length)P("",hdr("GENERAL NOTES/ GHI CHÚ CHUNG")+`<div style="position:absolute;left:36px;top:128px;width:1250px;font-size:19px;line-height:1.36">${gl.map((z,i)=>`<div style="margin-bottom:${i%2||!i?8:10}px;${i&&i%2===0?"font-style:italic":""}">${esc(z)}</div>`).join("")}</div>`);
+ /* 4. Master samples */
+ const ms=ph("pms");if(ms.length||mode===2)P("",hdr("MASTER SAMPLES RECORD AT FACTORY\nMẪU KÍ LƯU TẠI NHÀ MÁY","white-space:pre-line;line-height:1.25;font-size:30px")+`<div class=pbx style="left:152px;top:114px;width:449px">Bảng Màu Kí và Lưu Tại Nhà Máy</div><div class=pbx style="left:737px;top:114px;width:449px">Mẫu PPS Kí Và Lưu Tại Nhà Máy</div>`+im(ms[0],152,170,449,335)+im(ms[1],152,520,449,335)+im(ms[2],737,170,449,335)+im(ms[3],737,520,449,335));
+ /* 5-6. Ảnh sản phẩm 3×2 */
+ const grid=(key,title,extra)=>{const a=ph(key);if(!a.length&&!(mode===2&&key==="ppro"))return;const N=Math.max(1,Math.ceil(a.length/6));for(let i=0;i<N;i++){let b="";for(let j=0;j<6;j++){const p=a[i*6+j];if(!p&&!(mode===2&&i===N-1))continue;b+=im(p,[22,452,882][j%3],[120,490][Math.floor(j/3)],412,352)}P("",hdr(title+(i?" (CONTINUED)":""))+(extra||"")+b)}};
+ grid("ppro","PRODUCT PHOTOS/ HÌNH SẢN PHẨM",`<div style="position:absolute;left:795px;top:0;width:157px;height:108px;border-left:2px solid #fff;color:#fff;font:700 30px Arial;display:flex;align-items:center;justify-content:center">COLOR</div><div style="position:absolute;left:952px;top:0;width:364px;height:108px;border-left:2px solid #fff;color:#fff;font:700 40px Arial;display:flex;align-items:center;justify-content:center;overflow:hidden">${esc(c.fin||"")}</div>`);
+ grid("pww","WW PRODUCT PHOTOS/ HÌNH SẢN PHẨM CHƯA SƠN");
+ /* 7. Overall dim + 11. Drawing: 1 ảnh / trang */
+ const one=(key,title)=>{const a=ph(key);a.forEach((p,i)=>P("",hdr(title+(i?" (CONTINUED)":""))+im(p,160,128,996,742)))};
+ one("podim","OVERALL DIM/ KÍCH THƯỚC TỔNG THỂ");
+ /* 8. Đo kích thước chi tiết: cặp ảnh, số đo ghi phía trên */
+ {const a=ph("pdim");const N=Math.ceil(a.length/6);for(let i=0;i<N;i++){let b="";for(let m=0;m<3;m++){const q=i*6+m*2,p1=a[q],p2=a[q+1];if(!p1&&!p2)continue;const l=[9,444,879][m],v=(p2&&p2.cap)||(p1&&p1.cap)||"";
+   b+=p1?`<figure class=pq style="left:${l}px;top:126px"><img src="${I2(p1.id)}"><figcaption>${v?"• "+esc(v):""}</figcaption></figure>`:"";b+=im(p2,l,535,428,303)}
+  P("",hdr("DETAILS DIM MEASURE PHOTOS/ HÌNH ĐO KÍCH THƯỚC CHI TIẾT"+(i?" (CONTINUED)":""))+b)}}
+ /* 9. Vật liệu: ảnh trái, ghi chú phải, 2 ảnh / trang */
+ {const a=ph("pmat");for(let i=0;i<Math.ceil(a.length/2);i++){let b="";for(let j=0;j<2;j++){const p=a[i*2+j];if(!p)continue;b+=`<figure class=pm style="left:15px;top:${[120,500][j]}px"><img src="${I2(p.id)}"><figcaption>${esc(bul(p.cap))}</figcaption></figure>`}P("",hdr("MATERIALS/ VẬT LIỆU")+b)}}
+ /* 10. Chi tiết tháo rời & ngũ kim */
+ {const a=ph("pkd"),x=k.sec.pkd;if(a.length||secUsed(x,"pkd")||String(x?.note2||"").trim()){const N=Math.max(1,Math.ceil(a.length/4));for(let i=0;i<N;i++){let b="";for(let j=0;j<4;j++)b+=im(a[i*4+j],[18,338,658,978][j],150,300,400);
+   const nb=(t,l)=>`<div style="position:absolute;left:${l-24}px;top:592px;font-size:19px">Note</div><div class=cb style="left:${l}px;top:626px;width:409px;height:221px;font-size:18px">${bl(t)}</div>`;
+   P("",hdr("KD COMPONENT – HW/ CHI TIẾT THÁO RỜI & NGŨ KIM"+(i?" (CONTINUED)":""))+b+(i?"":nb(x?.note,60)+nb(x?.note2,668)))}}}
+ one("pdraw","PRODUCT DRAWING/ BẢN VẼ SẢN PHẨM");
+ /* 12-13. Lưu ý sản xuất */
+ {const a=ph("pwatch");if(a.length){if(c.wo!==0){try{const r=await fetch("pwo.jpg");if(r.ok){const b=await r.blob();H.push(`<section class=P><img class=fp src="${URL.createObjectURL(b)}" style="position:absolute;left:0;top:0;width:1316px;height:911px;object-fit:fill"></section>`)}}catch(e){}}
+  for(let i=0;i<Math.ceil(a.length/2);i++){let b="";for(let j=0;j<2;j++){const p=a[i*2+j];if(!p)continue;const l=[30,686][j];b+=`<figure class=pw style="left:${l}px;top:135px"><img src="${I2(p.id)}"><figcaption>${esc(bul(p.cap))}</figcaption></figure><div style="position:absolute;left:${l+6}px;top:597px;font-size:19px">Note</div>`}
+   P("",hdr("PRODUCTION WATCH OUT/ LƯU Ý CHO SẢN XUẤT"+(i?" (CONTINUED)":""))+b)}}}}
 /* ===== Xuất PDF theo mẫu Final Inspection Report ===== */
 const T={box:["Before Inspection/ Box Selection","Trước Khi Kiểm/ Chọn Thùng","Box Selection"],pack:["Packaging Check","Kiểm Tra Thùng/ Chất Lượng In","Packaging Check"],wt:["Weight Check/ Carton & Product","Kiểm Tra Cân Nặng/ Thùng & Sản Phẩm","Weight Check"],psz:["Package Measurements Check","Kiểm Tra Kích Thước Thùng","Package Size Check"],lbl:["Package Labels – Carton Printing Infor","Kiểm tra tem thùng – in trên thùng","Package Shipping Mark"],bar:["Barcode Check","Kiểm Tra Mã Vach","Bar Code Check"],mat:["Package Materials Check/ Box Open","Kiểm Tra Vật Liệu Đóng Gói/ khui thùng","Package Materials"],cmp:["Components Check","Kiểm Tra Chi Tiết Rời","Loose Component Check"],man:["Manual Check","Kiểm Tra HDLR","Manual Check"],moi:["Moisture Check","Kiểm Tra Độ Ẩm","Moisture Check"],col:["Color Check","Kiểm Tra Màu","Color Check"],fit:["Materials Check","Kiểm vật tư","Materials Check"],asm:["Assembly on Site Check","Kiểm Tra Lắp Ráp Tại Xưởng","Assembly Check"],psize:["Product Measurement Check","Kiểm Tra Kích Thước Sản Phẩm","Product Size Check"],pph:["Product Photos","Hình Sản Phẩm","Product Photos"],def:["Defects Found","Lỗi Tìm Thấy","Defects Found"]};
 const PF=[["desc","Product Description","Mô Tả Sản Phẩm"],["po","PO Quantity","Số Lượng Đơn Hàng"],["fin","Product Finish","Màu Sản Phẩm"],["con","Construction","Kết Cấu"],["ins","Inspected Q'ty Per AQL","Số Lượng Kiểm"],["st1","Status when inspection","Tình Trạng Khi Kiểm"],["rs","Inspection Q'ty Per RS","Số lượng kiểm theo gói RS"],["st2","Status when inspection","Tình Trạng Khi Kiểm"],["dim","Product Dimension (cm)","Kích Thước Sản Phẩm"],["pk","Package Dimension (cm)","Kích Thươc Thùng"],["nw","NW (Kg)","Cân Nặng Sản Phẩm"],["gw","GW (Kg)","Cân Nặng Thùng"],["mt","Materials","Vật Liệu"]];
@@ -763,7 +993,8 @@ const cf=CF(),lg=(cf.logo&&await img("logo"))||DEFLOGO;const c=S.cover,t=tot(),o
 if(mode!==2){const ids=S.skus.flatMap(k=>Object.values(k.sec).flatMap(x=>x.ph.map(p=>p.id))).filter(Boolean);for(let q=0;q<ids.length;q+=3)await Promise.all(ids.slice(q,q+3).map(img))}
 const has=(k,y)=>secUsed(k.sec[y],y);
 const hd=(en,vi,sk,cl="",st="")=>`<div class="hd ${cl} ${vi?"t2":""}" style="${st}"><div class=ht><b>${esc(en)}</b>${vi?`<small>${esc(vi)}</small>`:""}</div><span class=sk>${esc(sk||"")}</span>${IXA}</div>`;
-const P=(id,h,nof)=>H.push(`<section class=P ${id?`id="${id}"`:""}>${lg?`<img class=lg src="${lg}">`:""}${h}${nof?"":'<div class=ft>Final Inspection Report</div>'}</section>`);
+const P=(id,h,nof)=>H.push(`<section class=P ${id?`id="${id}"`:""}>${lg?`<img class=lg src="${lg}">`:""}${h}${nof?"":`<div class=ft>${isDrop()?"Droptest Report":isPPS()?"PPS Report":"Final Inspection Report"}</div>`}</section>`);
+if(isDrop())await dropPages(H,P,I2,mode);else if(isPPS())await ppsPages(H,P,I2,mode);else{
 /* Trang bìa */
 const fl=(x,y,w,l,v)=>`<u class=fl style="left:${x}px;top:${y+16}px">${l}</u><div class=fb style="left:${x<700?195:935}px;top:${y}px;width:${w}px;font-size:${String(v).length>(w>400?46:24)?15:20}px">${esc(v)}</div>`;
 const dt=c.date?c.date.split("-").reverse().join("/"):"";
@@ -821,7 +1052,8 @@ for(const k of S.skus){const f=k.f||{};
     (spec(key,{...x,note:NOTE},first)||(side?(key==="col"?`<div class=cl style="left:35px;top:114px">Inspector Comments:</div><div class="cb nb" style="left:34px;top:151px;width:411px;height:655px;padding:8px 12px">${bl(NOTE)}</div>`:`<div class=cl style="left:35px;top:122px">Inspector Comments:</div><div class="cb sd${one?" nb":""}" style="left:35px;top:157px;width:411px;height:656px">${bl(NOTE)}</div>`)
     :`<div class=cl style="left:200px;top:776px">Inspector Comments:</div><div class=cb style="left:479px;top:774px;width:749px;height:99px">${bl(NOTE)}</div>`));
    P(first?`s-${k.id}-${key}`:"",hd(first?tt[0]:tt[0]+" (Continued)",first?tt[1]:tt[1]+" (Tiếp Theo)",k.code,side?(key==="col"?"cc":"cc c73"):"")+b)}}}
-H.push(`<section class=P style="background:#fff"><svg style="position:absolute;left:0;top:0" width=1316 height=911 viewBox="0 0 1316 911"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#bfcdea"/><stop offset=".45" stop-color="#cfdaea"/><stop offset=".7" stop-color="#d3e2d6"/><stop offset="1" stop-color="#b9d6a3"/></linearGradient></defs><ellipse cx="1046" cy="488" rx="372" ry="492" transform="rotate(-10.0 1046 488)" fill="url(#eg)"/><ellipse cx="1048" cy="484" rx="354" ry="476" transform="rotate(-9.2 1048 484)" fill="#fff" fill-opacity=".3"/><ellipse cx="1050" cy="480" rx="335" ry="459" transform="rotate(-8.4 1050 480)" fill="#fff" fill-opacity=".3"/><ellipse cx="1052" cy="476" rx="317" ry="443" transform="rotate(-7.6 1052 476)" fill="#fff" fill-opacity=".3"/><ellipse cx="1054" cy="472" rx="298" ry="426" transform="rotate(-6.8 1054 472)" fill="#fff" fill-opacity=".3"/><ellipse cx="1056" cy="468" rx="280" ry="410" transform="rotate(-6.0 1056 468)" fill="#fff"/></svg><svg style="position:absolute;left:893px;top:312px" width=295 height=378 viewBox="0 0 295 378"><path d="M0 0H176L295 104V378H0Z" fill="#4472c4"/><path d="M33 33H145V125H262V345H33Z" fill="#fff"/><path d="M176 46V98H228Z" fill="#fff"/><g fill="#4472c4"><rect x="57" y="135" width="66" height="26"/><rect x="57" y="175" width="190" height="26"/><rect x="57" y="215" width="190" height="26"/><rect x="57" y="255" width="190" height="26"/><rect x="57" y="295" width="190" height="26"/></g></svg><div style="position:absolute;left:117px;top:419px;font-size:47px;font-weight:400;color:#44546a;font-family:'Calibri Light','Segoe UI','Open Sans',Arial,sans-serif;white-space:nowrap">ENDS REPORT</div></section>`);
+}
+if(!isPPS())H.push(`<section class=P style="background:#fff"><svg style="position:absolute;left:0;top:0" width=1316 height=911 viewBox="0 0 1316 911"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#bfcdea"/><stop offset=".45" stop-color="#cfdaea"/><stop offset=".7" stop-color="#d3e2d6"/><stop offset="1" stop-color="#b9d6a3"/></linearGradient></defs><ellipse cx="1046" cy="488" rx="372" ry="492" transform="rotate(-10.0 1046 488)" fill="url(#eg)"/><ellipse cx="1048" cy="484" rx="354" ry="476" transform="rotate(-9.2 1048 484)" fill="#fff" fill-opacity=".3"/><ellipse cx="1050" cy="480" rx="335" ry="459" transform="rotate(-8.4 1050 480)" fill="#fff" fill-opacity=".3"/><ellipse cx="1052" cy="476" rx="317" ry="443" transform="rotate(-7.6 1052 476)" fill="#fff" fill-opacity=".3"/><ellipse cx="1054" cy="472" rx="298" ry="426" transform="rotate(-6.8 1054 472)" fill="#fff" fill-opacity=".3"/><ellipse cx="1056" cy="468" rx="280" ry="410" transform="rotate(-6.0 1056 468)" fill="#fff"/></svg><svg style="position:absolute;left:893px;top:312px" width=295 height=378 viewBox="0 0 295 378"><path d="M0 0H176L295 104V378H0Z" fill="#4472c4"/><path d="M33 33H145V125H262V345H33Z" fill="#fff"/><path d="M176 46V98H228Z" fill="#fff"/><g fill="#4472c4"><rect x="57" y="135" width="66" height="26"/><rect x="57" y="175" width="190" height="26"/><rect x="57" y="215" width="190" height="26"/><rect x="57" y="255" width="190" height="26"/><rect x="57" y="295" width="190" height="26"/></g></svg><div style="position:absolute;left:117px;top:419px;font-size:47px;font-weight:400;color:#44546a;font-family:'Calibri Light','Segoe UI','Open Sans',Arial,sans-serif;white-space:nowrap">ENDS REPORT</div></section>`);
 $("#print").innerHTML=H.join("");
 await Promise.all([...document.querySelectorAll("#print img")].filter(i=>!/^pptx:/.test(i.getAttribute("src")||"")).map(i=>i.decode().catch(()=>{})));
 /* ảnh dọc: hiện trọn ảnh (không cắt) */
@@ -865,7 +1097,7 @@ async function storageUI(){const e=document.getElementById("stg");if(!e)return;t
 async function storageWarn(){try{const q=await navigator.storage.estimate();if(q.quota&&q.usage/q.quota>.85)toast(`⚠ Bộ nhớ app đã dùng ${(q.usage/q.quota*100).toFixed(0)}% — xóa bớt báo cáo cũ để tránh mất ảnh`)}catch(e){}}
 const idbKeys=n=>idbRun(n,"readonly",s=>s.getAllKeys()).then(r=>r||[],()=>[]);
 /* Tìm ảnh không thuộc báo cáo nào (trong máy + trên mây nếu đang đồng bộ), chọn từng ảnh để đưa lại vào item / mục */
-async function findLost(){busyMsg("Đang tìm ảnh…");const used=new Set();for(const r of await allReports())for(const k of r.skus)for(const x of Object.values(k.sec||{}))for(const p of x.ph||[])if(p.id)used.add(p.id);
+async function findLost(){busyMsg("Đang tìm ảnh…");const used=await trashIds();for(const r of await allReports())for(const k of r.skus)for(const x of Object.values(k.sec||{}))for(const p of x.ph||[])if(p.id)used.add(p.id);
  const keys=await idbKeys("i"),ids=new Set();for(const k of keys){const id=String(k).replace(/^[ht]:/,"");if(id!=="logo"&&!used.has(id))ids.add(id)}
  /* ảnh đã tải lên mây nhưng không còn trong báo cáo nào */
  let cloud=0;if(syOn()&&navigator.onLine){try{busyMsg("Đang tìm ảnh trên mây…");for(let off=0;off<20000;off+=1000){const r=await fetch(syU("/storage/v1/object/list/photos"),{method:"POST",headers:syH(1),body:JSON.stringify({prefix:SY.c.code+"/",limit:1000,offset:off})});if(!r.ok)break;const a=await r.json();
@@ -874,7 +1106,7 @@ async function findLost(){busyMsg("Đang tìm ảnh…");const used=new Set();fo
  const tm=id=>{const t=parseInt(id.slice(0,8),36);return t>1.5e12&&t<4e12?new Date(t).toLocaleString("vi-VN"):""};const SL=new Set();
  const m=document.createElement("div");m.style.cssText="position:fixed;inset:0;background:#000c;z-index:99;overflow:auto;padding:14px";
  m.innerHTML=`<div class=c style="max-width:760px;margin:auto"><h2>Tìm thấy ${L.length} ảnh không thuộc báo cáo nào</h2><p class=tip>${cloud?cloud+" ảnh lấy từ mây · ":""}Từ ${tm(L[0])} đến ${tm(L[L.length-1])}. Chạm để chọn ảnh, rồi đưa vào item &amp; mục phù hợp. Làm lần lượt từng nhóm.</p>
- <div style="position:sticky;top:-14px;background:var(--card);padding:8px 0;z-index:2"><div class=r><select id=lk ${S?.skus?.length?"":"disabled"}>${(S?.skus||[]).map(k=>`<option value="${k.id}">${esc(k.code)}</option>`).join("")||"<option>Mở 1 báo cáo trước</option>"}</select><select id=ls>${SEC.map(z=>`<option value="${z[0]}">${z[1]}</option>`).join("")}</select></div>
+ <div style="position:sticky;top:-14px;background:var(--card);padding:8px 0;z-index:2"><div class=r><select id=lk ${S?.skus?.length?"":"disabled"}>${(S?.skus||[]).map(k=>`<option value="${k.id}">${esc(k.code)}</option>`).join("")||"<option>Mở 1 báo cáo trước</option>"}</select><select id=ls>${SECS().map(z=>`<option value="${z[0]}">${z[1]}</option>`).join("")}</select></div>
  <div class=r style="margin-top:6px"><button class="b g" id=lal>Chọn tất cả</button><button class="b y" id=lad ${S?.skus?.length?"":"disabled"}>➕ Đưa <span id=lct>0</span> ảnh vào</button></div></div>
  <div id=lg style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px;margin-top:8px"></div>
  <button class="b g" id=lzp style="width:100%;margin-top:10px">📦 Tải ảnh đã chọn (hoặc tất cả) về máy (.zip)</button><button class="b x" id=ldl style="width:100%;margin-top:8px">🗑 Xóa hẳn ảnh đã chọn khỏi máy</button><button class="b g" id=lcl style="width:100%;margin-top:8px">Đóng</button></div>`;document.body.append(m);
@@ -886,7 +1118,7 @@ async function findLost(){busyMsg("Đang tìm ảnh…");const used=new Set();fo
  m.querySelector("#lad").onclick=async()=>{const sel=pick();if(!sel.length)return alert("Chạm vào ảnh để chọn trước.");const k=S.skus.find(z=>z.id===m.querySelector("#lk").value),sk=m.querySelector("#ls").value;if(!k)return;
   await snap(S,"Trước khi đưa ảnh thất lạc vào");const x=k.sec[sk]||(k.sec[sk]={ph:[],note:"",dn:1});busyMsg("Đang thêm ảnh…");let n=0;
   for(const id of sel){if(!(await imgBlob(id)))continue;x.ph.push({id,cap:dc(sk,x.ph.filter(p=>!p.up&&!p.ref).length)});n++;const e=m.querySelector(`[data-lid="${id}"]`);if(e)e.remove();L.splice(L.indexOf(id),1);SL.delete(id)}
-  await save();busyEnd();cnt();toast(`✓ Đã đưa ${n} ảnh vào ${k.code} · ${SEC.find(z=>z[0]===sk)[1]}`);if(!L.length){m.remove();render()}};
+  await save();busyEnd();cnt();toast(`✓ Đã đưa ${n} ảnh vào ${k.code} · ${ASEC.find(z=>z[0]===sk)[1]}`);if(!L.length){m.remove();render()}};
  m.querySelector("#ldl").onclick=async()=>{const sel=pick();if(!sel.length)return alert("Chạm vào ảnh để chọn trước.");if(!confirm(`Xóa hẳn ${sel.length} ảnh khỏi máy? Không thể hoàn tác.`))return;for(const id of sel){await delImg(id);m.querySelector(`[data-lid="${id}"]`)?.remove();L.splice(L.indexOf(id),1);SL.delete(id)}cnt()};
  m.querySelector("#lzp").onclick=async()=>{const sel=pick().length?pick():L;busyMsg("Đang nén…");const fs=[];let j=0;for(const id of sel){let b=await idbGet("i","h:"+id);if(!(b&&b.size)){b=await imgBlob(id);if(!b)continue}fs.push({n:`anh-that-lac/${String(++j).padStart(3,"0")} ${tm(id).replace(/[\/:]/g,"-")}.jpg`,blob:b})}
   const z=await zipBlobs(fs);busyEnd();offerFile(z,"anh-that-lac.zip")}}
@@ -992,7 +1224,7 @@ async function ocrPickRead(k){const bl=await ocrChoose(k);if(!bl)return;const cv
   const x=k.sec.wt||(k.sec.wt={ph:[],note:"",dn:1}),tt=x.t||(x.t={});tt.g0=g?g+" KGS":"";tt.n0=n?n+" KGS":"";save();render();toast("✓ Đã điền NW / GW in trên thùng")}}
 /* ===== Sao chép 1 mục kiểm (ảnh + ghi chú + số liệu) sang item khác trong cùng báo cáo ===== */
 async function dupImg(id){const d=asBlob(await idbGet("i",id))||await imgBlob(id);if(!d)return null;const nid=uid();if(!(await idbPut("i",nid,d)))return null;const h=await idbGet("i","h:"+id);if(h&&h.size)await idbPut("i","h:"+nid,h);const t=await idbGet("i","t:"+id);if(t)await idbPut("i","t:"+nid,t);return nid}
-function copySec(k,key){const src=k.sec[key],nm=SEC.find(z=>z[0]===key);if(!src||!(src.ph.some(p=>p.id)||secUsed(src,key)))return alert("Mục này chưa có ảnh hay ghi chú để sao chép.");
+function copySec(k,key){const src=k.sec[key],nm=ASEC.find(z=>z[0]===key);if(!src||!(src.ph.some(p=>p.id)||secUsed(src,key)))return alert("Mục này chưa có ảnh hay ghi chú để sao chép.");
  const others=S.skus.filter(z=>z!==k);if(!others.length)return alert("Báo cáo mới có 1 item. Thêm item khác trước.");
  const m=document.createElement("div");m.style.cssText="position:fixed;inset:0;background:#000a;z-index:99;display:grid;place-items:center;padding:16px";
  m.innerHTML=`<div class=c style="max-width:480px;width:100%;max-height:88vh;overflow:auto"><h2>Sao chép "${esc(nm[1])}" của ${esc(k.code)} sang…</h2>
@@ -1048,23 +1280,61 @@ function edDraw(im,st,maxSide,full){const sw=im.naturalWidth||im.width,sh=im.nat
  g.fillStyle="#fff";g.fillRect(0,0,c.width,c.height);g.imageSmoothingQuality="high";g.scale(k,k);g.translate(-c0.x*W0+W0/2,-c0.y*H0+H0/2);
  const A=st.a*Math.PI/180,ca=Math.abs(Math.cos(A)),sa=Math.abs(Math.sin(A)),z=Math.max((W0*ca+H0*sa)/W0,(W0*sa+H0*ca)/H0);
  g.rotate(A);g.scale(z,z);g.scale(st.fh?-1:1,st.fv?-1:1);g.rotate(st.r*Math.PI/2);g.drawImage(im,-sw/2,-sh/2);return c}
-const edPlain=st=>!st.r&&!st.fh&&!st.fv&&!st.a&&st.c.x<=0&&st.c.y<=0&&st.c.w>=1&&st.c.h>=1;
+const edPlain=st=>!st.r&&!st.fh&&!st.fv&&!st.a&&st.c.x<=0&&st.c.y<=0&&st.c.w>=1&&st.c.h>=1&&!(st.ann&&st.ann.length);
+/* ===== Vẽ mũi tên / chữ lên ảnh (toạ độ 0..1 theo khung ảnh đã xoay, chưa cắt) ===== */
+const EDC={r:"#e00000",y:"#ffd400",b:"#1565ff"};
+function drawAnn(g,W,H,list){const M=Math.max(W,H);g.save();g.lineCap="round";g.lineJoin="round";
+ for(const a of list||[]){const col=EDC[a.c]||a.c||"#e00000";g.strokeStyle=g.fillStyle=col;
+  if(a.t==="a"){const x1=a.x1*W,y1=a.y1*H,x2=a.x2*W,y2=a.y2*H,lw=Math.max(2,a.w*M),hl=Math.max(lw*3.2,M*.018),ang=Math.atan2(y2-y1,x2-x1);
+   const head=(x,y,an)=>{g.beginPath();g.moveTo(x,y);g.lineTo(x-hl*Math.cos(an-.42),y-hl*Math.sin(an-.42));g.lineTo(x-hl*Math.cos(an+.42),y-hl*Math.sin(an+.42));g.closePath();g.fill()};
+   const sh=hl*.8;g.lineWidth=lw;g.beginPath();g.moveTo(x1+(a.two?sh*Math.cos(ang):0),y1+(a.two?sh*Math.sin(ang):0));g.lineTo(x2-sh*Math.cos(ang),y2-sh*Math.sin(ang));g.stroke();
+   head(x2,y2,ang);if(a.two)head(x1,y1,ang+Math.PI)}
+  else if(a.t==="t"&&a.s){const fs=Math.max(10,a.f*M);g.save();g.translate(a.x*W,a.y*H);if(a.v)g.rotate(-Math.PI/2);g.font=`700 ${fs}px Arial,Helvetica,sans-serif`;g.textAlign="center";g.textBaseline="middle";
+   g.lineWidth=fs*.16;g.strokeStyle=a.c==="y"?"rgba(0,0,0,.75)":"rgba(255,255,255,.9)";g.strokeText(a.s,0,0);g.fillStyle=col;g.fillText(a.s,0,0);g.restore()}}
+ g.restore()}
+/* ảnh đã sửa (xoay/cắt) + chú thích vẽ */
+function edRender(im,st,maxSide){if(!st.ann||!st.ann.length)return edDraw(im,st,maxSide);const c0=st.c,F=edDraw(im,st,Math.min(6000,maxSide/Math.max(c0.w,c0.h)),1);{const g=F.getContext("2d");g.setTransform(1,0,0,1,0,0);drawAnn(g,F.width,F.height,st.ann)}
+ const sx=c0.x*F.width,sy=c0.y*F.height,sw=c0.w*F.width,sh=c0.h*F.height,k=Math.min(1,maxSide/Math.max(sw,sh)),o=document.createElement("canvas");o.width=Math.max(1,Math.round(sw*k));o.height=Math.max(1,Math.round(sh*k));
+ o.getContext("2d").drawImage(F,sx,sy,sw,sh,0,0,o.width,o.height);F.width=F.height=0;return o}
 function editImg(id){return new Promise(async done=>{const src=await img(id);if(!src){alert("Không đọc được ảnh");return done(false)}
  let full;try{full=await loadIm(src)}catch(e){alert("Không đọc được ảnh");return done(false)}
  /* ảnh xem trước nhỏ để kéo thanh chỉnh mượt */
  const pv=(()=>{const k=Math.min(1,1100/Math.max(full.naturalWidth,full.naturalHeight)),c=document.createElement("canvas");c.width=Math.round(full.naturalWidth*k);c.height=Math.round(full.naturalHeight*k);c.getContext("2d").drawImage(full,0,0,c.width,c.height);return c})();
- const st={r:0,fh:0,fv:0,a:0,c:{x:0,y:0,w:1,h:1}},RT=[["Tự do",0],["4:3",4/3],["3:4",3/4],["1:1",1]];let rt=0;
+ const st={r:0,fh:0,fv:0,a:0,c:{x:0,y:0,w:1,h:1},ann:[]},RT=[["Tự do",0],["4:3",4/3],["3:4",3/4],["1:1",1]];let rt=0;
  const m=document.createElement("div");m.className="ed";
- m.innerHTML=`<div class=edt><button class=no>Hủy</button><span>Sửa ảnh</span><button class=ok>Lưu</button></div><div class=edw><canvas></canvas><div class=ecb>${["nw","n","ne","e","se","s","sw","w"].map(h=>`<i data-h=${h}></i>`).join("")}</div></div>
-  <div class=eda>Chỉnh nghiêng: <b class=eav>0°</b></div><input class=eds type=range min=-45 max=45 step=0.1 value=0>
-  <div class=edb><button data-a=l>↺ 90°</button><button data-a=r>↻ 90°</button><button data-a=h>⇆ Lật ngang</button><button data-a=v>⇅ Lật dọc</button><button data-a=t>▢ Tự do</button><button data-a=z>Đặt lại</button></div>`;document.body.append(m);
- const cv=m.querySelector("canvas"),box=m.querySelector(".ecb"),wrap=m.querySelector(".edw"),sl=m.querySelector(".eds"),av=m.querySelector(".eav");
+ m.innerHTML=`<div class=edt><button class=no>Hủy</button><span>Sửa ảnh</span><button class=ok>Lưu</button></div><div class=edw><canvas></canvas><canvas class=eov></canvas><div class=ecb>${["nw","n","ne","e","se","s","sw","w"].map(h=>`<i data-h=${h}></i>`).join("")}</div></div>
+  <div class=edm><button data-md=crop class=on>✂ Cắt / xoay</button><button data-md=draw>✏️ Mũi tên &amp; chữ</button></div>
+  <div class=edp hidden><div class=edr><button data-tl=a2 class=on title="Mũi tên 2 đầu (đo kích thước)">↔</button><button data-tl=a1 title="Mũi tên chỉ">➝</button><button data-tl=t title="Chữ / số đo">T</button><span class=sep></span><button data-cl=r class="sw on" style="background:#e00000"></button><button data-cl=y class=sw style="background:#ffd400"></button><button data-cl=b class=sw style="background:#1565ff"></button></div>
+   <div class=edr><button data-sz=0>Nhỏ</button><button data-sz=1 class=on>Vừa</button><button data-sz=2>Lớn</button><button data-vt=1 title="Chữ dọc (theo cạnh đứng)">⤒ Dọc</button><button data-un=1 title="Hoàn tác">↶ Lùi</button><button data-cx=1 title="Xóa hết hình vẽ">🗑</button></div>
+   <div class=eda style="opacity:.8">Kéo trên ảnh để vẽ mũi tên · chọn T rồi chạm vào ảnh để ghi chữ (VD 120cm)</div></div>
+  <div class=edx><div class=eda>Chỉnh nghiêng: <b class=eav>0°</b></div><input class=eds type=range min=-45 max=45 step=0.1 value=0>
+  <div class=edb><button data-a=l>↺ 90°</button><button data-a=r>↻ 90°</button><button data-a=h>⇆ Lật ngang</button><button data-a=v>⇅ Lật dọc</button><button data-a=t>▢ Tự do</button><button data-a=z>Đặt lại</button></div></div>`;document.body.append(m);
+ const cv=m.querySelector("canvas"),ov=m.querySelector(".eov"),box=m.querySelector(".ecb"),wrap=m.querySelector(".edw"),sl=m.querySelector(".eds"),av=m.querySelector(".eav");
  let W0=1,H0=1;
  const draw=()=>{const c=edDraw(pv,st,1100,1);cv.width=c.width;cv.height=c.height;cv.getContext("2d").drawImage(c,0,0);c.width=0;W0=cv.width;H0=cv.height;place()};
- const place=()=>{const r=cv.getBoundingClientRect(),w=wrap.getBoundingClientRect();Object.assign(box.style,{left:(r.left-w.left+st.c.x*r.width)+"px",top:(r.top-w.top+st.c.y*r.height)+"px",width:st.c.w*r.width+"px",height:st.c.h*r.height+"px"})};
+ const place=()=>{const r=cv.getBoundingClientRect(),w=wrap.getBoundingClientRect();Object.assign(ov.style,{left:(r.left-w.left)+"px",top:(r.top-w.top)+"px",width:r.width+"px",height:r.height+"px"});if(ov.width!==cv.width||ov.height!==cv.height){ov.width=cv.width;ov.height=cv.height}drawOv();Object.assign(box.style,{left:(r.left-w.left+st.c.x*r.width)+"px",top:(r.top-w.top+st.c.y*r.height)+"px",width:st.c.w*r.width+"px",height:st.c.h*r.height+"px"})};
  const fitRatio=()=>{const R=RT[rt][1];if(!R){return}let w=1,h=(W0/R)/H0;if(h>1){h=1;w=(H0*R)/W0}st.c={x:(1-w)/2,y:(1-h)/2,w,h};place()};
- sl.oninput=()=>{st.a=+sl.value;av.textContent=(st.a>0?"+":"")+st.a.toFixed(1)+"°";draw()};
- m.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{const a=b.dataset.a;
+ /* --- vẽ mũi tên / chữ --- */
+ const SZ=[[.004,.032],[.0065,.045],[.01,.065]];let tool="a2",col="r",sz=1,vt=0,cur=null;
+ const drawOv=()=>{const g=ov.getContext("2d");g.clearRect(0,0,ov.width,ov.height);drawAnn(g,ov.width,ov.height,cur?[...st.ann,cur]:st.ann);
+  if(mode==="draw"&&!(st.c.x<=0&&st.c.y<=0&&st.c.w>=1&&st.c.h>=1)){g.save();g.fillStyle="rgba(0,0,0,.45)";g.beginPath();g.rect(0,0,ov.width,ov.height);g.rect(st.c.x*ov.width,st.c.y*ov.height,st.c.w*ov.width,st.c.h*ov.height);g.fill("evenodd");g.restore()}};
+ let mode="crop";const setMode=md=>{mode=md;m.querySelectorAll("[data-md]").forEach(b=>b.classList.toggle("on",b.dataset.md===md));box.style.display=md==="crop"?"":"none";ov.style.pointerEvents=md==="draw"?"auto":"none";m.querySelector(".edp").hidden=md!=="draw";m.querySelector(".edx").hidden=md==="draw";drawOv()};
+ m.querySelectorAll("[data-md]").forEach(b=>b.onclick=()=>setMode(b.dataset.md));
+ const pick=(sel,attr,fn)=>m.querySelectorAll(sel).forEach(b=>b.onclick=()=>{m.querySelectorAll(sel).forEach(z=>z.classList.toggle("on",z===b));fn(b.dataset[attr])});
+ pick("[data-tl]","tl",v=>tool=v);pick("[data-cl]","cl",v=>col=v);pick("[data-sz]","sz",v=>sz=+v);
+ m.querySelector("[data-vt]").onclick=e=>{vt^=1;e.currentTarget.classList.toggle("on",!!vt)};
+ m.querySelector("[data-un]").onclick=()=>{st.ann.pop();drawOv()};m.querySelector("[data-cx]").onclick=()=>{if(st.ann.length&&confirm("Xóa hết mũi tên và chữ đã vẽ?")){st.ann=[];drawOv()}};
+ const uv=e=>{const r=ov.getBoundingClientRect();return[Math.min(1,Math.max(0,(e.clientX-r.left)/r.width)),Math.min(1,Math.max(0,(e.clientY-r.top)/r.height))]};
+ ov.onpointerdown=e=>{e.preventDefault();const[x,y]=uv(e);
+  if(tool==="t"){const t=prompt("Nhập chữ / số đo (VD 120cm):","");if(t&&t.trim()){st.ann.push({t:"t",x,y,s:t.trim(),c:col,f:SZ[sz][1],v:vt});drawOv()}return}
+  ov.setPointerCapture(e.pointerId);cur={t:"a",x1:x,y1:y,x2:x,y2:y,c:col,w:SZ[sz][0],two:tool==="a2"};drawOv()};
+ ov.onpointermove=e=>{if(!cur)return;const[x,y]=uv(e);cur.x2=x;cur.y2=y;drawOv()};
+ ov.onpointerup=ov.onpointercancel=()=>{if(!cur)return;const d=Math.hypot((cur.x2-cur.x1)*ov.width,(cur.y2-cur.y1)*ov.height);if(d>12)st.ann.push(cur);cur=null;drawOv()};
+ /* xoay / lật / nghiêng làm lệch hình vẽ → hỏi trước */
+ const geoOK=()=>!st.ann.length||confirm("Xoay / lật / chỉnh nghiêng sẽ xóa các mũi tên và chữ đã vẽ. Tiếp tục?")?(st.ann=[],true):false;
+ sl.onpointerdown=e=>{if(st.ann.length&&!geoOK()){e.preventDefault()}};
+ sl.oninput=()=>{if(st.ann.length){st.ann=[]}st.a=+sl.value;av.textContent=(st.a>0?"+":"")+st.a.toFixed(1)+"°";draw()};
+ m.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{const a=b.dataset.a;if(a!=="t"&&!geoOK())return;
   if(a==="l"||a==="r"){st.r=(st.r+(a==="r"?1:3))%4;st.c={x:0,y:0,w:1,h:1};draw();fitRatio()}
   else if(a==="h"){st.fh^=1;st.c.x=1-st.c.x-st.c.w;draw()}else if(a==="v"){st.fv^=1;st.c.y=1-st.c.y-st.c.h;draw()}
   else if(a==="t"){rt=(rt+1)%RT.length;b.textContent="▢ "+RT[rt][0];if(rt)fitRatio();else place()}
@@ -1083,9 +1353,9 @@ function editImg(id){return new Promise(async done=>{const src=await img(id);if(
  const close=v=>{removeEventListener("resize",ro);m.remove();done(v)};
  m.querySelector(".no").onclick=()=>close(false);
  m.querySelector(".ok").onclick=async()=>{if(edPlain(st))return close(false);busyMsg("Đang lưu ảnh đã sửa…");try{
-   const c=edDraw(full,st,4096),nb=await cvBlob(c,.9);c.width=c.height=0;if(!nb)throw new Error("không tạo được ảnh");if(!(await idbPut("i",id,nb)))throw new Error("không lưu được");
+   const c=edRender(full,st,4096),nb=await cvBlob(c,.9);c.width=c.height=0;if(!nb)throw new Error("không tạo được ảnh");if(!(await idbPut("i",id,nb)))throw new Error("không lưu được");
    memSet(id,nb);delete memT[id];await idbDel("i","t:"+id);await saveThumb(id);await idbDel("m","u:"+id);
-   const h=await idbGet("i","h:"+id);if(h&&h.size){const u=URL.createObjectURL(h);try{const hi=await loadIm(u),c2=edDraw(hi,st,6000),hb=await cvBlob(c2,.92);c2.width=c2.height=0;if(hb)await idbPut("i","h:"+id,hb)}catch(e){}finally{URL.revokeObjectURL(u)}}
+   const h=await idbGet("i","h:"+id);if(h&&h.size){const u=URL.createObjectURL(h);try{const hi=await loadIm(u),c2=edRender(hi,st,6000),hb=await cvBlob(c2,.92);c2.width=c2.height=0;if(hb)await idbPut("i","h:"+id,hb)}catch(e){}finally{URL.revokeObjectURL(u)}}
    await save();busyEnd();toast("✓ Đã lưu ảnh đã sửa");close(true)}catch(e){busyEnd();alert("Không lưu được ảnh: "+(e&&e.message||e))}};
  requestAnimationFrame(draw)})}
 /* ===== Xoay ảnh trái/phải (xoay cả bản báo cáo lẫn ảnh gốc) ===== */
@@ -1147,7 +1417,7 @@ const syPath=id=>encodeURIComponent(SY.c.code)+"/"+encodeURIComponent(id)+".jpg"
 const dq=()=>{try{return JSON.parse(localStorage.getItem("fir_dirty")||"{}")}catch(e){return{}}},dqS=o=>{try{localStorage.setItem("fir_dirty",JSON.stringify(o))}catch(e){}};
 let syBusy=0,syLast=(()=>{try{return localStorage.getItem("fir_sylast")||""}catch(e){return""}})();
 function syMsg(t,ok){if(ok){syLast=t;try{localStorage.setItem("fir_sylast",t)}catch(e){}}const e=document.getElementById("sys");if(e)e.textContent=t}
-function syMark(id,del){if(!syOn()||!id)return;const o=dq();o[id]=(del?"d":"u")+Date.now();dqS(o);netUI();clearTimeout(syMark.t);syMark.t=setTimeout(syPush,1200)}
+function syMark(id,del){if(!syOn()||!id)return;if(!del&&S&&S.id===id&&S.cloudOff)return;const o=dq();o[id]=(del?"d":"u")+Date.now();dqS(o);netUI();clearTimeout(syMark.t);syMark.t=setTimeout(syPush,1200)}
 const SYC={n:0};
 function netUI(){const e=document.getElementById("net");if(!e)return;const n=syOn()?Object.keys(dq()).length:0,off=!navigator.onLine;e.onclick=null;e.style.cursor="";if(off){e.hidden=false;e.className="";e.textContent="📴 Đang offline — mọi thay đổi vẫn được lưu trong máy"+(n?` · ${n} báo cáo chờ đồng bộ`:syOn()?"":"")}else if(n){e.hidden=false;e.className="on";e.textContent=`⏳ Đang đồng bộ ${n} báo cáo…`}else e.hidden=true}
 addEventListener("online",netUI);addEventListener("offline",netUI);
@@ -1161,12 +1431,13 @@ async function syImgDown(id){if(!id||!syOn()||!navigator.onLine)return;try{const
 async function syRow(row){const r=await fetch(syU("/rest/v1/reports?on_conflict=id"),{method:"POST",headers:{...syH(1),Prefer:"resolution=merge-duplicates,return=minimal"},body:JSON.stringify([{...row,code:SY.c.code}])});if(!r.ok)throw await syErr(r,"Lưu báo cáo lên mây thất bại")}
 async function syPush(){if(!syOn()||syBusy)return;if(!navigator.onLine){netUI();return syMsg("Đang offline — sẽ đồng bộ khi có mạng")}syBusy=1;
  try{const o=dq(),ks=Object.keys(o);for(const id of ks){const tk=o[id];
-   if(tk[0]==="d"){try{const g=await fetch(syU("/rest/v1/reports?id=eq."+encodeURIComponent(id)+"&select=data"),{headers:syH()});const[x]=g.ok?await g.json():[];const used=new Set();for(const r of await allReports())for(const i of imgIds(r))used.add(i);const ps=x&&x.data?imgIds(x.data).filter(i=>i!=="logo"&&!used.has(i)).map(syPath).map(decodeURIComponent):[];
-     if(ps.length)await fetch(syU("/storage/v1/object/photos"),{method:"DELETE",headers:syH(1),body:JSON.stringify({prefixes:ps})})}catch(e){}
-    await syRow({id,data:null,updated:Date.now(),deleted:true})}
-   else{let r=await idbGet("m","r:"+id);if(r&&editing(id))continue;if(r){const t0=r.updated,base=await bGet(id);
+   if(tk[0]==="d"){await syRow({id,data:null,updated:Date.now(),deleted:true});
+    /* thùng rác trên máy này giữ đủ ảnh → không cần giữ bản trên mây nữa (đỡ tốn dung lượng) */
+    await trashCloudFree(id)}/* ảnh trên mây giữ lại cho Thùng rác; ảnh thừa dọn bằng nút 🧹 */
+   else{let r=await idbGet("m","r:"+id);if(r&&r.cloudOff){const o2=dq();delete o2[id];dqS(o2);continue}if(r&&editing(id))continue;if(r){const t0=r.updated,base=await bGet(id);
      /* có máy khác đã đẩy bản mới từ lần đồng bộ trước → gộp 3 chiều trước khi ghi, không ghi đè mù */
      const g=await fetch(syU("/rest/v1/reports?id=eq."+encodeURIComponent(id)+"&select=updated,deleted"),{headers:syH()});const[w]=g.ok?await g.json():[];
+     if(w&&!w.deleted&&+w.updated===0){r.cloudOff=1;await idbPut("m","r:"+id,r);if(S&&S.id===id)S.cloudOff=1;const o2=dq();delete o2[id];dqS(o2);continue}
      if(w&&!w.deleted&&(!base||+w.updated!==+base.updated)){const g2=await fetch(syU("/rest/v1/reports?id=eq."+encodeURIComponent(id)+"&select=data"),{headers:syH()});const[x]=g2.ok?await g2.json():[];
       if(x&&x.data&&x.data.skus){const cur=await idbGet("m","r:"+id);if(!cur||cur.updated!==t0||(S&&S.id===id&&J3(S)!==J3(cur)))continue;/* đang sửa dở → để lượt sau */
        await snap(cur,"Trước khi gộp với bản trên mây");const mg=merge3(base,cur,x.data);mg.updated=Date.now();const c2=await idbGet("m","r:"+id);if(J3(c2)!==J3(cur)||(S&&S.id===id&&J3(S)!==J3(cur)))continue;
@@ -1257,8 +1528,9 @@ async function syApply(x,a,msg){const id=x.id;
 async function syPull(only){if(!syOn()||!navigator.onLine)return 0;
  const r=await fetch(syU("/rest/v1/reports?code=eq."+encodeURIComponent(SY.c.code)+(only?"&id=eq."+encodeURIComponent(only):"")+"&select=id,updated,deleted"),{headers:syH()});if(!r.ok)throw await syErr(r,"Không đọc được dữ liệu trên mây");
  const rows=await r.json(),o=dq();let ch=0;
- for(const w of rows){const loc=await idbGet("m","r:"+w.id),base=await bGet(w.id);if(o[w.id]&&loc||editing(w.id))continue;/* máy này có thay đổi chưa đẩy: lượt đẩy sẽ tự gộp */
-  if(w.deleted){if(loc){await delReport(loc,1);ch++}continue}
+ for(const w of rows){const loc=await idbGet("m","r:"+w.id),base=await bGet(w.id);if(o[w.id]&&loc||editing(w.id))continue;if(loc&&loc.cloudOff)continue;/* báo cáo đã xóa khỏi mây: giữ nguyên bản trên máy *//* máy này có thay đổi chưa đẩy: lượt đẩy sẽ tự gộp */
+  if(w.deleted){if(loc){await trashReport(loc,1);trashCloudFree(w.id);if(S&&S.id===loc.id&&V.p!=="list"){V={p:"list"};S=blank();setTimeout(()=>{render();toast("Báo cáo này đã bị xóa ở máy khác — đã chuyển vào Thùng rác")},0)}ch++}continue}
+  if(+w.updated===0){if(loc&&!loc.cloudOff){loc.cloudOff=1;await idbPut("m","r:"+w.id,loc)}continue}/* máy khác đã "xóa khỏi mây" */
   if(loc&&(base?+base.updated===+w.updated:loc.updated>=w.updated))continue;
   const g=await fetch(syU("/rest/v1/reports?id=eq."+encodeURIComponent(w.id)+"&select=data"),{headers:syH()});if(!g.ok)continue;const[x]=await g.json();
   if(x&&x.data&&x.data.skus){if(editing(w.id)||loc&&S&&S.id===w.id&&J3(S)!==J3(loc))continue;/* đang có chữ chưa lưu → lượt sau */
@@ -1266,7 +1538,7 @@ async function syPull(only){if(!syOn()||!navigator.onLine)return 0;
    let mr;if(!loc)mr=x.data;else if(base)mr=merge3(base,loc,x.data);else mr=mergeRep(x.data,loc).r;
    const mine=!!loc&&(J3(mr.skus)!==J3(x.data.skus)||J3(mr.cover)!==J3(x.data.cover));if(mine)mr.updated=Date.now();
    const now=await idbGet("m","r:"+w.id);if(J3(now)!==J3(loc)||(loc&&S&&S.id===w.id&&J3(S)!==J3(loc)))continue;/* vừa sửa trong lúc tải → lượt sau */
-   if(S&&S.id===w.id){S=mr;LIVE.n=1}await idbPut("m","r:"+w.id,mr);await bPut(w.id,CP3(x.data));if(mine)syMark(w.id);ch++}}
+   if(S&&S.id===w.id){S=mr;LIVE.n=1}await idbPut("m","r:"+w.id,mr);await idbDel("m","x:"+w.id);/* máy này có ảnh mà trên mây chưa có (VD báo cáo được khôi phục ở máy khác) → tải lên */for(const i of imgIds(mr))if(i!=="logo"&&!(await idbGet("m","u:"+i))&&asBlob(await idbGet("i",i))){syMark(w.id);break}await bPut(w.id,CP3(x.data));if(mine)syMark(w.id);ch++}}
  return ch}
 /* ===== Gộp 3 chiều: base = bản đã đồng bộ lần trước, L = máy này, R = trên mây.
    Chỗ nào máy này đã sửa so với base thì giữ của máy này, chỗ nào chưa sửa thì lấy bản trên mây.
@@ -1311,7 +1583,7 @@ function mergeRep(rm,lc){const r=JSON.parse(JSON.stringify(rm)),have=new Set(),k
 /* ===== Tên báo cáo (PO#) không trùng, item không trùng ===== */
 const nk=v=>String(v||"").trim().replace(/\s+/g," ").toLowerCase();
 async function poTaken(po,exceptId){const k=nk(po);if(!k)return null;return (await allReports()).find(r=>r.id!==exceptId&&nk(r.cover?.po)===k)||null}
-async function askPO(def){let v=def||"";for(;;){v=prompt("Nhập PO# — tên báo cáo (không được trùng với báo cáo khác):",v);if(v==null)return null;v=v.trim().replace(/\s+/g," ");if(!v){alert("PO# không được để trống.");continue}
+async function askPO(def,lbl){let v=def||"";for(;;){v=prompt(lbl||"Nhập PO# — tên báo cáo (không được trùng với báo cáo khác):",v);if(v==null)return null;v=v.trim().replace(/\s+/g," ");if(!v){alert("PO# không được để trống.");continue}
   const t=await poTaken(v);if(t){alert(`Đã có báo cáo "${t.cover.po}" (${t.skus.length} item, sửa ${new Date(t.updated).toLocaleDateString("vi-VN")}).\nHãy mở báo cáo đó hoặc nhập PO# khác.`);continue}return v}}
 /* gộp item B vào item A (ảnh, ghi chú, số liệu còn thiếu) */
 function mergeSku(a,b){const have=new Set();for(const x of Object.values(a.sec||{}))for(const p of x.ph||[])if(p.id)have.add(p.id);
@@ -1343,15 +1615,48 @@ async function snapUI(){const ks=(await idbKeys("m")).filter(x=>String(x).starts
  m.querySelector("#snx").onclick=()=>m.remove();
  m.querySelectorAll("[data-sn]").forEach(e=>e.onclick=async()=>{const v=L[+e.dataset.sn][1];if(!confirm(`Quay lại bản lúc ${new Date(v.at).toLocaleString("vi-VN")} (${v.r.skus.length} item · ${phCount(v.r)} ảnh)?\nBản hiện tại cũng được lưu lại để có thể quay lại.`))return;
   await snap(S,"Trước khi khôi phục bản lưu");const id=S.id;S=JSON.parse(JSON.stringify(v.r));S.id=id;await save();m.remove();render();toast("✓ Đã khôi phục bản lưu tự động")})}
+
+/* ===== Dọn kho ảnh trên mây (Supabase Storage, gói miễn phí 1 GB) ===== */
+const MB=n=>(n/1048576).toFixed(n<1048576*10?1:0)+" MB";
+async function cloudList(){const all=[];for(let off=0;off<100000;off+=1000){busyMsg(`Đang đếm ảnh trên mây… ${all.length}`);const r=await fetch(syU("/storage/v1/object/list/photos"),{method:"POST",headers:syH(1),body:JSON.stringify({prefix:SY.c.code+"/",limit:1000,offset:off})});if(!r.ok)throw await syErr(r,"Không đọc được kho ảnh");const a=await r.json();
+  for(const o of a){if(!o.metadata)continue;all.push({id:String(o.name).split("/").pop().replace(/\.jpg$/i,""),sz:+(o.metadata.size||o.metadata.contentLength||0),t:Date.parse(o.created_at||o.updated_at||"")||0})}if(a.length<1000)break}return all}
+async function cloudUsed(skipId){const g=await fetch(syU("/rest/v1/reports?code=eq."+encodeURIComponent(SY.c.code)+"&select=id,data,deleted"),{headers:syH()});if(!g.ok)throw await syErr(g,"Không đọc được báo cáo trên mây");const u=new Set(["logo"]);for(const w of await g.json())if(w.id!==skipId&&!w.deleted&&w.data&&w.data.skus)for(const i of imgIds(w.data))u.add(i);return u}
+async function cloudDel(ids,msg){const ps=ids.map(syPath).map(decodeURIComponent);for(let q=0;q<ps.length;q+=100){msg&&busyMsg(`${msg} ${Math.min(q+100,ps.length)}/${ps.length}`);const r=await fetch(syU("/storage/v1/object/photos"),{method:"DELETE",headers:syH(1),body:JSON.stringify({prefixes:ps.slice(q,q+100)})});if(!r.ok)throw await syErr(r,"Không xóa được ảnh trên mây")}for(const i of ids)await idbDel("m","u:"+i)}
+async function cloudClean(){if(!syOn()||!navigator.onLine)return alert("Cần có mạng và đang bật đồng bộ.");busyMsg("Đang kiểm tra ảnh trên mây…");
+ try{const used=await cloudUsed(),wk=Date.now()-7*864e5;for(const i of await trashIds())used.add(i);
+  for(const r of await allReports())if(!r.cloudOff)for(const i of imgIds(r))used.add(i);
+  /* bản lưu tự động trong 7 ngày gần đây vẫn có thể cần ảnh → giữ */
+  for(const k of await idbKeys("m"))if(String(k).startsWith("snap:")){const v=await idbGet("m",k);if(v&&v.r&&v.at>wk)for(const i of imgIds(v.r))used.add(i)}
+  const all=await cloudList();busyEnd();const tot=all.reduce((a,o)=>a+o.sz,0),orf=all.filter(o=>!used.has(o.id)&&!(o.t&&o.t>Date.now()-36e5)),old=orf.filter(o=>o.t&&o.t<wk),sz=a=>a.reduce((x,o)=>x+o.sz,0);
+  const m=document.createElement("div");m.style.cssText="position:fixed;inset:0;background:#000a;z-index:99;display:grid;place-items:center;padding:16px";
+  m.innerHTML=`<div class=c style="max-width:460px;width:100%"><h2>🧹 Dọn ảnh trên mây</h2><p>Kho ảnh nhóm <b>${esc(SY.c.code)}</b>: <b>${all.length}</b> ảnh · <b>${MB(tot)}</b> / 1 GB (gói miễn phí, ${Math.round(tot/1073741824*100)}%)</p>
+   <div style="height:10px;background:#ddd;border-radius:5px;overflow:hidden;margin:6px 0 12px"><div style="height:100%;width:${Math.min(100,tot/1073741824*100)}%;background:${tot>.8*1073741824?"#c0392b":"#00b050"}"></div></div>
+   <p>Ảnh không còn báo cáo nào dùng (đã xóa): <b>${orf.length}</b> ảnh · <b>${MB(sz(orf))}</b><br><small class=tip>Trong đó tải lên hơn 7 ngày: ${old.length} ảnh · ${MB(sz(old))}</small></p>
+   <p class=tip>Ảnh đã dọn sẽ <b>không lấy lại được</b> bằng "Tìm ảnh bị thất lạc". Ảnh trong các báo cáo đang dùng, trong Thùng rác và ảnh vừa tải lên trong 1 giờ không bị đụng tới.</p>
+   ${old.length?`<p><button class="b y" id=cco style="width:100%">Dọn ${old.length} ảnh bỏ đi hơn 7 ngày (${MB(sz(old))})</button></p>`:""}${orf.length>old.length?`<p><button class="b g" id=cca style="width:100%">Dọn tất cả ${orf.length} ảnh không dùng (${MB(sz(orf))})</button></p>`:""}${orf.length?"":`<p>✓ Không có ảnh thừa để dọn.</p>`}
+   <p class=tip>Muốn giải phóng nhiều hơn: mở báo cáo đã xong (đã sao lưu .zip) → "📴 Xóa báo cáo này khỏi mây".</p><p><button class="b g" id=ccx style="width:100%">Đóng</button></p></div>`;document.body.append(m);
+  const go=async L=>{if(!confirm(`Xóa vĩnh viễn ${L.length} ảnh (${MB(sz(L))}) khỏi mây?`))return;m.remove();try{await cloudDel(L.map(o=>o.id),"Đang dọn ảnh…");busyEnd();toast(`✓ Đã dọn ${L.length} ảnh · giải phóng ${MB(sz(L))}`)}catch(e){busyEnd();alert(e&&e.message||e)}};
+  m.querySelector("#ccx").onclick=()=>m.remove();if(m.querySelector("#cco"))m.querySelector("#cco").onclick=()=>go(old);if(m.querySelector("#cca"))m.querySelector("#cca").onclick=()=>go(orf)}
+ catch(e){busyEnd();alert("Không dọn được: "+(e&&e.message||e))}}
+/* Xóa 1 báo cáo khỏi mây nhưng giữ trên máy (báo cáo đã xong, đã sao lưu) */
+async function cloudOff(){if(!syOn()||!navigator.onLine)return alert("Cần có mạng và đang bật đồng bộ.");const r=S,nm=r.cover.po||"này";
+ if(!(r.bk&&r.bk>=r.updated)&&!confirm(`Báo cáo "${nm}" CHƯA sao lưu bản mới nhất (.zip).\nNên bấm "Sao lưu báo cáo" trước. Vẫn tiếp tục?`))return;
+ if(!confirm(`Xóa báo cáo "${nm}" khỏi mây?\n\n• Báo cáo và ảnh vẫn giữ nguyên trên MÁY NÀY.\n• Máy khác đang có báo cáo này vẫn giữ bản của máy đó (không nhận thay đổi nữa).\n• Ảnh của báo cáo trên mây bị xóa để giải phóng dung lượng.`))return;
+ busyMsg("Đang xóa khỏi mây…");try{const used=await cloudUsed(r.id),ids=imgIds(r).filter(i=>!used.has(i));const n=ids.length;
+  await cloudDel(ids,"Đang xóa ảnh trên mây…");await syRow({id:r.id,data:null,updated:0,deleted:false});
+  r.cloudOff=1;await idbPut("m","r:"+r.id,r);await idbDel("m","b:"+r.id);const o=dq();delete o[r.id];dqS(o);busyEnd();render();toast(`✓ Đã xóa khỏi mây (${n} ảnh) · báo cáo vẫn trên máy`)}
+ catch(e){busyEnd();alert("Không xóa được khỏi mây: "+(e&&e.message||e))}}
+async function cloudOn(){if(!confirm("Đưa báo cáo này lên mây lại? Toàn bộ ảnh sẽ được tải lên và các máy khác sẽ nhận bản này."))return;if(!navigator.onLine)return alert("Cần có mạng.");try{await syRow({id:S.id,data:null,updated:1,deleted:false})}catch(e){return alert(e&&e.message||e)}/* bỏ dấu "đã xóa khỏi mây" */delete S.cloudOff;for(const i of imgIds(S))await idbDel("m","u:"+i);await save();render();toast("Đang tải báo cáo lên mây…")}
 async function syNow(show){if(!syOn()||syNow.on)return;syNow.on=1;try{await syPush();const ch=await syPull();if(!dq()||!Object.keys(dq()).length)syMsg("✓ Đã đồng bộ lúc "+new Date().toLocaleTimeString("vi-VN")+(ch?" · nhận "+ch+" thay đổi":""),1);if(V.p!=="list")liveRender();else if(ch){LIVE.n=0;render()}}catch(e){syMsg("⚠ "+(e&&e.message||e))}syNow.on=0}
 function syLink(){const c=SY.c;return location.origin+location.pathname+"#sync="+btoa(unescape(encodeURIComponent(JSON.stringify(c))))}
 function syCard(){const c=SY.c||{};if(!syOn())return`<div class=c><h2>Đồng bộ điện thoại ↔ máy tính</h2><p class=tip>Kết nối kho dữ liệu Supabase (miễn phí) để báo cáo làm trên điện thoại tự hiện trên máy tính. Nếu đã kết nối ở máy khác, chỉ cần mở <b>link kết nối</b> được gửi từ máy đó.</p>
  <label>Supabase Project URL</label><input id=su placeholder="https://xxxx.supabase.co" value="${esc(c.url||"")}"><label>Supabase anon / publishable key</label><input id=sk placeholder="eyJ… hoặc sb_publishable_…" value="${esc(c.key||"")}"><label>Mã nhóm (máy nào cùng mã sẽ thấy chung báo cáo)</label><input id=sc placeholder="vd: qc-team-2026" value="${esc(c.code||"")}">
  <p><button class="b y" id=sok>Kết nối</button></p><p class=tip id=sys></p></div>`;
- return`<div class=c><h2>Đồng bộ điện thoại ↔ máy tính</h2><p class=tip>Đang bật · mã nhóm <b>${esc(c.code)}</b>. Sửa trên máy nào, máy kia tự cập nhật sau vài giây.</p><p class=tip id=sys>${esc(syLast||"")}</p><div class=r><button class="b y" id=snw>🔄 Đồng bộ ngay</button><button class="b g" id=slk>🔗 Gửi link kết nối cho máy khác</button></div><p><button class="b x" id=sof>Ngắt đồng bộ trên máy này</button></p></div>`}
+ return`<div class=c><h2>Đồng bộ điện thoại ↔ máy tính</h2><p class=tip>Đang bật · mã nhóm <b>${esc(c.code)}</b>. Sửa trên máy nào, máy kia tự cập nhật sau vài giây.</p><p class=tip id=sys>${esc(syLast||"")}</p><div class=r><button class="b y" id=snw>🔄 Đồng bộ ngay</button><button class="b g" id=slk>🔗 Gửi link kết nối cho máy khác</button></div><p><button class="b g" id=scl style="width:100%">🧹 Dọn ảnh trên mây (xem dung lượng)</button></p><p><button class="b x" id=sof>Ngắt đồng bộ trên máy này</button></p></div>`}
 function syBind(a){const q=s=>a.querySelector(s);
  if(q("#sok"))q("#sok").onclick=async()=>{const v={url:q("#su").value.trim(),key:q("#sk").value.trim(),code:q("#sc").value.trim()};if(!/^https:\/\/.+/.test(v.url)||!v.key||!v.code)return alert("Điền đủ URL (bắt đầu bằng https://), key và mã nhóm.");SY.set(v);syMsg("Đang kiểm tra kết nối…");
   try{const r=await fetch(syU("/rest/v1/reports?select=id&limit=1"),{headers:syH()});if(!r.ok)throw await syErr(r,"Supabase từ chối");const o=dq();for(const x of await allReports())o[x.id]="u"+Date.now();dqS(o);await syNow();render()}catch(e){SY.set(null);syMsg("⚠ Không kết nối được: "+(e&&e.message||e))}};
+ if(q("#scl"))q("#scl").onclick=cloudClean;
  if(q("#snw"))q("#snw").onclick=()=>{syMsg("Đang đồng bộ…");syNow()};
  if(q("#slk"))q("#slk").onclick=async()=>{const l=syLink();try{if(navigator.share){await navigator.share({title:"Link kết nối báo cáo kiểm hàng",url:l});return}}catch(e){if(e&&e.name==="AbortError")return}try{await navigator.clipboard.writeText(l);alert("Đã sao chép link. Dán và mở link này trên máy tính (hoặc máy khác).")}catch(e){prompt("Sao chép link này và mở trên máy khác:",l)}};
  if(q("#sof"))q("#sof").onclick=()=>{if(confirm("Ngắt đồng bộ trên máy này? Báo cáo trong máy vẫn giữ nguyên.")){SY.set(null);render()}}}
@@ -1359,7 +1664,7 @@ function syInit(){const h=location.hash.match(/^#sync=(.+)$/);if(h){try{const v=
  if(!syOn())return;const tick=()=>{if(document.visibilityState==="visible")syNow()};setTimeout(tick,800);setInterval(tick,4000);addEventListener("online",tick);document.addEventListener("visibilitychange",tick)}
 
 (async()=>{try{db=await openDB();const old=await idbGet("m","s");if(old){old.id=old.id||uid();old.created=old.updated=Date.now();await idbPut("m","r:"+old.id,old);await idbDel("m","s")}
-  await bFix();syInit();setTimeout(migrateImgs,4000)}catch(e){alert("Trình duyệt không cho lưu dữ liệu. Hãy mở file bằng Chrome/Safari và đừng dùng chế độ ẩn danh.")}
+  await bFix();trashAuto();syInit();setTimeout(migrateImgs,4000)}catch(e){alert("Trình duyệt không cho lưu dữ liệu. Hãy mở file bằng Chrome/Safari và đừng dùng chế độ ẩn danh.")}
   S=S||blank();render();netUI();try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{})}catch(e){}})();
 if("serviceWorker" in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script></body></html>
