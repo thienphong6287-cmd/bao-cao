@@ -195,7 +195,7 @@ const SEC=[["box","Box Selection","Chọn thùng"],["pack","Packaging Check","Ki
 const DSEC=[["dpk","Packaging Before Test","Đóng gói trước khi test"],["dwt","Weight Photos","Cân nặng thùng & sản phẩm"],["ddim","Packaging Dim","Kích thước thùng"],["dcor","Drop Test – Corner","Thả rơi – Góc"],["dfac","Drop Test – Face","Thả rơi – Mặt"],["dedg","Drop Test – Edges","Thả rơi – Cạnh"],["dopen","Open Box After Tested","Khui thùng sau khi test"],["dinb","Inner Box Photos","Thùng chèn bên trong (kích thước inner box)"],["dmat","Packing Materials","Vật tư đóng gói"],["dcmp","Loose Components","Chi tiết rời"],["dman","Manual (AI)","Hướng dẫn lắp ráp (HDLR)"],["dpph","Product After Unbox","Sản phẩm sau khi khui thùng"]];
 const PSEC=[["pcov","Cover Photo","Ảnh trang bìa"],["pms","Master Samples at Factory","Mẫu kí lưu tại nhà máy"],["ppro","Product Photos","Hình sản phẩm"],["pww","WW Product Photos","Hình sản phẩm chưa sơn"],["podim","Overall Dim","Kích thước tổng thể"],["pdim","Details Dim Measure","Đo kích thước chi tiết"],["pmat","Materials","Vật liệu"],["pkd","KD Component – HW","Chi tiết tháo rời & ngũ kim"],["pdraw","Product Drawing","Bản vẽ sản phẩm"],["pwatch","Production Watch Out","Lưu ý cho sản xuất"]];
 const ASEC=[...SEC,...DSEC,...PSEC],isDrop=r=>(r||S||{}).type==="drop",isPPS=r=>(r||S||{}).type==="pps",isOne=r=>isDrop(r)||isPPS(r),isDK=k=>DSEC.some(z=>z[0]===k)||PSEC.some(z=>z[0]===k),SECS=()=>isDrop()?DSEC:isPPS()?PSEC:SEC;
-const APPV="v63";const $=s=>document.querySelector(s);
+const APPV="v64";const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 let db,S,V={p:"list"},mem={};
@@ -1440,6 +1440,10 @@ async function cfAdopt(){const c=SY.c;const g=await fetch(cfU(c,"/rest/v1/report
   for(const i of imgIds(r))if(!have.has(i)&&(await idbGet("m","u:"+i))){await idbDel("m","u:"+i);if(asBlob(await idbGet("i",i)))mk=1}
   if(!w)mk=1;else if(!w.deleted&&+w.updated>1&&r.updated>+w.updated){const x=await fetch(cfU(c,"/rest/v1/reports?id=eq."+encodeURIComponent(r.id)+"&select=data"),{headers:cfH(c)});const[d]=x.ok?await x.json():[];if(d&&d.data&&d.data.skus){await bPut(r.id,CP3(d.data));mk=1}}
   if(mk){const o=dq();o[r.id]="u"+Date.now();dqS(o)}}netUI()}
+/* tự kiểm tra: ảnh máy này có nhưng máy chủ chưa có (VD dấu "đã gửi" còn từ máy chủ cũ) → gửi lại */
+async function cfHeal(){if(!syOn()||!navigator.onLine||cfHeal.on)return 0;cfHeal.on=1;let n=0;try{const have=await cfIds(SY.c);const o=dq();
+ for(const r of await allReports()){if(r.cloudOff)continue;let mk=0;for(const i of imgIds(r))if(!have.has(i)){if(await idbGet("m","u:"+i))await idbDel("m","u:"+i);if(asBlob(await idbGet("i",i)))mk=1}if(mk&&!o[r.id]){o[r.id]="u"+Date.now();n++}}
+ if(n){dqS(o);netUI();setTimeout(syPush,500)}}catch(e){}cfHeal.on=0;return n}
 /* máy khác đã chuyển nhóm sang máy chủ mới → máy này tự chuyển theo */
 async function cfFollow(){const g=await fetch(syU("/rest/v1/reports?id=eq.__moved&select=data"),{headers:syH()});if(!g.ok)return;const[x]=await g.json();const v=x&&x.data;if(!v||!v.url||!v.key||v.url===SY.c.url)return;
  const n={url:v.url,key:v.key,code:SY.c.code};const t=await fetch(cfU(n,"/rest/v1/reports?select=id&limit=1"),{headers:cfH(n)});if(!t.ok)return;SY.set(n);syVer=null;try{await cfAdopt()}catch(e){}
@@ -1710,13 +1714,13 @@ function syCard(){const c=SY.c||{};if(!syOn())return`<div class=c><h2>Đồng b�
  return`<div class=c><h2>Đồng bộ điện thoại ↔ máy tính</h2><p class=tip>Đang bật · mã nhóm <b>${esc(c.code)}</b>. Sửa trên máy nào, máy kia tự cập nhật sau vài giây.</p><p class=tip id=sys>${esc(syLast||"")}</p><div class=r><button class="b y" id=snw>🔄 Đồng bộ ngay</button><button class="b g" id=slk>🔗 Gửi link kết nối cho máy khác</button></div>${syCF()?"":`<p><button class="b y" id=smv style="width:100%">🚚 Chuyển dữ liệu từ Supabase sang Cloudflare</button></p>`}<p><button class="b g" id=scl style="width:100%">🧹 Dọn ảnh trên mây (xem dung lượng)</button></p><p class=tip>Máy chủ: ${syCF()?"Cloudflare":"Supabase"}</p><p><button class="b x" id=sof>Ngắt đồng bộ trên máy này</button></p></div>`}
 function syBind(a){const q=s=>a.querySelector(s);
  if(q("#sok"))q("#sok").onclick=async()=>{const v={url:q("#su").value.trim(),key:q("#sk").value.trim(),code:q("#sc").value.trim()};if(!/^https:\/\/.+/.test(v.url)||!v.key||!v.code)return alert("Điền đủ URL (bắt đầu bằng https://), key và mã nhóm.");SY.set(v);syMsg("Đang kiểm tra kết nối…");
-  try{const r=await fetch(syU("/rest/v1/reports?select=id&limit=1"),{headers:syH()});if(!r.ok)throw await syErr(r,"Máy chủ từ chối");const o=dq();for(const x of await allReports())o[x.id]="u"+Date.now();dqS(o);await syNow();render()}catch(e){SY.set(null);syMsg("⚠ Không kết nối được: "+(e&&e.message||e))}};
+  try{const r=await fetch(syU("/rest/v1/reports?select=id&limit=1"),{headers:syH()});if(!r.ok)throw await syErr(r,"Máy chủ từ chối");const o=dq();for(const x of await allReports())o[x.id]="u"+Date.now();dqS(o);await cfHeal();await syNow();render()}catch(e){SY.set(null);syMsg("⚠ Không kết nối được: "+(e&&e.message||e))}};
  if(q("#scl"))q("#scl").onclick=cloudClean;if(q("#smv"))q("#smv").onclick=cfMoveUI;
  if(q("#snw"))q("#snw").onclick=()=>{syMsg("Đang đồng bộ…");syNow()};
  if(q("#slk"))q("#slk").onclick=async()=>{const l=syLink();try{if(navigator.share){await navigator.share({title:"Link kết nối báo cáo kiểm hàng",url:l});return}}catch(e){if(e&&e.name==="AbortError")return}try{await navigator.clipboard.writeText(l);alert("Đã sao chép link. Dán và mở link này trên máy tính (hoặc máy khác).")}catch(e){prompt("Sao chép link này và mở trên máy khác:",l)}};
  if(q("#sof"))q("#sof").onclick=()=>{if(confirm("Ngắt đồng bộ trên máy này? Báo cáo trong máy vẫn giữ nguyên.")){SY.set(null);render()}}}
 function syInit(){const h=location.hash.match(/^#sync=(.+)$/);if(h){try{const v=JSON.parse(decodeURIComponent(escape(atob(h[1]))));if(v.url&&v.key&&v.code){SY.set(v);alert("Đã kết nối đồng bộ (mã nhóm: "+v.code+"). Báo cáo từ các máy khác sẽ tự tải về.")}}catch(e){}history.replaceState(null,"",location.pathname)}
- if(!syOn())return;const tick=()=>{if(document.visibilityState==="visible")syNow()};setTimeout(tick,800);setInterval(tick,4000);addEventListener("online",tick);document.addEventListener("visibilitychange",tick)}
+ if(!syOn())return;const tick=()=>{if(document.visibilityState==="visible")syNow()};setTimeout(tick,800);setTimeout(cfHeal,5000);setInterval(tick,4000);addEventListener("online",tick);document.addEventListener("visibilitychange",tick)}
 
 (async()=>{try{db=await openDB();const old=await idbGet("m","s");if(old){old.id=old.id||uid();old.created=old.updated=Date.now();await idbPut("m","r:"+old.id,old);await idbDel("m","s")}
   await bFix();trashAuto();syInit();setTimeout(migrateImgs,4000)}catch(e){alert("Trình duyệt không cho lưu dữ liệu. Hãy mở file bằng Chrome/Safari và đừng dùng chế độ ẩn danh.")}
