@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" href="icon-192.png?v=55"><link rel="apple-touch-icon" href="apple-touch-icon.png?v=55"><meta name="theme-color" content="#3b3b3b">
+<title>Thư viện báo cáo</title>
+<style>
+:root{--bg:#e9ebee;--card:#fff;--ink:#1d2127;--mut:#68707b;--hd:#3b3b3b;--acc:#f2b705;--line:#d3d7dc;--bad:#c0392b;--ok:#1e8e4e;--blu:#1e6fd9}
+@media(prefers-color-scheme:dark){:root{--bg:#14161a;--card:#1f2227;--ink:#eceef1;--mut:#9aa1ab;--hd:#0c0d0f;--line:#33383f;--blu:#6aa7ff}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+header{background:var(--hd);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px}
+header h1{font-size:17px;margin:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header button{background:var(--acc);color:#222;border:0;border-radius:8px;padding:8px 12px;font-weight:700;font:inherit;font-size:14px;cursor:pointer}
+header .ub{background:#ffffff22;color:#fff}
+main{padding:12px;max-width:900px;margin:auto}
+.c{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:12px}
+.c h2{font-size:15px;margin:0 0 8px}.c h3{font-size:14px;margin:14px 0 6px;color:var(--mut);font-weight:600}
+label{display:block;font-size:13px;color:var(--mut);margin:8px 0 2px}
+input,textarea,select{width:100%;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px}
+textarea{min-height:64px;resize:vertical}
+.r{display:flex;gap:8px;align-items:center}.r>*{flex:1}.r>.fx{flex:none}
+button.b{background:var(--hd);color:#fff;border:0;border-radius:8px;padding:10px 14px;font:inherit;font-weight:600;cursor:pointer}
+button.b.y{background:var(--acc);color:#222}button.b.g{background:var(--bg);color:var(--ink);border:1px solid var(--line)}button.b.x{background:var(--bad)}button.b.s{padding:6px 10px;font-size:13px}
+button:disabled{opacity:.5}
+.tip{color:var(--mut);font-size:13px}
+.err{color:var(--bad);font-size:14px;min-height:1em}
+.rp{cursor:pointer;display:flex;gap:10px;align-items:flex-start}.rp:hover{border-color:var(--acc)}
+.rp .t{flex:1;min-width:0}.rp b{font-size:16px}.rp small{display:block;color:var(--mut);overflow:hidden;text-overflow:ellipsis}
+.tag{display:inline-block;font-size:11px;font-weight:700;border-radius:9px;padding:1px 8px;background:var(--bg);border:1px solid var(--line);margin-right:4px;vertical-align:1px}
+.tag.final{background:#e8f1ff;color:#1e4f9c;border-color:#bcd3f5}.tag.drop{background:#fff3e0;color:#9a5300;border-color:#f3d2a2}.tag.pps{background:#eaf7ee;color:#1d6b3c;border-color:#bfe3cb}
+.bd{min-width:24px;text-align:center;border-radius:12px;padding:2px 8px;font-size:12px;font-weight:700;background:var(--bg);border:1px solid var(--line);white-space:nowrap}
+.bd.un{background:var(--bad);color:#fff;border-color:var(--bad)}.bd.op{background:var(--acc);color:#222;border-color:var(--acc)}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:4px 12px;font-size:14px}.kv span{color:var(--mut)}
+.ph{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.ph figure{margin:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--bg);position:relative;cursor:pointer}
+.ph img{width:100%;aspect-ratio:4/3;object-fit:contain;background:#111;display:block}
+.ph figcaption{font-size:12px;padding:4px 6px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ph .cn{position:absolute;right:5px;top:5px;background:var(--acc);color:#222;font-size:12px;font-weight:700;border-radius:10px;padding:1px 7px}
+.ph .cn.done{background:#000a;color:#fff}
+.cm{border-top:1px solid var(--line);padding:10px 0}.cm:first-child{border-top:0}
+.cm .hd{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px}.cm .hd b{font-size:14px}.cm .hd .tm{color:var(--mut)}
+.cm .tx{white-space:pre-wrap;margin:4px 0;word-wrap:break-word}
+.cm .rl{margin-left:18px;border-left:3px solid var(--line);padding-left:10px}
+.cm .ac{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.cm .ac button{background:none;border:0;color:var(--blu);font:inherit;font-size:13px;padding:2px 4px;cursor:pointer}
+.cm.done>.hd .st{background:var(--ok);color:#fff}.st{font-size:11px;font-weight:700;border-radius:9px;padding:1px 8px;background:var(--acc);color:#222}
+.cm .th{width:72px;height:54px;object-fit:cover;border-radius:6px;float:right;margin-left:8px;cursor:pointer;background:#111}
+.rtag{font-size:11px;border-radius:8px;padding:0 6px;border:1px solid var(--line);color:var(--mut)}
+.mod{position:fixed;inset:0;background:#000d;z-index:50;display:flex;flex-direction:column}
+.mod .bar{display:flex;gap:6px;align-items:center;padding:calc(8px + env(safe-area-inset-top)) 10px 8px;background:#111;color:#fff;flex-wrap:wrap}
+.mod .bar button{background:#333;color:#fff;border:0;border-radius:8px;padding:7px 10px;font:inherit;font-size:14px;cursor:pointer}
+.mod .bar button.on{background:var(--acc);color:#222}
+.mod .bar .sp{flex:1}.mod .bar .cl{width:26px;height:26px;border-radius:50%;padding:0;border:2px solid #fff}
+.mod .bdy{flex:1;display:flex;min-height:0}
+.mod .stage{flex:1;position:relative;display:flex;align-items:center;justify-content:center;min-width:0;background:#000;touch-action:none}
+.mod .stage img{max-width:100%;max-height:100%;display:block;user-select:none;-webkit-user-drag:none}
+.mod .stage canvas{position:absolute;touch-action:none}
+.mod .side{width:360px;max-width:42vw;background:var(--card);color:var(--ink);overflow:auto;padding:10px}
+@media(max-width:760px){.mod .bdy{flex-direction:column}.mod .side{width:auto;max-width:none;height:46vh}.mod .stage{min-height:0}}
+.pg{display:flex;justify-content:center;margin:10px 0}
+.dlg{position:fixed;inset:0;background:#000a;z-index:60;display:grid;place-items:center;padding:16px}.dlg .c{max-width:440px;width:100%}
+table.us{width:100%;border-collapse:collapse;font-size:14px}table.us td,table.us th{border-top:1px solid var(--line);padding:8px 4px;text-align:left;vertical-align:middle}
+table.us select{padding:5px;width:auto}
+.empty{text-align:center;color:var(--mut);padding:30px 10px}
+#tst{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:20px;opacity:0;transition:.2s;z-index:99;pointer-events:none}#tst.on{opacity:1}
+</style></head><body>
+<header><button id="bk" hidden>←</button><h1 id="ttl">Thư viện báo cáo</h1><button id="usr" class="ub" hidden></button></header>
+<main id="app"></main><div id="tst"></div>
+<script>
+const SEC=[["box","Box Selection","Chọn thùng"],["pack","Packaging Check","Kiểm tra thùng / chất lượng in"],["wt","Weight Check","Kiểm tra cân nặng"],["psz","Package Measurements","Kích thước thùng"],["lbl","Package Labels","Tem thùng"],["bar","Barcode Check","Kiểm tra mã vạch"],["mat","Package Materials","Vật liệu đóng gói"],["cmp","Components Check","Kiểm tra chi tiết rời"],["man","Manual Check","Hướng dẫn lắp ráp"],["moi","Moisture Check","Kiểm tra độ ẩm"],["col","Color Check","Kiểm tra màu"],["fit","Materials / Fittings","Kiểm vật tư"],["asm","Assembly on Site","Kiểm tra lắp ráp"],["psize","Product Measurement","Kích thước sản phẩm"],["pph","Product Photos","Hình sản phẩm"],["def","Defects Found","Lỗi tìm thấy"]];
+const DSEC=[["dpk","Packaging Before Test","Đóng gói trước khi test"],["dwt","Weight Photos","Cân nặng thùng & sản phẩm"],["ddim","Packaging Dim","Kích thước thùng"],["dcor","Drop Test – Corner","Thả rơi – Góc"],["dfac","Drop Test – Face","Thả rơi – Mặt"],["dedg","Drop Test – Edges","Thả rơi – Cạnh"],["dopen","Open Box After Tested","Khui thùng sau khi test"],["dinb","Inner Box Photos","Thùng chèn bên trong (kích thước inner box)"],["dmat","Packing Materials","Vật tư đóng gói"],["dcmp","Loose Components","Chi tiết rời"],["dman","Manual (AI)","Hướng dẫn lắp ráp (HDLR)"],["dpph","Product After Unbox","Sản phẩm sau khi khui thùng"]];
+const PSEC=[["pcov","Cover Photo","Ảnh trang bìa"],["pms","Master Samples at Factory","Mẫu kí lưu tại nhà máy"],["ppro","Product Photos","Hình sản phẩm"],["pww","WW Product Photos","Hình sản phẩm chưa sơn"],["podim","Overall Dim","Kích thước tổng thể"],["pdim","Details Dim Measure","Đo kích thước chi tiết"],["pmat","Materials","Vật liệu"],["pkd","KD Component – HW","Chi tiết tháo rời & ngũ kim"],["pdraw","Product Drawing","Bản vẽ sản phẩm"],["pwatch","Production Watch Out","Lưu ý cho sản xuất"]];
+const SECM={};for(const[k,e,v]of[...SEC,...DSEC,...PSEC])SECM[k]=[e,v];
+const TYPES={final:"Final",drop:"Drop test",pps:"PPS"};
+const COL={r:"#e53935",y:"#ffc400",b:"#1e88e5"};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const EMB=/embed=1/.test(location.hash);
+function toast(t){const e=$("#tst");e.textContent=t;e.className="on";clearTimeout(toast.t);toast.t=setTimeout(()=>e.className="",2400)}
+const ls={get(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}},set(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+/* phiên: ưu tiên đăng nhập riêng của thư viện; nếu không có thì dùng kết nối của app (cùng trang) */
+function sess(){const p=ls.get("fir_portal");if(p&&p.url&&p.tok)return p;const a=ls.get("fir_sync");if(a&&a.url&&(a.tok||a.key))return{url:a.url,tok:a.tok,key:a.tok?null:a.key,user:a.user,app:1};return null}
+let SE=sess(),ME=null;
+const U=p=>SE.url.trim().replace(/\/+$/,"")+p;
+const H=j=>{const h={};if(SE.tok)h["x-token"]=SE.tok;else if(SE.key)h.apikey=SE.key;if(j)h["Content-Type"]="application/json";return h};
+async function api(p,body,method){const r=await fetch(U(p),{method:method||(body?"POST":"GET"),headers:H(!!body),body:body?JSON.stringify(body):undefined});let j=null;try{j=await r.json()}catch(e){}
+ if(r.status===401){if(!SE.app){ls.set("fir_portal",null);SE=sess()}if(!SE){loginView();throw new Error("Hết phiên đăng nhập")}}
+ if(!r.ok)throw new Error(j&&j.message||("Lỗi "+r.status));return j}
+const fmtT=t=>{const d=new Date(t),n=new Date();const hm=d.toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"});return d.toDateString()===n.toDateString()?hm:d.toLocaleDateString("vi-VN")+" "+hm};
+const ROLE={admin:"Admin",inspector:"Kiểm hàng",viewer:"Xem & bình luận"};
+const canW=()=>ME&&(ME.role==="admin"||ME.role==="inspector");
+
+/* ===== ảnh: tải bằng khóa đăng nhập, 4 ảnh một lúc ===== */
+const IMG={},IQ=[];let IA=0;
+function imgUrl(code,id){const k=code+"/"+id;if(!IMG[k])IMG[k]=new Promise((ok,no)=>{IQ.push(async()=>{try{const r=await fetch(U("/storage/v1/object/authenticated/photos/"+encodeURIComponent(code)+"/"+encodeURIComponent(id)+".jpg"),{headers:H()});if(!r.ok)throw 0;ok(URL.createObjectURL(await r.blob()))}catch(e){delete IMG[k];no(e)}});pump()});return IMG[k]}
+function pump(){while(IA<4&&IQ.length){IA++;IQ.shift()().finally(()=>{IA--;pump()})}}
+const IO=new IntersectionObserver(es=>{for(const e of es)if(e.isIntersecting){IO.unobserve(e.target);const i=e.target;imgUrl(i.dataset.code,i.dataset.id).then(u=>i.src=u,()=>{i.alt="Không tải được ảnh";i.style.opacity=.4})}},{rootMargin:"300px"});
+const lazy=root=>root.querySelectorAll("img[data-id]").forEach(i=>IO.observe(i));
+
+/* ===== đăng nhập ===== */
+function loginView(msg){$("#bk").hidden=true;$("#usr").hidden=true;$("#ttl").textContent="Đăng nhập";const a=ls.get("fir_sync")||{},q=new URLSearchParams(location.hash.slice(1));const url=q.get("s")||(ls.get("fir_portal")||{}).url||a.url||"";
+ $("#app").innerHTML=`<div class=c style="max-width:420px;margin:30px auto"><h2>📚 Thư viện báo cáo kiểm hàng</h2><p class=tip>Đăng nhập bằng tài khoản admin cấp cho bạn.</p>
+ <label>Địa chỉ máy chủ</label><input id=lu value="${esc(url)}" placeholder="https://….workers.dev">
+ <label>Tên đăng nhập</label><input id=ll autocomplete=username autocapitalize=none><label>Mật khẩu</label><input id=lp type=password autocomplete=current-password>
+ <p class=err id=le>${esc(msg||"")}</p><button class="b y" id=lg style="width:100%">Đăng nhập</button></div>`;
+ const go=async()=>{const url=$("#lu").value.trim(),login=$("#ll").value.trim(),pass=$("#lp").value;if(!/^https?:\/\//.test(url))return $("#le").textContent="Nhập địa chỉ máy chủ (https://…)";$("#lg").disabled=true;$("#le").textContent="";
+  try{const r=await fetch(url.replace(/\/+$/,"")+"/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({login,pass})});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.message||"Lỗi "+r.status);
+   ls.set("fir_portal",{url,tok:j.token,user:j.user});SE=sess();ME=j.user;start()}catch(e){$("#le").textContent=e.message||"Không kết nối được máy chủ"}$("#lg").disabled=false};
+ $("#lg").onclick=go;$("#lp").onkeydown=e=>{if(e.key==="Enter")go()}}
+function userMenu(){const d=document.createElement("div");d.className="dlg";d.innerHTML=`<div class=c><h2>${esc(ME.name)}</h2><p class=tip>${ME.master?"Đang dùng khóa chính của app (quyền admin). Nên đăng nhập bằng tài khoản riêng.":esc(ME.login)+" · "+ROLE[ME.role]}</p>
+ ${ME.role==="admin"?`<p><button class="b g" id=mu style="width:100%">👥 Quản lý tài khoản</button></p>`:""}${ME.master?"":`<p><button class="b g" id=mp style="width:100%">🔑 Đổi mật khẩu</button></p>`}
+ ${SE.app?(ME.master?`<p><button class="b g" id=mi style="width:100%">Đăng nhập tài khoản khác</button></p>`:""):`<p><button class="b x" id=mo style="width:100%">Đăng xuất</button></p>`}<p><button class="b g" id=mx style="width:100%">Đóng</button></p></div>`;document.body.append(d);
+ const q=s=>d.querySelector(s);q("#mx").onclick=()=>d.remove();if(q("#mu"))q("#mu").onclick=()=>{d.remove();go({p:"users"})};if(q("#mp"))q("#mp").onclick=()=>{d.remove();pwDlg()};
+ if(q("#mi"))q("#mi").onclick=()=>{d.remove();ls.set("fir_portal",null);SE={url:SE.url};loginView()};
+ if(q("#mo"))q("#mo").onclick=async()=>{d.remove();try{await api("/api/logout",{})}catch(e){}ls.set("fir_portal",null);SE=sess();if(SE)start();else loginView()}}
+function pwDlg(force){const d=document.createElement("div");d.className="dlg";d.innerHTML=`<div class=c><h2>🔑 Đổi mật khẩu</h2>${force?`<p class=tip>Đây là lần đăng nhập đầu — hãy đặt mật khẩu riêng của bạn.</p>`:""}
+ <label>Mật khẩu hiện tại</label><input id=po type=password><label>Mật khẩu mới (tối thiểu 6 ký tự)</label><input id=pn type=password><label>Nhập lại mật khẩu mới</label><input id=pr type=password><p class=err id=pe></p>
+ <div class=r><button class="b y" id=ps>Lưu</button>${force?"":`<button class="b g" id=pc>Hủy</button>`}</div></div>`;document.body.append(d);const q=s=>d.querySelector(s);if(q("#pc"))q("#pc").onclick=()=>d.remove();
+ q("#ps").onclick=async()=>{if(q("#pn").value!==q("#pr").value)return q("#pe").textContent="Hai mật khẩu mới không giống nhau";try{await api("/api/password",{old:q("#po").value,pass:q("#pn").value});ME.must=false;const p=ls.get("fir_portal");if(p){p.user=ME;ls.set("fir_portal",p)}d.remove();toast("✓ Đã đổi mật khẩu")}catch(e){q("#pe").textContent=e.message}}}
+
+/* ===== điều hướng ===== */
+let V={p:"lib"},LIB={q:"",type:"",open:false,rows:[],more:false};
+function go(v){V=v;const h=v.p==="rep"?"#r="+encodeURIComponent(v.id)+(v.pid?"&p="+encodeURIComponent(v.pid):""):v.p==="users"?"#users":"";if(!EMB&&location.hash!==h)history.pushState(v,"",h||location.pathname);render()}
+addEventListener("popstate",e=>{V=e.state||fromHash();render()});
+function fromHash(){const q=new URLSearchParams(location.hash.slice(1));if(q.get("r"))return{p:"rep",id:q.get("r"),pid:q.get("p")};if(location.hash==="#users")return{p:"users"};return{p:"lib"}}
+$("#bk").onclick=()=>{if(EMB){parent.postMessage({portal:"close"},"*");return}if(history.state)history.back();else go({p:"lib"})};
+$("#usr").onclick=userMenu;
+async function start(){if(!SE)return loginView();try{ME=(await api("/api/me")).user}catch(e){if(SE)loginView(e.message);return}
+ $("#usr").hidden=false;$("#usr").textContent="👤 "+ME.name;if(ME.must&&!ME.master)pwDlg(1);V=fromHash();render()}
+function render(){clearInterval(render.t);$("#bk").hidden=V.p==="lib"&&!EMB;if(V.p==="rep")repView();else if(V.p==="users")usersView();else libView()}
+
+/* ===== thư viện: tìm theo PO / tên sản phẩm / nhà máy / khách ===== */
+async function libView(){$("#ttl").textContent="📚 Thư viện báo cáo";const a=$("#app");
+ a.innerHTML=`<div class=c><div class=r><input id=q placeholder="🔍 Tìm PO, mã / tên sản phẩm, nhà máy, khách hàng…" value="${esc(LIB.q)}"></div>
+ <div class=r style="margin-top:8px;flex-wrap:wrap"><select id=ty class=fx style="width:auto"><option value="">Tất cả loại</option>${Object.entries(TYPES).map(([k,v])=>`<option value=${k} ${LIB.type===k?"selected":""}>${v}</option>`).join("")}</select>
+ <label class=fx style="display:flex;gap:6px;align-items:center;margin:0;color:var(--ink)"><input type=checkbox id=op style="width:auto" ${LIB.open?"checked":""}> Có bình luận chưa xử lý</label></div></div><div id=lst><p class=empty>Đang tải…</p></div>`;
+ let t;$("#q").oninput=()=>{clearTimeout(t);t=setTimeout(()=>{LIB.q=$("#q").value.trim();load(0)},300)};$("#ty").onchange=()=>{LIB.type=$("#ty").value;load(0)};$("#op").onchange=()=>{LIB.open=$("#op").checked;load(0)};
+ async function load(off){try{const ps=new URLSearchParams({q:LIB.q,limit:40,offset:off});if(LIB.type)ps.set("type",LIB.type);if(LIB.open)ps.set("open","1");const j=await api("/api/reports?"+ps);
+   if(j.reindex>0){await api("/api/reindex",{});return load(off)}LIB.rows=off?LIB.rows.concat(j.rows):j.rows;LIB.more=j.rows.length===40;draw()}catch(e){$("#lst").innerHTML=`<p class="empty err">${esc(e.message)}</p>`}}
+ function draw(){const L=LIB.rows;$("#lst").innerHTML=L.length?L.map(r=>`<div class="c rp" data-id="${esc(r.id)}"><div class=t><b>${esc(r.po||"(chưa có PO)")}</b> <span class="tag ${esc(r.type)}">${TYPES[r.type]||esc(r.type)}</span>
+   <small>${esc(r.items||"")}</small><small>${[r.date,r.fac,r.cust,r.insp].filter(Boolean).map(esc).join(" · ")} · ${r.nph} ảnh · 👤 ${esc(r.oname||"Admin")}</small></div>
+   <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">${r.nunread?`<span class="bd un" title="Bình luận mới">${r.nunread} mới</span>`:""}${r.nopen?`<span class="bd op" title="Chưa xử lý">💬 ${r.nopen}</span>`:r.ncom?`<span class=bd title="Đã xử lý hết">💬 ✓</span>`:""}</div></div>`).join("")+(LIB.more?`<div class=pg><button class="b g" id=more>Xem thêm</button></div>`:"")
+   :`<p class=empty>${LIB.q||LIB.type||LIB.open?"Không tìm thấy báo cáo phù hợp.":"Chưa có báo cáo nào trên máy chủ."}</p>`;
+  $("#lst").querySelectorAll(".rp").forEach(e=>e.onclick=()=>go({p:"rep",id:e.dataset.id}));if($("#more"))$("#more").onclick=()=>load(LIB.rows.length)}
+ if(LIB.rows.length)draw();load(0);render.t=setInterval(()=>{if(V.p==="lib"&&document.visibilityState==="visible"&&!$(".dlg"))load(0)},30000)}
+
+/* ===== xem báo cáo + bình luận ===== */
+let R=null,CM=[];
+function photos(d){const out=[];const order=d.type==="drop"?DSEC:d.type==="pps"?PSEC:SEC;(d.skus||[]).forEach((k,ki)=>{const keys=[...order.map(x=>x[0]).filter(x=>k.sec&&k.sec[x]),...Object.keys(k.sec||{}).filter(x=>!order.some(o=>o[0]===x))];
+ for(const s of keys){const ph=(k.sec[s].ph||[]).filter(p=>p&&p.id);ph.forEach((p,i)=>out.push({ki,id:p.id,cap:p.cap||"",sku:k.code||"",skuName:k.name||"",sec:s,secName:(SECM[s]||[s])[0],secVi:(SECM[s]||[,""])[1],i}))}});return out}
+async function repView(){const a=$("#app");a.innerHTML=`<p class=empty>Đang tải báo cáo…</p>`;
+ try{R=await api("/api/report/"+encodeURIComponent(V.id));await loadCm();api("/api/seen",{rid:R.id}).catch(()=>{})}catch(e){a.innerHTML=`<p class="empty err">${esc(e.message)}</p>`;return}
+ drawRep();if(V.pid){const p=R.P.find(x=>x.id===V.pid);if(p)photoMod(p)}
+ render.t=setInterval(async()=>{if(V.p!=="rep"||document.visibilityState!=="visible"||$(".mod textarea:focus,#app textarea:focus"))return;const n=JSON.stringify(CM);await loadCm().catch(()=>{});if(JSON.stringify(CM)!==n){if($(".mod"))drawSide();drawRep(1)}},20000)}
+async function loadCm(){CM=await api("/api/comments?rid="+encodeURIComponent(R.id))}
+const roots=pid=>CM.filter(c=>!c.parent&&(pid===undefined||(pid===null?!c.pid:c.pid===pid)));
+const kids=id=>CM.filter(c=>c.parent===id);
+function drawRep(keep){const d=R.data,c=d.cover||{},a=$("#app"),y=scrollY;R.P=photos(d);$("#ttl").textContent=c.po||"Báo cáo";
+ const cnt={};for(const x of roots())if(x.pid){cnt[x.pid]=cnt[x.pid]||{o:0,n:0};cnt[x.pid].n++;if(x.status==="open")cnt[x.pid].o++}
+ const open=roots().filter(x=>x.status==="open").length;
+ let h=`<div class=c><h2>${esc(c.po||"(chưa có PO)")} <span class="tag ${esc(d.type||"final")}">${TYPES[d.type||"final"]}</span></h2><div class=kv>
+  ${[["Ngày kiểm",c.date],["Nhà máy",c.fac],["Khách hàng",c.cust],["Người kiểm",c.insp],["Số báo cáo",c.no],["Mô tả",c.desc],["Số lượng",c.qty]].filter(x=>x[1]).map(([k,v])=>`<span>${k}</span><div>${esc(v)}</div>`).join("")}
+  <span>Người phụ trách</span><div>${ME.role==="admin"?`<select id=own style="width:auto;padding:4px"><option value="">Admin (chung)</option></select>`:esc(R.oname||"Admin")} <span class=tip>${ME.role==="admin"?"· chỉ người phụ trách và admin được sửa / xóa báo cáo":R.owner===ME.id?"· báo cáo của bạn":"· bạn chỉ được xem"}</span></div>
+  <span>Sản phẩm</span><div>${(d.skus||[]).map(k=>esc([k.code,k.name].filter(Boolean).join(" – "))).join("<br>")||"—"}</div></div></div>
+  <div class=c id=gen><h2>💬 Bình luận ${open?`<span class="bd op">${open} chưa xử lý</span>`:""}</h2><p class=tip>Bấm vào một ảnh bên dưới để bình luận ngay trên ảnh (có thể khoanh vùng). Danh sách dưới đây gồm mọi bình luận của báo cáo.</p>
+  <div id=allc>${roots().length?roots().map(x=>cmHTML(x,1)).join(""):`<p class=tip>Chưa có bình luận.</p>`}</div>
+  <label>Bình luận chung cho cả báo cáo</label><textarea id=gt placeholder="Nhập bình luận…"></textarea><div class=r style="margin-top:6px"><span></span><button class="b y fx" id=gs>Gửi bình luận</button></div></div>`;
+ (d.skus||[]).forEach((k,ki)=>{const P=R.P.filter(p=>p.ki===ki);if(!P.length)return;h+=`<div class=c>${(d.skus.length>1||k.code||k.name)?`<h2>${esc([k.code,k.name].filter(Boolean).join(" – "))}</h2>`:""}`;let last="";
+  for(const p of P){if(p.sec!==last){if(last)h+=`</div>`;h+=`<h3>${esc(p.secName)}${p.secVi?` <span class=tip>· ${esc(p.secVi)}</span>`:""}</h3><div class=ph>`;last=p.sec}
+   const n=cnt[p.id];h+=`<figure data-p="${esc(p.id)}"><img data-id="${esc(p.id)}" data-code="${esc(R.code)}" alt="">${n?`<span class="cn ${n.o?"":"done"}">💬 ${n.o||"✓"}</span>`:""}<figcaption>${esc(p.cap||"")}&nbsp;</figcaption></figure>`}
+  if(last)h+=`</div>`;h+=`</div>`});
+ a.innerHTML=h;lazy(a);if($("#own"))ownSel();bindCm(a.querySelector("#allc"));a.querySelectorAll("figure[data-p]").forEach(f=>f.onclick=()=>photoMod(R.P.find(x=>x.id===f.dataset.p)));
+ $("#gs").onclick=async()=>{const t=$("#gt").value.trim();if(!t)return;$("#gs").disabled=true;try{await api("/api/comments",{rid:R.id,text:t});$("#gt").value="";await loadCm();drawRep(1);toast("✓ Đã gửi")}catch(e){alert(e.message)}$("#gs").disabled=false};
+ if(keep)scrollTo(0,y)}
+let USERS=null;async function ownSel(){const s=$("#own");try{USERS=USERS||await api("/api/users")}catch(e){return}s.innerHTML=`<option value="">Admin (chung)</option>`+USERS.filter(u=>u.role!=="viewer"&&u.active).map(u=>`<option value=${u.id} ${R.owner===u.id?"selected":""}>${esc(u.name)} (${esc(u.login)})</option>`).join("");
+ s.onchange=async()=>{try{await api("/api/owner",{rid:R.id,uid:s.value});R.owner=s.value?+s.value:null;R.oname=s.value?USERS.find(u=>u.id==s.value).name:null;toast("✓ Đã giao báo cáo cho "+(R.oname||"Admin"))}catch(e){alert(e.message)}}}
+function cmHTML(x,thumb){const rs=kids(x.id),p=x.pid&&R.P.find(q=>q.id===x.pid),ctx=x.ctx||{};
+ const where=x.pid?`<div class=tip style="font-size:12px">📷 ${esc([ctx.sku,ctx.secName||(p&&p.secName),ctx.cap].filter(Boolean).join(" · ")||"Ảnh")}${p?"":" (ảnh đã bị xóa khỏi báo cáo)"}</div>`:"";
+ const one=(c,root)=>`<div class="hd"><b>${esc(c.uname)}</b><span class=rtag>${ROLE[c.urole]||""}</span><span class=tm>${fmtT(c.created)}</span>${root?`<span class=st>${c.status==="done"?"✓ Đã xử lý":"Chưa xử lý"}</span>`:""}</div>
+  <div class=tx>${esc(c.text)}</div>${c.ann&&c.ann.length?`<div class=tip style="font-size:12px">✏️ Có khoanh vùng trên ảnh${c.pid||x.pid?` — <a href="#" data-sa="${esc(c.id)}">xem</a>`:""}</div>`:""}
+  <div class=ac>${root?`<button data-rp="${esc(c.id)}">Trả lời</button>`:""}${root&&(canW()||c.uid===ME.id)?`<button data-stt="${esc(c.id)}" data-v="${c.status==="done"?"open":"done"}">${c.status==="done"?"Mở lại":"✓ Đánh dấu đã xử lý"}</button>`:""}${(c.uid===ME.id&&!ME.master)||ME.role==="admin"?`<button data-del="${esc(c.id)}" style="color:var(--bad)">Xóa</button>`:""}</div>`;
+ return`<div class="cm ${x.status==="done"?"done":""}" data-c="${esc(x.id)}">${thumb&&p?`<img class=th data-id="${esc(p.id)}" data-code="${esc(R.code)}" data-go="${esc(p.id)}" alt="">`:""}${where}${one(x,1)}${rs.length?`<div class=rl>${rs.map(r=>`<div class=cm>${one(r)}</div>`).join("")}</div>`:""}<div class=rbox></div></div>`}
+function bindCm(root,inMod){if(!root)return;lazy(root);
+ root.querySelectorAll("[data-go]").forEach(e=>e.onclick=()=>photoMod(R.P.find(x=>x.id===e.dataset.go),e.closest("[data-c]").dataset.c));
+ root.querySelectorAll("[data-sa]").forEach(e=>e.onclick=ev=>{ev.preventDefault();const c=CM.find(z=>z.id===e.dataset.sa);const r=c.parent?CM.find(z=>z.id===c.parent):c;const p=R.P.find(x=>x.id===(c.pid||r.pid));if(!p)return;if(inMod&&MOD.p===p){MOD.show=c.id;paint()}else photoMod(p,c.id)});
+ root.querySelectorAll("[data-stt]").forEach(e=>e.onclick=async()=>{try{await api("/api/comments/"+e.dataset.stt,{status:e.dataset.v});await loadCm();refresh()}catch(x){alert(x.message)}});
+ root.querySelectorAll("[data-del]").forEach(e=>e.onclick=async()=>{if(!confirm("Xóa bình luận này (kèm các trả lời)?"))return;try{await api("/api/comments/"+e.dataset.del,{deleted:1});await loadCm();refresh()}catch(x){alert(x.message)}});
+ root.querySelectorAll("[data-rp]").forEach(e=>e.onclick=()=>{const box=e.closest("[data-c]").querySelector(".rbox");if(box.innerHTML){box.innerHTML="";return}
+  box.innerHTML=`<textarea placeholder="Trả lời…" style="margin-top:6px"></textarea><div class=r style="margin-top:6px">${canW()?`<label style="display:flex;gap:6px;align-items:center;margin:0;color:var(--ink)"><input type=checkbox style="width:auto"> Đánh dấu đã xử lý</label>`:"<span></span>"}<button class="b y s fx">Gửi</button></div>`;
+  const ta=box.querySelector("textarea");ta.focus();box.querySelector("button").onclick=async ev=>{const t=ta.value.trim();if(!t)return;ev.target.disabled=true;const ck=box.querySelector("input[type=checkbox]");
+   try{await api("/api/comments",{rid:R.id,parent:e.dataset.rp,text:t,done:ck&&ck.checked?1:0});await loadCm();refresh();toast("✓ Đã trả lời")}catch(x){alert(x.message);ev.target.disabled=false}}})}
+function refresh(){if($(".mod"))drawSide();drawRep(1)}
+
+/* ===== xem ảnh lớn + khoanh vùng + bình luận ghim vào ảnh ===== */
+let MOD=null;
+function photoMod(p,showId){if(!p)return;if($(".mod"))$(".mod").remove();const m=document.createElement("div");m.className="mod";
+ m.innerHTML=`<div class=bar><button id=mx>✕</button><button id=mp>‹</button><button id=mn>›</button><span id=mi style="font-size:13px;color:#ccc;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:40vw"></span><span class=sp></span>
+  <span style="font-size:13px;color:#ccc">Khoanh:</span><button data-t=arrow title="Mũi tên">➚</button><button data-t=circle title="Vòng tròn">◯</button><button data-t=rect title="Khung">▭</button><button data-t=pen title="Vẽ tự do">✎</button>
+  <button class=cl data-c=r style="background:${COL.r}"></button><button class=cl data-c=y style="background:${COL.y}"></button><button class=cl data-c=b style="background:${COL.b}"></button><button id=mu title="Hoàn tác">↶</button></div>
+  <div class=bdy><div class=stage><img alt=""><canvas></canvas></div><div class=side></div></div>`;
+ document.body.append(m);document.body.style.overflow="hidden";
+ MOD={p,tool:"circle",col:"r",draft:[],show:showId||null,m};const im=m.querySelector("img"),cv=m.querySelector("canvas");
+ const close=()=>{m.remove();document.body.style.overflow="";MOD=null;if(!EMB)history.replaceState(history.state,"","#r="+encodeURIComponent(R.id))};
+ m.querySelector("#mx").onclick=close;const nav=d=>{const i=R.P.indexOf(MOD.p)+d;if(i>=0&&i<R.P.length){if(MOD.draft.length&&!confirm("Bỏ phần khoanh vùng chưa gửi?"))return;photoMod(R.P[i])}};m.querySelector("#mp").onclick=()=>nav(-1);m.querySelector("#mn").onclick=()=>nav(1);
+ m.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{MOD.tool=b.dataset.t;tb()});m.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{MOD.col=b.dataset.c;tb()});
+ m.querySelector("#mu").onclick=()=>{MOD.draft.pop();paint();drawSide(1)};
+ const tb=()=>{m.querySelectorAll("[data-t]").forEach(b=>b.classList.toggle("on",b.dataset.t===MOD.tool));m.querySelectorAll("[data-c]").forEach(b=>b.style.outline=b.dataset.c===MOD.col?"3px solid #fff":"none")};tb();
+ m.querySelector("#mi").textContent=`${R.P.indexOf(p)+1}/${R.P.length} · ${[p.sku,p.secName,p.cap].filter(Boolean).join(" · ")}`;
+ if(!EMB)history.replaceState(history.state,"","#r="+encodeURIComponent(R.id)+"&p="+encodeURIComponent(p.id));
+ imgUrl(R.code,p.id).then(u=>{im.src=u});im.onload=()=>fit();window.onresize=fit;
+ function fit(){if(!im.naturalWidth||!MOD)return;const r=im.getBoundingClientRect(),s=im.parentElement.getBoundingClientRect();cv.width=r.width*devicePixelRatio;cv.height=r.height*devicePixelRatio;cv.style.width=r.width+"px";cv.style.height=r.height+"px";cv.style.left=(r.left-s.left)+"px";cv.style.top=(r.top-s.top)+"px";paint()}
+ let cur=null;const pt=e=>{const r=cv.getBoundingClientRect();return[Math.min(1,Math.max(0,(e.clientX-r.left)/r.width)),Math.min(1,Math.max(0,(e.clientY-r.top)/r.height))]};
+ cv.onpointerdown=e=>{cv.setPointerCapture(e.pointerId);const[x,y]=pt(e);cur={t:MOD.tool,c:MOD.col,p:MOD.tool==="pen"?[x,y]:[x,y,x,y]};MOD.draft.push(cur);MOD.show=null;paint()};
+ cv.onpointermove=e=>{if(!cur)return;const[x,y]=pt(e);if(cur.t==="pen")cur.p.push(x,y);else{cur.p[2]=x;cur.p[3]=y}paint()};
+ cv.onpointerup=cv.onpointercancel=()=>{if(!cur)return;const q=cur.p;if(cur.t!=="pen"&&Math.hypot(q[2]-q[0],q[3]-q[1])<.01)MOD.draft.pop();cur=null;q.forEach((v,i)=>q[i]=Math.round(v*1e4)/1e4);paint();drawSide(1)};
+ drawSide()}
+function shapes(){if(!MOD)return[];const S=[...MOD.draft];const pick=MOD.show?CM.filter(c=>c.id===MOD.show):CM.filter(c=>!c.parent&&c.pid===MOD.p.id&&c.status==="open"||c.parent&&CM.some(r=>r.id===c.parent&&r.pid===MOD.p.id&&r.status==="open"));for(const c of pick)if(c.ann)S.push(...c.ann.map(a=>({...a,old:1})));return S}
+function paint(){if(!MOD)return;const cv=MOD.m.querySelector("canvas"),g=cv.getContext("2d"),W=cv.width,Hh=cv.height;g.clearRect(0,0,W,Hh);const lw=Math.max(3,W/220);
+ for(const a of shapes()){g.strokeStyle=COL[a.c]||COL.r;g.lineWidth=lw;g.lineCap=g.lineJoin="round";g.globalAlpha=a.old&&MOD.draft.length?.55:1;const p=a.p.map((v,i)=>v*(i%2?Hh:W));g.beginPath();
+  if(a.t==="pen"){g.moveTo(p[0],p[1]);for(let i=2;i<p.length;i+=2)g.lineTo(p[i],p[i+1]);g.stroke()}
+  else if(a.t==="rect"){g.strokeRect(Math.min(p[0],p[2]),Math.min(p[1],p[3]),Math.abs(p[2]-p[0]),Math.abs(p[3]-p[1]))}
+  else if(a.t==="circle"){g.ellipse((p[0]+p[2])/2,(p[1]+p[3])/2,Math.abs(p[2]-p[0])/2,Math.abs(p[3]-p[1])/2,0,0,7);g.stroke()}
+  else{const[x1,y1,x2,y2]=p,an=Math.atan2(y2-y1,x2-x1),hl=lw*5;g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke();g.beginPath();g.moveTo(x2,y2);g.lineTo(x2-hl*Math.cos(an-.45),y2-hl*Math.sin(an-.45));g.lineTo(x2-hl*Math.cos(an+.45),y2-hl*Math.sin(an+.45));g.closePath();g.fillStyle=g.strokeStyle;g.fill()}}
+ g.globalAlpha=1}
+function drawSide(onlyForm){if(!MOD)return;const sd=MOD.m.querySelector(".side"),p=MOD.p,L=roots(p.id);
+ const form=`<div id=nf><label style="margin-top:0">Bình luận cho ảnh này</label><textarea id=nt placeholder="Mô tả vấn đề… (có thể vẽ khoanh vùng lên ảnh trước khi gửi)"></textarea>
+  <div class=r style="margin-top:6px"><span class=tip>${MOD.draft.length?`✏️ ${MOD.draft.length} hình khoanh sẽ gửi kèm`:"Chọn ◯ ▭ ➚ ✎ rồi vẽ lên ảnh"}</span><button class="b y fx" id=ns>Gửi</button></div></div>`;
+ if(onlyForm&&sd.querySelector("#nf")){const t=sd.querySelector("#nt").value;sd.querySelector("#nf").outerHTML=form;sd.querySelector("#nt").value=t;bindForm();return}
+ const t=sd.querySelector("#nt")?sd.querySelector("#nt").value:"";
+ sd.innerHTML=`${form}<h3 style="font-size:14px;margin:14px 0 4px">Bình luận trên ảnh (${L.length})${MOD.show?` · <a href="#" id=sall>hiện tất cả khoanh vùng</a>`:""}</h3><div id=pl>${L.length?L.map(x=>cmHTML(x)).join(""):`<p class=tip>Chưa có bình luận nào cho ảnh này.</p>`}</div>`;
+ sd.querySelector("#nt").value=t;bindForm();bindCm(sd.querySelector("#pl"),1);if(sd.querySelector("#sall"))sd.querySelector("#sall").onclick=e=>{e.preventDefault();MOD.show=null;paint();drawSide()};paint()
+ function bindForm(){sd.querySelector("#ns").onclick=async ev=>{const text=sd.querySelector("#nt").value.trim();if(!text&&!MOD.draft.length)return alert("Nhập nội dung hoặc khoanh vùng trên ảnh");ev.target.disabled=true;
+  try{await api("/api/comments",{rid:R.id,pid:p.id,ctx:{sku:p.sku,skuName:p.skuName,sec:p.sec,secName:p.secName,cap:p.cap,i:p.i},text,ann:MOD.draft});MOD.draft=[];sd.querySelector("#nt").value="";await loadCm();drawSide();drawRep(1);toast("✓ Đã gửi bình luận")}catch(e){alert(e.message);ev.target.disabled=false}}}}
+
+/* ===== quản lý tài khoản (admin) ===== */
+async function usersView(){$("#ttl").textContent="👥 Tài khoản";const a=$("#app");if(ME.role!=="admin"){a.innerHTML=`<p class=empty>Chỉ admin mới quản lý tài khoản.</p>`;return}
+ let L=[];try{L=await api("/api/users")}catch(e){a.innerHTML=`<p class="empty err">${esc(e.message)}</p>`;return}
+ a.innerHTML=`<div class=c><h2>Thêm tài khoản</h2><div class=r style="flex-wrap:wrap"><div style="min-width:150px"><label>Họ tên</label><input id=un></div><div style="min-width:150px"><label>Tên đăng nhập</label><input id=ul autocapitalize=none placeholder="vd: lan.qc"></div></div>
+  <div class=r style="flex-wrap:wrap"><div style="min-width:150px"><label>Mật khẩu tạm (≥ 6 ký tự)</label><input id=up value="${Math.random().toString(36).slice(2,10)}"></div><div style="min-width:150px"><label>Quyền</label><select id=ur><option value=viewer>Xem & bình luận</option><option value=inspector>Kiểm hàng (làm báo cáo)</option><option value=admin>Admin</option></select></div></div>
+  <p class=err id=ue></p><button class="b y" id=ua>＋ Tạo tài khoản</button><p class=tip>Người dùng đăng nhập lần đầu sẽ được yêu cầu đổi mật khẩu. Gửi cho họ: địa chỉ thư viện, tên đăng nhập và mật khẩu tạm.</p></div>
+  <div class=c><h2>Danh sách (${L.length})</h2><div style="overflow:auto"><table class=us><tr><th>Họ tên</th><th>Đăng nhập</th><th>Quyền</th><th></th></tr>
+  ${L.map(x=>`<tr data-u=${x.id} style="${x.active?"":"opacity:.5"}"><td>${esc(x.name)}${x.must?` <span class=tip>(chưa đổi MK)</span>`:""}</td><td>${esc(x.login)}</td><td><select data-role>${Object.entries(ROLE).map(([k,v])=>`<option value=${k} ${x.role===k?"selected":""}>${v}</option>`).join("")}</select></td>
+   <td style="white-space:nowrap"><button class="b g s" data-pw>Đặt lại MK</button> <button class="b ${x.active?"x":"g"} s" data-ac>${x.active?"Khóa":"Mở khóa"}</button></td></tr>`).join("")}</table></div>
+  <p class=tip>Địa chỉ thư viện để gửi cho người xem: <b>${esc(location.origin+location.pathname)}#s=${esc(encodeURIComponent(SE.url))}</b></p></div>`;
+ $("#ua").onclick=async()=>{try{await api("/api/users",{name:$("#un").value,login:$("#ul").value,pass:$("#up").value,role:$("#ur").value});const info=`Thư viện báo cáo: ${location.origin+location.pathname}#s=${encodeURIComponent(SE.url)}\nTên đăng nhập: ${$("#ul").value.trim().toLowerCase()}\nMật khẩu tạm: ${$("#up").value}`;
+  try{await navigator.clipboard.writeText(info);toast("✓ Đã tạo — thông tin đăng nhập đã chép vào bộ nhớ tạm")}catch(e){prompt("Đã tạo. Gửi thông tin này cho người dùng:",info)}usersView()}catch(e){$("#ue").textContent=e.message}};
+ a.querySelectorAll("tr[data-u]").forEach(tr=>{const id=tr.dataset.u,x=L.find(z=>z.id==id);
+  tr.querySelector("[data-role]").onchange=async e=>{try{await api("/api/users/"+id,{role:e.target.value});toast("✓ Đã đổi quyền")}catch(er){alert(er.message);usersView()}};
+  tr.querySelector("[data-pw]").onclick=async()=>{const np=prompt("Mật khẩu tạm mới cho "+x.name+" (≥ 6 ký tự):",Math.random().toString(36).slice(2,10));if(!np)return;try{await api("/api/users/"+id,{pass:np});alert("Đã đặt lại. Gửi cho "+x.name+":\nTên đăng nhập: "+x.login+"\nMật khẩu tạm: "+np);usersView()}catch(er){alert(er.message)}};
+  tr.querySelector("[data-ac]").onclick=async()=>{if(x.active&&!confirm("Khóa tài khoản "+x.name+"? Người này sẽ bị đăng xuất ngay."))return;try{await api("/api/users/"+id,{active:x.active?0:1});usersView()}catch(er){alert(er.message)}}})}
+
+if(EMB){$("#bk").textContent="✕ Đóng";$("#bk").hidden=false}
+start();
+</script></body></html>
