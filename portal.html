@@ -28,7 +28,7 @@ button:disabled{opacity:.5}
 .rp{cursor:pointer;display:flex;gap:10px;align-items:flex-start}.rp:hover{border-color:var(--acc)}
 .rp .t{flex:1;min-width:0}.rp b{font-size:16px}.rp small{display:block;color:var(--mut);overflow:hidden;text-overflow:ellipsis}
 .tag{display:inline-block;font-size:11px;font-weight:700;border-radius:9px;padding:1px 8px;background:var(--bg);border:1px solid var(--line);margin-right:4px;vertical-align:1px}
-.tag.final{background:#e8f1ff;color:#1e4f9c;border-color:#bcd3f5}.tag.drop{background:#fff3e0;color:#9a5300;border-color:#f3d2a2}.tag.pps{background:#eaf7ee;color:#1d6b3c;border-color:#bfe3cb}
+.tag.final{background:#e8f1ff;color:#1e4f9c;border-color:#bcd3f5}.tag.drop{background:#fff3e0;color:#9a5300;border-color:#f3d2a2}.tag.inl{background:#104862;color:#fff;border-color:#104862}.tag.pps{background:#eaf7ee;color:#1d6b3c;border-color:#bfe3cb}
 .bd{min-width:24px;text-align:center;border-radius:12px;padding:2px 8px;font-size:12px;font-weight:700;background:var(--bg);border:1px solid var(--line);white-space:nowrap}
 .bd.un{background:var(--bad);color:#fff;border-color:var(--bad)}.bd.op{background:var(--acc);color:#222;border-color:var(--acc)}
 .kv{display:grid;grid-template-columns:max-content 1fr;gap:4px 12px;font-size:14px}.kv span{color:var(--mut)}
@@ -72,11 +72,13 @@ const SEC=[["box","Box Selection","Chọn thùng"],["pack","Packaging Check","Ki
 const DSEC=[["dpk","Packaging Before Test","Đóng gói trước khi test"],["dwt","Weight Photos","Cân nặng thùng & sản phẩm"],["ddim","Packaging Dim","Kích thước thùng"],["dcor","Drop Test – Corner","Thả rơi – Góc"],["dfac","Drop Test – Face","Thả rơi – Mặt"],["dedg","Drop Test – Edges","Thả rơi – Cạnh"],["dopen","Open Box After Tested","Khui thùng sau khi test"],["dinb","Inner Box Photos","Thùng chèn bên trong (kích thước inner box)"],["dmat","Packing Materials","Vật tư đóng gói"],["dcmp","Loose Components","Chi tiết rời"],["dman","Manual (AI)","Hướng dẫn lắp ráp (HDLR)"],["dpph","Product After Unbox","Sản phẩm sau khi khui thùng"]];
 const PSEC=[["pcov","Cover Photo","Ảnh trang bìa"],["pms","Master Samples at Factory","Mẫu kí lưu tại nhà máy"],["ppro","Product Photos","Hình sản phẩm"],["pww","WW Product Photos","Hình sản phẩm chưa sơn"],["podim","Overall Dim","Kích thước tổng thể"],["pdim","Details Dim Measure","Đo kích thước chi tiết"],["pmat","Materials","Vật liệu"],["pkd","KD Component – HW","Chi tiết tháo rời & ngũ kim"],["pdraw","Product Drawing","Bản vẽ sản phẩm"],["pwatch","Production Watch Out","Lưu ý cho sản xuất"]];
 const SECM={};for(const[k,e,v]of[...SEC,...DSEC,...PSEC])SECM[k]=[e,v];
-const TYPES={final:"Final",drop:"Drop test",pps:"PPS"};
+const TYPES={final:"Final",drop:"Drop test",pps:"PPS",inl:"Inline"};
+const inlNm=(d,s)=>{const m=/^i([df]):(.+)$/.exec(s);if(!m)return null;const L=d.dfx||[],i=L.findIndex(z=>z.id===m[2]),z=L[i]||{},t=(i>=0?(i+1)+". ":"")+(z.cat||z.area||"Lỗi");return[(m[1]==="d"?"Lỗi ":"Đã sửa ")+t,m[1]==="d"?(z.det||z.area||""):"FIXED Photos"]};
 const COL={r:"#e53935",y:"#ffc400",b:"#1e88e5"};
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const EMB=/embed=1/.test(location.hash);
+const SRVMAP={"rs-qcteam.github.io":"https://rs-report.taidb87.workers.dev","thienphong6287-cmd.github.io":"https://bao-cao.thienphong6287.workers.dev"},DEFSRV=()=>{try{const o=localStorage.getItem("fir_srv");if(o)return o}catch(e){}return SRVMAP[location.hostname]||""};
 function toast(t){const e=$("#tst");e.textContent=t;e.className="on";clearTimeout(toast.t);toast.t=setTimeout(()=>e.className="",2400)}
 const ls={get(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}},set(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 /* phiên: ưu tiên đăng nhập riêng của thư viện; nếu không có thì dùng kết nối của app (cùng trang) */
@@ -99,7 +101,7 @@ const IO=new IntersectionObserver(es=>{for(const e of es)if(e.isIntersecting){IO
 const lazy=root=>root.querySelectorAll("img[data-id]").forEach(i=>IO.observe(i));
 
 /* ===== đăng nhập ===== */
-function loginView(msg){$("#bk").hidden=true;$("#usr").hidden=true;$("#ttl").textContent="Đăng nhập";const a=ls.get("fir_sync")||{},q=new URLSearchParams(location.hash.slice(1));const url=q.get("s")||(ls.get("fir_portal")||{}).url||a.url||"";
+function loginView(msg){$("#bk").hidden=true;$("#usr").hidden=true;$("#ttl").textContent="Đăng nhập";const a=ls.get("fir_sync")||{},q=new URLSearchParams(location.hash.slice(1));const url=q.get("s")||(ls.get("fir_portal")||{}).url||a.url||DEFSRV();
  $("#app").innerHTML=`<div class=c style="max-width:420px;margin:30px auto"><h2>📚 Thư viện báo cáo kiểm hàng</h2><p class=tip>Đăng nhập bằng tài khoản admin cấp cho bạn.</p>
  <label>Địa chỉ máy chủ</label><input id=lu value="${esc(url)}" placeholder="https://….workers.dev">
  <label>Tên đăng nhập</label><input id=ll autocomplete=username autocapitalize=none><label>Mật khẩu</label><input id=lp type=password autocomplete=current-password>
@@ -123,11 +125,11 @@ function pwDlg(force){const d=document.createElement("div");d.className="dlg";d.
 let V={p:"lib"},LIB={q:"",type:"",open:false,rows:[],more:false};
 function go(v){V=v;const h=v.p==="rep"?"#r="+encodeURIComponent(v.id)+(v.pid?"&p="+encodeURIComponent(v.pid):""):v.p==="users"?"#users":"";if(!EMB&&location.hash!==h)history.pushState(v,"",h||location.pathname);render()}
 addEventListener("popstate",e=>{V=e.state||fromHash();render()});
-function fromHash(){const q=new URLSearchParams(location.hash.slice(1));if(q.get("r"))return{p:"rep",id:q.get("r"),pid:q.get("p")};if(location.hash==="#users")return{p:"users"};return{p:"lib"}}
+function fromHash(){const q=new URLSearchParams(location.hash.slice(1));if(q.get("r"))return{p:"rep",id:q.get("r"),pid:q.get("p")};if(location.hash==="#users"||q.has("users"))return{p:"users"};return{p:"lib"}}
 $("#bk").onclick=()=>{if(EMB){parent.postMessage({portal:"close"},"*");return}if(history.state)history.back();else go({p:"lib"})};
 $("#usr").onclick=userMenu;
 async function start(){if(!SE)return loginView();try{ME=(await api("/api/me")).user}catch(e){if(SE)loginView(e.message);return}
- $("#usr").hidden=false;$("#usr").textContent="👤 "+ME.name;if(ME.must&&!ME.master)pwDlg(1);V=fromHash();render()}
+ $("#usr").hidden=false;$("#usr").textContent="👤 "+ME.name;if(ME.must&&!ME.master)pwDlg(1);else if(/(^#|&)pw(&|$)/.test(location.hash))pwDlg();V=fromHash();render()}
 function render(){clearInterval(render.t);$("#bk").hidden=V.p==="lib"&&!EMB;if(V.p==="rep")repView();else if(V.p==="users")usersView();else libView()}
 
 /* ===== thư viện: tìm theo PO / tên sản phẩm / nhà máy / khách ===== */
@@ -147,8 +149,8 @@ async function libView(){$("#ttl").textContent="📚 Thư viện báo cáo";cons
 
 /* ===== xem báo cáo + bình luận ===== */
 let R=null,CM=[];
-function photos(d){const out=[];const order=d.type==="drop"?DSEC:d.type==="pps"?PSEC:SEC;(d.skus||[]).forEach((k,ki)=>{const keys=[...order.map(x=>x[0]).filter(x=>k.sec&&k.sec[x]),...Object.keys(k.sec||{}).filter(x=>!order.some(o=>o[0]===x))];
- for(const s of keys){const ph=(k.sec[s].ph||[]).filter(p=>p&&p.id);ph.forEach((p,i)=>out.push({ki,id:p.id,cap:p.cap||"",sku:k.code||"",skuName:k.name||"",sec:s,secName:(SECM[s]||[s])[0],secVi:(SECM[s]||[,""])[1],i}))}});return out}
+function photos(d){const out=[];const order=d.type==="drop"?DSEC:d.type==="pps"?PSEC:d.type==="inl"?(d.dfx||[]).flatMap(z=>[["id:"+z.id],["if:"+z.id]]):SEC;(d.skus||[]).forEach((k,ki)=>{const keys=[...order.map(x=>x[0]).filter(x=>k.sec&&k.sec[x]),...Object.keys(k.sec||{}).filter(x=>!order.some(o=>o[0]===x))];
+ for(const s of keys){const ph=(k.sec[s].ph||[]).filter(p=>p&&p.id);ph.forEach((p,i)=>out.push({ki,id:p.id,cap:p.cap||"",sku:k.code||"",skuName:k.name||"",sec:s,secName:(SECM[s]||inlNm(d,s)||[s])[0],secVi:(SECM[s]||inlNm(d,s)||[,""])[1],i}))}});return out}
 async function repView(){const a=$("#app");a.innerHTML=`<p class=empty>Đang tải báo cáo…</p>`;
  try{R=await api("/api/report/"+encodeURIComponent(V.id));await loadCm();api("/api/seen",{rid:R.id}).catch(()=>{})}catch(e){a.innerHTML=`<p class="empty err">${esc(e.message)}</p>`;return}
  drawRep();if(V.pid){const p=R.P.find(x=>x.id===V.pid);if(p)photoMod(p)}
