@@ -38,7 +38,7 @@ button.b.y{background:var(--acc);color:#222}button.b.g{background:var(--bg);colo
 .tip{font-size:13px;color:var(--mut)}
 #print{display:none}
 .ed{position:fixed;inset:0;background:#1c1c1e;z-index:110;display:flex;flex-direction:column;color:#fff;user-select:none;-webkit-user-select:none}
-.edt{display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 10px 8px}.edt span{flex:1;text-align:center;font-weight:700}.edt button{border:0;border-radius:8px;padding:10px 14px;font-size:15px;font-weight:700;background:#3a3a3c;color:#fff}.edt .ok{background:#ffd60a;color:#000}
+.edt{display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 10px 8px}.edt span{flex:1;text-align:center;font-weight:700}.edt button{border:0;border-radius:8px;padding:10px 14px;font-size:15px;font-weight:700;background:#3a3a3c;color:#fff}.edt .ok{background:#ffd60a;color:#000}.edt .no{background:#5a2a2a}.edt .rs{background:#2c4a6e}
 .edw{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;padding:18px;touch-action:none}.edw canvas{max-width:100%;max-height:100%;display:block}.edw .eov{position:absolute;max-width:none;max-height:none;pointer-events:none;touch-action:none;z-index:2}
 .edm{display:flex;gap:6px;padding:6px 10px 0}.edm button{flex:1;border:0;border-radius:10px;padding:10px;background:#3a3a3c;color:#fff;font-size:14px;font-weight:700}.edm button.on{background:#ffd60a;color:#000}
 .edp{padding:6px 10px calc(10px + env(safe-area-inset-bottom))}.edr{display:flex;gap:6px;margin-bottom:6px;align-items:center}.edr button{flex:1;border:0;border-radius:10px;padding:10px 6px;background:#3a3a3c;color:#fff;font-size:15px;font-weight:700;white-space:nowrap;min-width:0}
@@ -200,7 +200,7 @@ const SEC=[["box","Box Selection","Chọn thùng"],["pack","Packaging Check","Ki
 const DSEC=[["dpk","Packaging Before Test","Đóng gói trước khi test"],["dwt","Weight Photos","Cân nặng thùng & sản phẩm"],["ddim","Packaging Dim","Kích thước thùng"],["dcor","Drop Test – Corner","Thả rơi – Góc"],["dfac","Drop Test – Face","Thả rơi – Mặt"],["dedg","Drop Test – Edges","Thả rơi – Cạnh"],["dopen","Open Box After Tested","Khui thùng sau khi test"],["dinb","Inner Box Photos","Thùng chèn bên trong (kích thước inner box)"],["dmat","Packing Materials","Vật tư đóng gói"],["dcmp","Loose Components","Chi tiết rời"],["dman","Manual (AI)","Hướng dẫn lắp ráp (HDLR)"],["dpph","Product After Unbox","Sản phẩm sau khi khui thùng"]];
 const PSEC=[["pcov","Cover Photo","Ảnh trang bìa"],["pms","Master Samples at Factory","Mẫu kí lưu tại nhà máy"],["ppro","Product Photos","Hình sản phẩm"],["pww","WW Product Photos","Hình sản phẩm chưa sơn"],["podim","Overall Dim","Kích thước tổng thể"],["pdim","Details Dim Measure","Đo kích thước chi tiết"],["pmat","Materials","Vật liệu"],["pkd","KD Component – HW","Chi tiết tháo rời & ngũ kim"],["pdraw","Product Drawing","Bản vẽ sản phẩm"],["pwatch","Production Watch Out","Lưu ý cho sản xuất"]];
 const ASEC=[...SEC,...DSEC,...PSEC],isDrop=r=>(r||S||{}).type==="drop",isPPS=r=>(r||S||{}).type==="pps",isInl=r=>(r||S||{}).type==="inl",isOne=r=>isDrop(r)||isPPS(r),isDK=k=>/^(i([df]:|new$)|c:)/.test(k)||DSEC.some(z=>z[0]===k)||PSEC.some(z=>z[0]===k),SECS=()=>isInl()?inlSecs():isIpc()?ipcSecs():isDrop()?DSEC:isPPS()?PSEC:SEC;
-const APPV="v81";const $=s=>document.querySelector(s);
+const APPV="v82";const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 let db,S,V={p:"list"},mem={};
@@ -248,7 +248,7 @@ async function trashRestore(id){const v=await idbGet("m","x:"+id);if(!v)return;c
  await idbPut("m","r:"+r.id,r);await idbDel("m","x:"+id);for(const i of imgIds(r))await idbDel("m","u:"+i);/* tải ảnh lên lại phòng khi bản trên mây đã bị dọn */
  if(syOn()&&!r.cloudOff){const o=dq();o[r.id]="u"+Date.now();dqS(o);netUI();setTimeout(syPush,500)}}
 async function trashPurge(id){const v=await idbGet("m","x:"+id);if(!v)return;const keep=new Set();for(const r of await allReports())for(const i of imgIds(r))keep.add(i);for(const t of await trashList())if(t.r.id!==id)for(const i of imgIds(t.r))keep.add(i);
- for(const i of imgIds(v.r))if(i!=="logo"&&!keep.has(i)){await idbDel("i",i);await idbDel("i","h:"+i);await idbDel("i","t:"+i);await idbDel("m","u:"+i);memDrop(i);delete memT[i]}
+ for(const i of imgIds(v.r))if(i!=="logo"&&!keep.has(i)){await idbDel("i",i);await idbDel("i","h:"+i);await idbDel("i","t:"+i);await idbDel("i","e:"+i);await idbDel("i","eh:"+i);await idbDel("m","u:"+i);memDrop(i);delete memT[i]}
  for(const k of await idbKeys("m"))if(String(k).startsWith("snap:"+id+":"))await idbDel("m",k);await idbDel("m","x:"+id)}
 /* báo cáo trong thùng rác mà máy này giữ ĐỦ ảnh → xóa bản ảnh trên mây cho đỡ tốn dung lượng (khôi phục sẽ tải lên lại) */
 async function trashCloudFree(id){try{if(!syOn()||!navigator.onLine)return;const v=await idbGet("m","x:"+id);if(!v||v.cg)return;const ids=imgIds(v.r).filter(i=>i!=="logo");for(const i of ids)if(!asBlob(await idbGet("i",i)))return;
@@ -277,7 +277,7 @@ async function renderList(a){$("#ttl").textContent="Báo cáo của tôi";const 
  $("#rsf").onchange=e=>{const f=e.target.files[0];e.target.value="";restore(f)}}
 /* ghi nhớ item / ảnh đã xóa để đồng bộ không "hồi sinh" chúng từ máy khác */
 const gone=(kind,id)=>{if(!S||!id)return;const g=S.gone||(S.gone={k:[],p:[]});const a=g[kind]||(g[kind]=[]);if(!a.includes(id)){a.push(id);if(a.length>5000)a.splice(0,a.length-5000)}};
-const delImg=async id=>{gone("p",id);await idbDel("i",id);await idbDel("i","h:"+id);await idbDel("i","t:"+id);await idbDel("m","u:"+id);memDrop(id);delete memT[id]};
+const delImg=async id=>{gone("p",id);await idbDel("i",id);await idbDel("i","h:"+id);await idbDel("i","t:"+id);await idbDel("i","e:"+id);await idbDel("i","eh:"+id);await idbDel("m","u:"+id);memDrop(id);delete memT[id]};
 const memT={};const mkThumb=src=>new Promise(ok=>{const i=new Image();i.onload=()=>{const k=Math.min(1,360/Math.max(i.naturalWidth,i.naturalHeight)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(i.naturalWidth*k));c.height=Math.max(1,Math.round(i.naturalHeight*k));c.getContext("2d").drawImage(i,0,0,c.width,c.height);const o=c.toDataURL("image/jpeg",.72);c.width=c.height=0;ok(o)};i.onerror=()=>ok("");i.src=src});
 /* ảnh nhỏ cho màn hình sửa báo cáo — tạo 1 lần, lưu lại; không nạp ảnh lớn vào bộ nhớ */
 const saveThumb=async(id,d)=>{try{const t=await mkThumb(d||mem[id]);if(t){memT[id]=t;await idbPut("i","t:"+id,t)}}catch(e){}};
@@ -296,8 +296,8 @@ async function dlImg(bl){const q=DLQ();if(q==="orig"||!bl)return bl;const kb=+q,
 async function prepPhotos(){const L=[];for(const k of S.skus){const code=(k.code||"sku").replace(/[^\w.\-]/g,"_");for(const d of (isInl()?SECS():ASEC)){const x=k.sec[d[0]];if(!x)continue;let j=0;for(const p of x.ph){if(!p.id)continue;L.push([p.id,`${code}_${d[0]}_${String(++j).padStart(2,"0")}.jpg`])}}}
  let n=0;const R=await pool(L,IOSD?2:4,async([id,nm])=>{const h=await idbGet("i","h:"+id);const u=await dlImg(h&&h.size?h:await imgBlob(id));busyMsg(`Đang chuẩn bị ảnh ${++n}/${L.length}…`);return u?new File([u],nm,{type:"image/jpeg"}):null});PHF=R.filter(Boolean)}
 function confirmSaveAll(){const n=PHF.length;if(!n)return alert("Chưa có ảnh nào trong báo cáo.");const mb=(PHF.reduce((a,f)=>a+f.size,0)/1048576).toFixed(1),m=document.createElement("div");m.style.cssText="position:fixed;inset:0;background:#000a;z-index:99;display:grid;place-items:center;padding:20px";
- m.innerHTML=`<div class=c style="max-width:420px;width:100%"><h2>Lưu tất cả ảnh?</h2><p>${n} ảnh · ${mb} MB sẽ được lưu / chia sẻ.</p><div class=r><button class="b y" id=sy>Lưu tất cả</button><button class="b g" id=sn>Hủy</button></div></div>`;document.body.append(m);
- m.querySelector("#sn").onclick=()=>m.remove();m.querySelector("#sy").onclick=()=>{m.remove();saveAllPhotos()}}
+ m.innerHTML=`<div class=c style="max-width:420px;width:100%"><h2>Lưu tất cả ảnh?</h2><p>${n} ảnh · ${mb} MB sẽ được lưu / chia sẻ.</p>${FSD()?`<p><button class="b y" id=syd style="width:100%">📁 Chọn thư mục để lưu (mỗi item 1 thư mục con)</button></p>`:""}<div class=r><button class="b ${FSD()?"g":"y"}" id=sy>Lưu tất cả</button><button class="b g" id=sn>Hủy</button></div>${FSD()?"":`<p class=tip style="margin-top:8px">Muốn chọn thư mục: trên iPhone chọn <b>Lưu vào Tệp</b> ở bảng chia sẻ; trên máy tính dùng Chrome hoặc Edge.</p>`}</div>`;document.body.append(m);
+ m.querySelector("#sn").onclick=()=>m.remove();m.querySelector("#sy").onclick=()=>{m.remove();saveAllPhotos()};if(m.querySelector("#syd"))m.querySelector("#syd").onclick=()=>{m.remove();const fs=PHF.map(f=>{const c=String(f.name).split("_")[0];return new File([f],(c?c+"/":"")+f.name,{type:f.type})});fsSaveDir(fs,S.cover.po?"PO "+S.cover.po:"Bao cao")}}
 async function saveAllPhotos(){const fs=PHF;if(!fs.length)return alert("Chưa có ảnh nào trong báo cáo.");
  try{if(navigator.canShare&&navigator.canShare({files:fs})){await navigator.share({files:fs});return}}catch(e){if(e&&e.name==="AbortError")return}
  await zipPhotos(true)}
@@ -639,9 +639,21 @@ function secForm(k,x){const t=x.t||{},f=(n,l)=>`<div><label>${l}</label><input d
  return k==="wt"?`<div class=c><h2>Cân nặng (kg)</h2><p class=tip>In trên thùng</p><div class=r>${f("n0","NW")}${f("g0","GW")}</div><button class="b y" id=ocr style="width:100%;margin-top:8px">🔎 Đọc NW / GW từ ảnh tem thùng</button><p class=tip style="margin:4px 0 0">Chọn ảnh tem đã chụp ở mục Chất lượng in / Barcode, khoanh vùng số cân rồi đọc.</p><p class=tip>Thực tế</p><div class=r>${f("n1","NW")}${f("g1","GW")}</div></div>`
  :k==="psz"?`<div class=c><h2>Kích thước thùng</h2><div class=r>${f("p0","In trên thùng (cm)")}${f("p1","Thực tế (cm)")}</div></div>`
  :k==="bar"?`<div class=c><label>Kết quả quét</label><select data-t="rd"><option value="1" ${t.rd!=="0"?"selected":""}>Readable (đọc được)</option><option value="0" ${t.rd==="0"?"selected":""}>Unreadable (không đọc được)</option></select></div>`:""}
+/* ===== Lưu vào thư mục tự chọn (Chrome / Edge trên máy tính; máy nhớ thư mục lần trước) ===== */
+const FSF=()=>typeof window.showSaveFilePicker==="function",FSD=()=>typeof window.showDirectoryPicker==="function";
+const fsClean=t=>String(t||"").replace(/[\\/:*?"<>|\n\r\t]+/g," ").replace(/\s+/g," ").trim().slice(0,80)||"Bao cao";
+async function fsSave(bl,name){try{const ext=(name.match(/\.(\w+)$/)||[,""])[1].toLowerCase(),MT={pdf:"application/pdf",pptx:bl.type,xlsx:bl.type,docx:bl.type,zip:"application/zip",json:"application/json",jpg:"image/jpeg"};
+  const h=await window.showSaveFilePicker({suggestedName:name,id:"kiem-hang-file",startIn:"documents",types:ext&&MT[ext]?[{description:ext.toUpperCase(),accept:{[MT[ext]||"application/octet-stream"]:["."+ext]}}]:undefined});
+  const w=await h.createWritable();await w.write(bl);await w.close();toast("✓ Đã lưu "+h.name);return true}
+ catch(e){if(e&&e.name==="AbortError")return false;alert("Không lưu được vào thư mục đã chọn: "+(e&&e.message||e)+"\nHãy dùng nút 'Lưu về máy'.");return false}}
+async function fsSaveDir(files,folder){let d;try{d=await window.showDirectoryPicker({id:"kiem-hang-anh",mode:"readwrite",startIn:"pictures"})}catch(e){if(e&&e.name==="AbortError")return false;alert("Không mở được thư mục: "+(e&&e.message||e));return false}
+ busyMsg("Đang lưu ảnh vào thư mục…");let n=0;try{const sub=await d.getDirectoryHandle(fsClean(folder),{create:true});
+  for(const f of files){const parts=String(f.name).split("/");let dir=sub;for(const q of parts.slice(0,-1))dir=await dir.getDirectoryHandle(fsClean(q),{create:true});const fh=await dir.getFileHandle(parts[parts.length-1],{create:true}),w=await fh.createWritable();await w.write(f);await w.close();n++;if(n%5===0)busyMsg(`Đang lưu ảnh ${n}/${files.length}…`)}
+  busyEnd();alert(`✓ Đã lưu ${n} ảnh vào thư mục "${d.name}/${fsClean(folder)}".`);return true}catch(e){busyEnd();alert(`Lưu được ${n}/${files.length} ảnh rồi bị lỗi: `+(e&&e.message||e));return false}}
+const fsTip=()=>FSF()?"":`<p class=tip style="margin-top:8px">Chọn thư mục: trên iPhone bấm <b>Chia sẻ → Lưu vào Tệp</b> rồi chọn thư mục; trên máy tính dùng Chrome hoặc Edge để có nút "Lưu vào thư mục…".</p>`;
 function offerFile(bl,name,imgs){const m=document.createElement("div");m.style.cssText="position:fixed;inset:0;background:#000a;z-index:99;display:grid;place-items:center;padding:20px";
- m.innerHTML=`<div class=c style="max-width:420px;width:100%"><h2>File đã sẵn sàng</h2><p>${esc(name)} · ${(bl.size/1048576).toFixed(1)} MB</p><button class="b y" id=shf style="width:100%">Chia sẻ (gửi đi / lưu vào Tệp)</button><button class="b g" id=svf style="width:100%;margin-top:8px">Lưu về máy</button><button class="b g" id=opf style="width:100%;margin-top:8px">Mở file trong trình duyệt</button>${imgs&&imgs.length?`<button class="b g" id=shi style="width:100%;margin-top:8px">Chia sẻ ${imgs.length} ảnh gốc (lưu vào Ảnh)</button>`:""}<button class="b g" id=clf style="width:100%;margin-top:8px">Đóng</button></div>`;document.body.append(m);
- const q=t=>m.querySelector(t);q("#clf").onclick=()=>m.remove();q("#opf").onclick=()=>{const u=URL.createObjectURL(bl);if(!window.open(u,"_blank"))location.href=u};
+ m.innerHTML=`<div class=c style="max-width:420px;width:100%"><h2>File đã sẵn sàng</h2><p>${esc(name)} · ${(bl.size/1048576).toFixed(1)} MB</p><button class="b y" id=shf style="width:100%">Chia sẻ (gửi đi / lưu vào Tệp)</button>${FSF()?`<button class="b y" id=svd style="width:100%;margin-top:8px">📁 Lưu vào thư mục…</button>`:""}<button class="b g" id=svf style="width:100%;margin-top:8px">Lưu về máy (thư mục Tải về)</button><button class="b g" id=opf style="width:100%;margin-top:8px">Mở file trong trình duyệt</button>${imgs&&imgs.length?`<button class="b g" id=shi style="width:100%;margin-top:8px">Chia sẻ ${imgs.length} ảnh gốc (lưu vào Ảnh)</button>`:""}<button class="b g" id=clf style="width:100%;margin-top:8px">Đóng</button>${fsTip()}</div>`;document.body.append(m);
+ const q=t=>m.querySelector(t);q("#clf").onclick=()=>m.remove();if(q("#svd"))q("#svd").onclick=()=>fsSave(bl,name);q("#opf").onclick=()=>{const u=URL.createObjectURL(bl);if(!window.open(u,"_blank"))location.href=u};
  q("#shf").onclick=async()=>{const f=new File([bl],name,{type:bl.type||"application/octet-stream"});try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:name});return}}catch(e){if(e.name==="AbortError")return}
   alert("Thiết bị không cho chia sẻ trực tiếp loại file này. Hãy bấm 'Lưu về máy' rồi chia sẻ từ ứng dụng Tệp.")};
  q("#svf").onclick=()=>{const u=URL.createObjectURL(bl),a=document.createElement("a");a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000)};
@@ -1512,7 +1524,7 @@ async function storageWarn(){try{const q=await navigator.storage.estimate();if(q
 const idbKeys=n=>idbRun(n,"readonly",s=>s.getAllKeys()).then(r=>r||[],()=>[]);
 /* Tìm ảnh không thuộc báo cáo nào (trong máy + trên mây nếu đang đồng bộ), chọn từng ảnh để đưa lại vào item / mục */
 async function findLost(){busyMsg("Đang tìm ảnh…");const used=await trashIds();for(const r of await allReports())for(const k of r.skus)for(const x of Object.values(k.sec||{}))for(const p of x.ph||[])if(p.id)used.add(p.id);
- const keys=await idbKeys("i"),ids=new Set();for(const k of keys){const id=String(k).replace(/^[ht]:/,"");if(id!=="logo"&&!used.has(id))ids.add(id)}
+ const keys=await idbKeys("i"),ids=new Set();for(const k of keys){const id=String(k).replace(/^(eh|[hte]):/,"");if(id!=="logo"&&!used.has(id))ids.add(id)}
  /* ảnh đã tải lên mây nhưng không còn trong báo cáo nào */
  let cloud=0;if(syOn()&&navigator.onLine){try{busyMsg("Đang tìm ảnh trên mây…");for(let off=0;off<20000;off+=1000){const r=await fetch(syU("/storage/v1/object/list/photos"),{method:"POST",headers:syH(1),body:JSON.stringify({prefix:SY.c.code+"/",limit:1000,offset:off})});if(!r.ok)break;const a=await r.json();
    for(const o of a){const id=String(o.name||"").split("/").pop().replace(/\.jpg$/i,"");if(id&&!used.has(id)&&!ids.has(id)){ids.add(id);cloud++}}if(a.length<1000)break}}catch(e){}}
@@ -1710,13 +1722,13 @@ function drawAnn(g,W,H,list){const M=Math.max(W,H);g.save();g.lineCap="round";g.
 function edRender(im,st,maxSide){if(!st.ann||!st.ann.length)return edDraw(im,st,maxSide);const c0=st.c,F=edDraw(im,st,Math.min(6000,maxSide/Math.max(c0.w,c0.h)),1);{const g=F.getContext("2d");g.setTransform(1,0,0,1,0,0);drawAnn(g,F.width,F.height,st.ann)}
  const sx=c0.x*F.width,sy=c0.y*F.height,sw=c0.w*F.width,sh=c0.h*F.height,k=Math.min(1,maxSide/Math.max(sw,sh)),o=document.createElement("canvas");o.width=Math.max(1,Math.round(sw*k));o.height=Math.max(1,Math.round(sh*k));
  o.getContext("2d").drawImage(F,sx,sy,sw,sh,0,0,o.width,o.height);F.width=F.height=0;return o}
-function editImg(id){return new Promise(async done=>{const src=await img(id);if(!src){alert("Không đọc được ảnh");return done(false)}
+function editImg(id){return new Promise(async done=>{const src=await img(id);if(!src){alert("Không đọc được ảnh");return done(false)}const ORIG=!!asBlob(await idbGet("i","e:"+id));
  let full;try{full=await loadIm(src)}catch(e){alert("Không đọc được ảnh");return done(false)}
  /* ảnh xem trước nhỏ để kéo thanh chỉnh mượt */
  const pv=(()=>{const k=Math.min(1,1100/Math.max(full.naturalWidth,full.naturalHeight)),c=document.createElement("canvas");c.width=Math.round(full.naturalWidth*k);c.height=Math.round(full.naturalHeight*k);c.getContext("2d").drawImage(full,0,0,c.width,c.height);return c})();
  const st={r:0,fh:0,fv:0,a:0,c:{x:0,y:0,w:1,h:1},ann:[]},RT=[["Tự do",0],["4:3",4/3],["3:4",3/4],["1:1",1]];let rt=0;
  const m=document.createElement("div");m.className="ed";
- m.innerHTML=`<div class=edt><button class=no>Hủy</button><span>Sửa ảnh</span><button class=ok>Lưu</button></div><div class=edw><canvas></canvas><canvas class=eov></canvas><div class=ecb>${["nw","n","ne","e","se","s","sw","w"].map(h=>`<i data-h=${h}></i>`).join("")}</div></div>
+ m.innerHTML=`<div class=edt><button class=no>✕ Hủy bỏ</button><span>Sửa ảnh</span>${ORIG?`<button class=rs title="Bỏ mọi chỉnh sửa trước đây, quay về ảnh lúc chụp">↩ Ảnh gốc</button>`:""}<button class=ok>💾 Lưu</button></div><div class=edw><canvas></canvas><canvas class=eov></canvas><div class=ecb>${["nw","n","ne","e","se","s","sw","w"].map(h=>`<i data-h=${h}></i>`).join("")}</div></div>
   <div class=edm><button data-md=crop class=on>✂ Cắt / xoay</button><button data-md=draw>✏️ Mũi tên &amp; chữ</button></div>
   <div class=edp hidden><div class=edr><button data-tl=a2 class=on title="Mũi tên 2 đầu (đo kích thước)">↔</button><button data-tl=a1 title="Mũi tên chỉ">➝</button><button data-tl=t title="Chữ / số đo">T</button><span class=sep></span><button data-cl=r class="sw on" style="background:#e00000"></button><button data-cl=y class=sw style="background:#ffd400"></button><button data-cl=b class=sw style="background:#1565ff"></button></div>
    <div class=edr><button data-sz=0>Nhỏ</button><button data-sz=1 class=on>Vừa</button><button data-sz=2>Lớn</button><button data-vt=1 title="Chữ dọc (theo cạnh đứng)">⤒ Dọc</button><button data-un=1 title="Hoàn tác">↶ Lùi</button><button data-cx=1 title="Xóa hết hình vẽ">🗑</button></div>
@@ -1765,8 +1777,12 @@ function editImg(id){return new Promise(async done=>{const src=await img(id);if(
  box.onpointerup=box.onpointercancel=()=>{drag=null};
  const ro=()=>place();addEventListener("resize",ro);
  const close=v=>{removeEventListener("resize",ro);m.remove();done(v)};
- m.querySelector(".no").onclick=()=>close(false);
+ m.querySelector(".no").onclick=()=>{if(!edPlain(st)&&!confirm("Bỏ các chỉnh sửa vừa làm? Ảnh giữ nguyên như trước khi sửa."))return;close(false)};
+ if(m.querySelector(".rs"))m.querySelector(".rs").onclick=async()=>{if(!confirm("Quay về ảnh gốc lúc chụp? Mọi chỉnh sửa (cắt, xoay, vẽ) của ảnh này sẽ bị bỏ."))return;busyMsg("Đang khôi phục ảnh gốc…");try{
+   const ob=asBlob(await idbGet("i","e:"+id));if(!ob)throw new Error("không còn ảnh gốc");await idbPut("i",id,ob);const oh=await idbGet("i","eh:"+id);if(oh&&oh.size)await idbPut("i","h:"+id,oh);await idbDel("i","e:"+id);await idbDel("i","eh:"+id);
+   memSet(id,ob);delete memT[id];await idbDel("i","t:"+id);await saveThumb(id);await idbDel("m","u:"+id);await save();busyEnd();toast("✓ Đã quay về ảnh gốc");close(true)}catch(e){busyEnd();alert("Không khôi phục được: "+(e&&e.message||e))}};
  m.querySelector(".ok").onclick=async()=>{if(edPlain(st))return close(false);busyMsg("Đang lưu ảnh đã sửa…");try{
+   /* giữ bản trước lần sửa đầu tiên để có thể quay về ảnh gốc */if(!ORIG){const cur=asBlob(await idbGet("i",id));if(cur)await idbPut("i","e:"+id,cur);const ch=await idbGet("i","h:"+id);if(ch&&ch.size)await idbPut("i","eh:"+id,ch)}
    const c=edRender(full,st,4096),nb=await cvBlob(c,.9);c.width=c.height=0;if(!nb)throw new Error("không tạo được ảnh");if(!(await idbPut("i",id,nb)))throw new Error("không lưu được");
    memSet(id,nb);delete memT[id];await idbDel("i","t:"+id);await saveThumb(id);await idbDel("m","u:"+id);
    const h=await idbGet("i","h:"+id);if(h&&h.size){const u=URL.createObjectURL(h);try{const hi=await loadIm(u),c2=edRender(hi,st,6000),hb=await cvBlob(c2,.92);c2.width=c2.height=0;if(hb)await idbPut("i","h:"+id,hb)}catch(e){}finally{URL.revokeObjectURL(u)}}
